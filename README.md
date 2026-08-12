@@ -1,3 +1,5 @@
+![CaseZero MVP banner](./casezero-banner.svg)
+
 # CaseZero MVP
 
 CaseZero is a lightweight incident-resolution demo that simulates evidence-driven operational decisions for security, infrastructure, data, and customer-impact workflows. The app models approval gates, verification checks, automatic stop conditions, and rollback behavior across six realistic runtime scenarios.
