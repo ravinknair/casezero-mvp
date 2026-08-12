@@ -1,0 +1,7 @@
+.DS_Store
+casezero-mvp/.vite/
+.vite/
+node_modules/
+dist/
+.next/
+.wrangler/
