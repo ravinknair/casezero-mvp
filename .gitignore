@@ -1,7 +1,35 @@
+# OS files
 .DS_Store
-casezero-mvp/.vite/
+Thumbs.db
+
+# local caches
 .vite/
+casezero-mvp/.vite/
+
+# dependencies
 node_modules/
+casezero-mvp/node_modules/
+
+# build outputs
+build/
 dist/
+out/
 .next/
+.vinext/
 .wrangler/
+casezero-mvp/.next/
+casezero-mvp/dist/
+casezero-mvp/out/
+casezero-mvp/.wrangler/
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# env
+.env
+.env.*
+
+# editor settings
+.vscode/
