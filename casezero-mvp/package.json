@@ -14,6 +14,7 @@
     "check": "npm run lint && npm run test && npm run build",
     "ci": "npm run check",
     "test:full": "npm run check",
+    "test:dashboard": "node test-reports/server.mjs",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {

@@ -1,0 +1,67 @@
+import React from "react";
+
+interface SidebarItem {
+  icon: string;
+  label: string;
+  count?: number;
+  href?: string;
+  onClick?: () => void;
+  active?: boolean;
+}
+
+interface SidebarProps {
+  items: SidebarItem[];
+  userName?: string;
+  caseCount?: number;
+}
+
+export function Sidebar({ items, userName, caseCount }: SidebarProps) {
+  return (
+    <div className="w-64 bg-gray-900 text-white h-screen flex flex-col fixed left-0 top-0">
+      {/* Header */}
+      <div className="p-6 border-b border-gray-800">
+        <div className="text-2xl font-bold mb-1">CASEZERO AI</div>
+        {userName && (
+          <div className="text-xs text-gray-400">
+            <div>{userName}</div>
+            <div>Incident approver</div>
+          </div>
+        )}
+      </div>
+
+      {/* Main sections */}
+      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+        {items.map((item, index) => (
+          <button
+            key={index}
+            onClick={item.onClick}
+            className={`w-full text-left px-4 py-3 rounded transition flex items-center justify-between ${
+              item.active
+                ? "bg-blue-600 text-white"
+                : "text-gray-300 hover:bg-gray-800"
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-lg">{item.icon}</span>
+              <span className="font-medium">{item.label}</span>
+            </div>
+            {item.count !== undefined && (
+              <span className="bg-gray-700 px-2 py-0.5 rounded text-xs font-semibold">
+                {item.count}
+              </span>
+            )}
+          </button>
+        ))}
+      </nav>
+
+      {/* Footer stats */}
+      <div className="p-4 border-t border-gray-800">
+        <div className="text-xs text-gray-400 mb-3">CASES</div>
+        <div className="flex items-baseline gap-2">
+          <span className="text-2xl font-bold text-white">{caseCount || 0}</span>
+          <span className="text-gray-400">cases</span>
+        </div>
+      </div>
+    </div>
+  );
+}
