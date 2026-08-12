@@ -1,0 +1,62 @@
+<svg width="1400" height="700" viewBox="0 0 1400 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1400" y2="700" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#071827"/>
+      <stop offset="1" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="100" y1="120" x2="1200" y2="540" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7DD3FC"/>
+      <stop offset="0.5" stop-color="#60A5FA"/>
+      <stop offset="1" stop-color="#A78BFA"/>
+    </linearGradient>
+  </defs>
+  <rect width="1400" height="700" rx="28" fill="url(#bg)"/>
+  <text x="80" y="90" fill="#E2E8F0" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700">CaseZero Workflow</text>
+
+  <g>
+    <rect x="80" y="150" width="190" height="110" rx="18" fill="#0F172A" stroke="#334155"/>
+    <text x="112" y="200" fill="#E2E8F0" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="600">1. Intake</text>
+    <text x="110" y="230" fill="#94A3B8" font-family="Arial, Helvetica, sans-serif" font-size="18">Evidence + risk</text>
+  </g>
+
+  <g>
+    <rect x="330" y="150" width="190" height="110" rx="18" fill="#0F172A" stroke="#334155"/>
+    <text x="352" y="200" fill="#E2E8F0" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="600">2. Approve</text>
+    <text x="356" y="230" fill="#94A3B8" font-family="Arial, Helvetica, sans-serif" font-size="18">Human gate</text>
+  </g>
+
+  <g>
+    <rect x="580" y="150" width="190" height="110" rx="18" fill="#0F172A" stroke="#334155"/>
+    <text x="612" y="200" fill="#E2E8F0" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="600">3. Execute</text>
+    <text x="610" y="230" fill="#94A3B8" font-family="Arial, Helvetica, sans-serif" font-size="18">Action state</text>
+  </g>
+
+  <g>
+    <rect x="830" y="150" width="190" height="110" rx="18" fill="#0F172A" stroke="#334155"/>
+    <text x="860" y="200" fill="#E2E8F0" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="600">4. Verify</text>
+    <text x="857" y="230" fill="#94A3B8" font-family="Arial, Helvetica, sans-serif" font-size="18">Stop checks</text>
+  </g>
+
+  <g>
+    <rect x="1080" y="150" width="190" height="110" rx="18" fill="#0F172A" stroke="#334155"/>
+    <text x="1108" y="200" fill="#E2E8F0" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="600">5. Resolve</text>
+    <text x="1102" y="230" fill="#94A3B8" font-family="Arial, Helvetica, sans-serif" font-size="18">Or rollback</text>
+  </g>
+
+  <path d="M270 205H330" stroke="url(#accent)" stroke-width="6" stroke-linecap="round"/>
+  <path d="M520 205H580" stroke="url(#accent)" stroke-width="6" stroke-linecap="round"/>
+  <path d="M770 205H830" stroke="url(#accent)" stroke-width="6" stroke-linecap="round"/>
+  <path d="M1020 205H1080" stroke="url(#accent)" stroke-width="6" stroke-linecap="round"/>
+
+  <path d="M220 260V338H765" stroke="#64748B" stroke-width="3" stroke-dasharray="10 10" opacity="0.8"/>
+  <path d="M470 260V420H765" stroke="#64748B" stroke-width="3" stroke-dasharray="10 10" opacity="0.8"/>
+  <path d="M720 260V490H765" stroke="#64748B" stroke-width="3" stroke-dasharray="10 10" opacity="0.8"/>
+
+  <g>
+    <rect x="520" y="338" width="430" height="210" rx="24" fill="#0F172A" stroke="#334155"/>
+    <text x="560" y="390" fill="#E2E8F0" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700">Decision loop</text>
+    <text x="560" y="440" fill="#94A3B8" font-family="Arial, Helvetica, sans-serif" font-size="24">Evidence → Approve → Execute → Verify</text>
+    <text x="560" y="485" fill="#94A3B8" font-family="Arial, Helvetica, sans-serif" font-size="24">If stop conditions trigger, rollback instead of resolving.</text>
+    <rect x="560" y="510" width="250" height="12" rx="6" fill="url(#accent)"/>
+  </g>
+</svg>
