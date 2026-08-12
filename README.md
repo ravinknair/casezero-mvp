@@ -1,44 +1,40 @@
 ![CaseZero MVP banner](./casezero-banner.svg)
 
-![CaseZero MVP banner](./casezero-banner.svg)
-
 # CaseZero MVP
 
-CaseZero is a portfolio-ready workflow simulator for AI-assisted incident response and operational decision-making. It models evidence collection, approval gates, automated verification, and rollback logic across realistic production scenarios.
+CaseZero is a workflow simulator for AI-assisted incident response and operational decision-making. It turns evidence into safe actions by combining structured diagnostics, human approval gates, verification checks, and automatic rollback logic.
 
-## Portfolio summary
+## Portfolio-ready summary
 
-This project demonstrates how an operational control plane can turn evidence into safe decisions. It combines a polished UI with a deterministic state machine that covers certificate expiry, production incidents, database saturation, duplicate billing, access remediation, and pipeline reliability issues.
+This project showcases a product-style interface paired with a deterministic safety engine. It models realistic operational cases such as certificate expiry, production incidents, database saturation, customer refunds, access remediation, and pipeline reliability failures.
 
 ## How it works
 
-Each scenario follows a repeatable workflow:
+Each case follows the same decision loop:
 
 1. Intake evidence
-   - The app loads the case, its risk severity, and the recommended action.
-2. Human approval gate
-   - The user reviews the proposal before the action can proceed.
-3. Action execution
-   - The workflow enters its execution state and performs the bounded operational change.
-4. Verification
-   - Stop conditions are checked to ensure the remediation remains safe.
-5. Resolution or rollback
-   - A successful verification leads to a clean resolution; failures trigger rollback instead of partial success.
+   - The app loads the diagnosis, recommended action, risk severity, and relevant evidence.
+2. Review the proposed change
+   - The user evaluates the bounded scope and stop conditions before approving.
+3. Execute the action
+   - The workflow moves into execution as the remediation begins.
+4. Verify the outcome
+   - Safety checks ensure the action remains within acceptable risk limits.
+5. Resolve or rollback
+   - If the verification passes, the case resolves cleanly. If a stop condition is triggered, the system rolls back instead of leaving partial impact behind.
 
-This creates a compact demonstration of controlled automation, operational safety, and traceable decisions.
+This creates a compact, high-signal demo of trustable automation in operations.
 
 ## Demo flow
 
 ![CaseZero workflow diagram](./docs/demo-flow.svg)
 
-## Why it matters
+## Why this project stands out
 
-This project is useful for showcasing:
-
-- AI-assisted operational reasoning
-- human-in-the-loop approval patterns
-- safe execution design with rollback protection
-- structured evidence-driven decision making
+- Human-in-the-loop decision design
+- Evidence-driven operational reasoning
+- Safe bounded actions with rollback protection
+- Clean UI for a portfolio-ready technical story
 
 ## Local development
 
@@ -48,7 +44,7 @@ npm install
 npm run dev
 ```
 
-Validate the project with:
+Validate with:
 
 ```bash
 npm run check
@@ -57,9 +53,9 @@ npm run check
 ## Project structure
 
 - `app/` — UI and simulation logic
-- `.github/workflows/ci.yml` — GitHub Actions checks for lint, tests, and build
-- `Makefile` — local automation helpers
-- `start.sh`, `stop.sh`, `restart.sh` — clean restart commands
+- `.github/workflows/ci.yml` — CI for lint, test, and build
+- `Makefile` — local project commands
+- `start.sh`, `stop.sh`, `restart.sh` — clean restart flow
 
 ## License
 
