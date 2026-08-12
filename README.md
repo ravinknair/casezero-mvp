@@ -4,6 +4,10 @@
 
 CaseZero is a workflow simulator for AI-assisted incident response and operational decision-making. It turns evidence into safe actions by combining structured diagnostics, human approval gates, verification checks, and automatic rollback logic.
 
+## Portfolio pitch
+
+I built CaseZero to explore how AI and automation can support high-stakes operational decisions without removing human oversight. The project models a safer decision loop: gather evidence, require approval, execute within limits, verify outcomes, and rollback when conditions fail.
+
 ## Portfolio-ready summary
 
 This project showcases a product-style interface paired with a deterministic safety engine. It models realistic operational cases such as certificate expiry, production incidents, database saturation, customer refunds, access remediation, and pipeline reliability failures.
