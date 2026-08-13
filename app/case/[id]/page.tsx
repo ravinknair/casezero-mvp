@@ -45,7 +45,7 @@ export default function CaseDetailPage() {
         body: JSON.stringify({
           caseId,
           status: "approved",
-          approvedBy: "user-default",
+          approvedBy: "Mandar Pophali",
           approvalNotes: "Proceeding with recommended action",
         }),
       });
@@ -72,7 +72,7 @@ export default function CaseDetailPage() {
         body: JSON.stringify({
           caseId,
           status: "rejected",
-          approvedBy: "user-default",
+          approvedBy: "Mandar Pophali",
           approvalNotes: "Keeping case under observation",
         }),
       });
@@ -114,10 +114,10 @@ export default function CaseDetailPage() {
   ];
 
   return (
-    <div className="flex">
+    <div className="app-layout flex">
       <Sidebar items={sidebarItems} userName="Ravi Nair" />
 
-      <div className="flex-1 ml-64">
+      <div className="app-workspace flex-1">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 px-8 py-6">
           <div className="flex justify-between items-start mb-4">
@@ -168,8 +168,8 @@ export default function CaseDetailPage() {
                 >
                   {index < 2 ? "✓" : index + 1}
                 </div>
-                <span className="font-medium">{step}</span>
-                {index < 4 && <span className="text-gray-400 mx-1">→</span>}
+                <span className="app-step-label font-medium">{step}</span>
+                {index < 4 && <span className="app-step-arrow text-gray-400 mx-1">→</span>}
               </div>
             ))}
           </div>

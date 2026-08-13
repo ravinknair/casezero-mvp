@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { CaseCard } from "@/components/CaseCard";
 import { Sidebar } from "@/components/Sidebar";
 
@@ -60,14 +61,24 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="flex">
+    <div className="app-layout flex">
       <Sidebar items={sidebarItems} userName="Ravi Nair" caseCount={cases.length} />
 
-      <div className="flex-1 ml-64">
+      <div className="app-workspace flex-1">
         {/* Top bar */}
         <div className="bg-white border-b border-gray-200 px-8 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900">Incident Resolution Dashboard</h1>
+            <div className="app-main-brand flex items-center gap-3">
+              <Image
+                src="/casezero-logo.svg"
+                alt="CaseZero"
+                width={128}
+                height={24}
+                className="h-6 w-auto"
+              />
+              <div className="h-6 w-px bg-gray-200" />
+              <h1 className="text-2xl font-bold text-gray-900">Incident Resolution</h1>
+            </div>
             <button className="px-4 py-2 bg-blue-600 text-white rounded font-semibold hover:bg-blue-700">
               New Case
             </button>

@@ -1,0 +1,6 @@
+<svg width="640" height="120" viewBox="0 0 640 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="4" y="4" width="112" height="112" rx="28" fill="#0B1220" stroke="#60A5FA" stroke-width="4"/>
+  <circle cx="60" cy="60" r="29" stroke="#7DD3FC" stroke-width="8"/>
+  <path d="M43 60H77" stroke="#A78BFA" stroke-width="8" stroke-linecap="round"/>
+  <text x="142" y="78" fill="#F8FAFC" font-family="Arial, Helvetica, sans-serif" font-size="58" font-weight="700" letter-spacing="2">CASEZERO</text>
+</svg>

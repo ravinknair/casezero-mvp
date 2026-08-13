@@ -21,10 +21,10 @@ export default function WorkflowsPage() {
   }));
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="app-layout flex min-h-screen bg-gray-50">
       <Sidebar items={sidebarItems} userName="Ravi Nair" caseCount={mockCases.length} />
 
-      <main className="flex-1 ml-64 p-8">
+      <main className="app-workspace flex-1 p-8">
         <div className="max-w-6xl mx-auto">
           <div className="mb-8">
             <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">Operations</p>
