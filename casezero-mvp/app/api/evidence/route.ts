@@ -20,7 +20,7 @@ export async function GET(request: Request) {
       ? mockEvidence.filter((e) => e.caseId === caseId)
       : mockEvidence;
     return Response.json(results);
-  } catch (error) {
+  } catch {
     return Response.json({ error: "Failed to fetch evidence" }, { status: 500 });
   }
 }
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     };
     mockEvidence.unshift(newEvidence);
     return Response.json(newEvidence, { status: 201 });
-  } catch (error) {
+  } catch {
     return Response.json({ error: "Failed to create evidence" }, { status: 500 });
   }
 }

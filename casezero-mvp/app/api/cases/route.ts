@@ -33,7 +33,7 @@ export async function POST(request: Request) {
 
     mockCases.unshift(newCase);
     return Response.json(newCase, { status: 201 });
-  } catch (error) {
+  } catch {
     return Response.json({ error: "Failed to create case" }, { status: 500 });
   }
 }

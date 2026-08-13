@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     }
 
     return Response.json(mockApprovals);
-  } catch (error) {
+  } catch {
     return Response.json({ error: "Failed to fetch approvals" }, { status: 500 });
   }
 }
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     }
 
     return Response.json(newApproval, { status: 201 });
-  } catch (error) {
+  } catch {
     console.error("Error creating approval:", error);
     return Response.json({ error: "Failed to create approval" }, { status: 500 });
   }
@@ -60,7 +60,7 @@ export async function PATCH(request: Request) {
     approvalToUpdate.decidedAt = new Date().toISOString();
 
     return Response.json(approvalToUpdate);
-  } catch (error) {
+  } catch {
     console.error("Error updating approval:", error);
     return Response.json({ error: "Failed to update approval" }, { status: 500 });
   }

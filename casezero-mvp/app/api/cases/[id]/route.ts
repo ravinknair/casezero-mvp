@@ -24,7 +24,7 @@ export async function GET(
       approvals: [],
       metrics: caseFound.recommendation?.metrics ?? [],
     });
-  } catch (error) {
+  } catch {
     return Response.json({ error: "Failed to fetch case" }, { status: 500 });
   }
 }
@@ -44,7 +44,7 @@ export async function PATCH(
 
     caseFound.status = body.status || caseFound.status;
     return Response.json(caseFound);
-  } catch (error) {
+  } catch {
     return Response.json({ error: "Failed to update case" }, { status: 500 });
   }
 }

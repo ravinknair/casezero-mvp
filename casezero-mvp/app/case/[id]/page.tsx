@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { DiagnosisSection } from "@/components/DiagnosisSection";
 import { RecommendationSection } from "@/components/RecommendationSection";
@@ -10,32 +10,67 @@ import { PoliciesSection } from "@/components/PoliciesSection";
 import { Sidebar } from "@/components/Sidebar";
 import { normalizeChain } from "@/lib/caseChain";
 
+interface CaseDetailData {
+  case: {
+    caseId: string;
+    title: string;
+    subtitle?: string;
+    severity: string;
+    confidence: number;
+    sources: number;
+    activity: number;
+    status: string;
+  };
+  diagnoses: Array<{ title: string; description: string; chain: unknown }>;
+  recommendations: Array<{
+    title: string;
+    description: string;
+    actionLabel: string;
+    riskValue: string;
+    riskLabel: string;
+    note: string;
+  }>;
+  evidence: Array<{
+    type: string;
+    title: string;
+    description: string;
+    timestamp: string;
+    color?: string;
+  }>;
+  metrics: Array<{
+    name: string;
+    value: string;
+    change: string;
+    status: "neutral" | "warn" | "danger";
+  }>;
+}
+
 export default function CaseDetailPage() {
   const params = useParams();
   const caseId = params.id as string;
-  const [caseData, setCaseData] = useState<any>(null);
+  const [caseData, setCaseData] = useState<CaseDetailData | null>(null);
   const [loading, setLoading] = useState(true);
   const [approvalStatus, setApprovalStatus] = useState<"pending" | "approved" | "rejected">("pending");
 
-  useEffect(() => {
-    if (caseId) {
-      fetchCaseDetail();
-    }
-  }, [caseId]);
-
-  const fetchCaseDetail = async () => {
+  const fetchCaseDetail = useCallback(async () => {
     try {
       const response = await fetch(`/api/cases/${caseId}`);
       if (response.ok) {
         const data = await response.json();
-        setCaseData(data);
+        setCaseData(data as CaseDetailData);
       }
     } catch (error) {
       console.error("Failed to fetch case:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [caseId]);
+
+  useEffect(() => {
+    if (caseId) {
+      void fetchCaseDetail();
+    }
+  }, [caseId, fetchCaseDetail]);
 
   const handleApprove = async () => {
     try {
@@ -55,10 +90,7 @@ export default function CaseDetailPage() {
       }
 
       setApprovalStatus("approved");
-      const updated = await fetchCaseDetail();
-      if (updated) {
-        setCaseData(updated);
-      }
+      await fetchCaseDetail();
     } catch (error) {
       console.error("Failed to approve:", error);
     }
@@ -82,10 +114,7 @@ export default function CaseDetailPage() {
       }
 
       setApprovalStatus("rejected");
-      const updated = await fetchCaseDetail();
-      if (updated) {
-        setCaseData(updated);
-      }
+      await fetchCaseDetail();
     } catch (error) {
       console.error("Failed to reject:", error);
     }
@@ -99,10 +128,9 @@ export default function CaseDetailPage() {
     return <div className="flex items-center justify-center h-screen">Case not found</div>;
   }
 
-  const { case: caseInfo, diagnoses, recommendations, evidence, activities, approvals, metrics } = caseData;
+  const { case: caseInfo, diagnoses, recommendations, evidence, metrics } = caseData;
   const diagnosis = diagnoses?.[0];
   const recommendation = recommendations?.[0];
-  const approval = approvals?.[0];
   const canDecide = approvalStatus === "pending" && !["resolved", "rejected"].includes(caseInfo?.status);
 
   const sidebarItems = [
@@ -189,7 +217,7 @@ export default function CaseDetailPage() {
           {/* Metrics */}
           {metrics && metrics.length > 0 && (
             <MetricsCard
-              items={metrics.map((m: any) => ({
+              items={metrics.map((m) => ({
                 name: m.name,
                 value: m.value,
                 change: m.change,
@@ -218,7 +246,7 @@ export default function CaseDetailPage() {
           {/* Evidence */}
           {evidence && evidence.length > 0 && (
             <EvidenceSection
-              items={evidence.map((e: any) => ({
+              items={evidence.map((e) => ({
                 type: e.type,
                 title: e.title,
                 description: e.description,

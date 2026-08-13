@@ -18,7 +18,7 @@ export async function GET(request: Request) {
       ? mockActivities.filter((a) => a.caseId === caseId)
       : mockActivities;
     return Response.json(results);
-  } catch (error) {
+  } catch {
     return Response.json({ error: "Failed to fetch activities" }, { status: 500 });
   }
 }
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
     };
     mockActivities.unshift(newActivity);
     return Response.json(newActivity, { status: 201 });
-  } catch (error) {
+  } catch {
     return Response.json({ error: "Failed to create activity" }, { status: 500 });
   }
 }

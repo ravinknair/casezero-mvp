@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { CaseCard } from "@/components/CaseCard";
@@ -20,29 +20,25 @@ interface Case {
 export default function DashboardPage() {
   const router = useRouter();
   const [cases, setCases] = useState<Case[]>([]);
-  const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchCases();
-  }, []);
-
-  const fetchCases = async () => {
+  const fetchCases = useCallback(async () => {
     try {
       const response = await fetch("/api/cases");
       if (response.ok) {
         const data = await response.json();
         setCases(data);
-        if (data.length > 0) {
-          setSelectedCaseId(data[0].id);
-        }
       }
     } catch (error) {
       console.error("Failed to fetch cases:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    void fetchCases();
+  }, [fetchCases]);
 
   const sidebarItems = [
     { icon: "◫", label: "Cases", href: "/dashboard", count: cases.length, active: true },
@@ -128,7 +124,6 @@ export default function DashboardPage() {
                     key={caseItem.id}
                     {...caseItem}
                     onClick={() => {
-                      setSelectedCaseId(caseItem.id);
                       router.push(`/case/${caseItem.id}`);
                     }}
                   />

@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 interface CreateCaseFormProps {
-  onSuccess?: (caseData: any) => void;
+  onSuccess?: (caseData: unknown) => void;
 }
 
 export function CreateCaseForm({ onSuccess }: CreateCaseFormProps) {
@@ -64,9 +64,10 @@ export function CreateCaseForm({ onSuccess }: CreateCaseFormProps) {
       <h2 className="text-xl font-bold text-gray-900">Create New Case</h2>
 
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">Case ID</label>
+        <label htmlFor="case-id" className="block text-sm font-semibold text-gray-700 mb-1">Case ID</label>
         <input
           type="text"
+          id="case-id"
           name="caseId"
           value={formData.caseId}
           onChange={handleChange}
@@ -78,9 +79,10 @@ export function CreateCaseForm({ onSuccess }: CreateCaseFormProps) {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">Type</label>
+          <label htmlFor="case-type" className="block text-sm font-semibold text-gray-700 mb-1">Type</label>
           <select
             name="type"
+            id="case-type"
             value={formData.type}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded"
@@ -94,9 +96,10 @@ export function CreateCaseForm({ onSuccess }: CreateCaseFormProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">Severity</label>
+          <label htmlFor="case-severity" className="block text-sm font-semibold text-gray-700 mb-1">Severity</label>
           <select
             name="severity"
+            id="case-severity"
             value={formData.severity}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded"
@@ -111,9 +114,10 @@ export function CreateCaseForm({ onSuccess }: CreateCaseFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">Title</label>
+        <label htmlFor="case-title" className="block text-sm font-semibold text-gray-700 mb-1">Title</label>
         <input
           type="text"
+          id="case-title"
           name="title"
           value={formData.title}
           onChange={handleChange}
@@ -124,9 +128,10 @@ export function CreateCaseForm({ onSuccess }: CreateCaseFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">Subtitle (Optional)</label>
+        <label htmlFor="case-subtitle" className="block text-sm font-semibold text-gray-700 mb-1">Subtitle (Optional)</label>
         <textarea
           name="subtitle"
+          id="case-subtitle"
           value={formData.subtitle}
           onChange={handleChange}
           placeholder="Additional context or description"
@@ -135,9 +140,10 @@ export function CreateCaseForm({ onSuccess }: CreateCaseFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">Confidence: {formData.confidence}%</label>
+        <label htmlFor="case-confidence" className="block text-sm font-semibold text-gray-700 mb-1">Confidence: {formData.confidence}%</label>
         <input
           type="range"
+          id="case-confidence"
           name="confidence"
           min="0"
           max="100"

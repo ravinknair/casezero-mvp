@@ -1,5 +1,3 @@
-import React from "react";
-
 interface CaseCardProps {
   id: string;
   caseId: string;
@@ -33,7 +31,8 @@ export function CaseCard({
   };
 
   return (
-    <div
+    <button
+      type="button"
       onClick={onClick}
       className="border rounded-lg p-4 hover:shadow-lg transition-shadow cursor-pointer bg-white"
     >
@@ -64,6 +63,6 @@ export function CaseCard({
           <span className="font-semibold">{sources}</span> sources
         </div>
       </div>
-    </div>
+    </button>
   );
 }

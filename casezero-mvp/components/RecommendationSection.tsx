@@ -1,5 +1,3 @@
-import React from "react";
-
 interface RecommendationProps {
   title: string;
   description: string;
