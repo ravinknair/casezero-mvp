@@ -12,7 +12,7 @@ done < <(lsof -ti tcp:"${PORT}" || true)
 if [ "${#pids[@]}" -gt 0 ]; then
   echo "Restarting CaseZero app on port ${PORT} (stopping PIDs: ${pids[*]})"
   for pid in "${pids[@]}"; do
-    kill "$pid" || true
+    kill -TERM "$pid" || true
   done
   sleep 2
 fi

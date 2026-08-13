@@ -8,6 +8,7 @@ import { EvidenceSection } from "@/components/EvidenceSection";
 import { MetricsCard } from "@/components/MetricsCard";
 import { PoliciesSection } from "@/components/PoliciesSection";
 import { Sidebar } from "@/components/Sidebar";
+import { normalizeChain } from "@/lib/caseChain";
 
 export default function CaseDetailPage() {
   const params = useParams();
@@ -181,7 +182,7 @@ export default function CaseDetailPage() {
             <DiagnosisSection
               title={diagnosis.title}
               description={diagnosis.description}
-              chain={JSON.parse(diagnosis.chain)}
+              chain={normalizeChain(diagnosis.chain)}
             />
           )}
 

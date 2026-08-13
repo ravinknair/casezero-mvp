@@ -1,0 +1,25 @@
+CaseZero MVP Onboarding
+
+Run steps:
+1. cd /Users/ravinair/Desktop/MANDAR/MyCodexProject
+2. bash ./start.sh
+3. Open http://localhost:3000
+
+Expected app URL:
+- Local: http://localhost:3000
+- External tunnel: https://twiddling-lifter-evolve.ngrok-free.dev
+
+When the sections populate:
+- Workflows: populated from mock case data immediately after the app loads.
+- Evidence: populated from the per-case evidence arrays and seeded data.
+- Policies: populated from the policy seed data in the database.
+- Telemetry: populated from the metrics rows in the mock data and seeded metrics.
+
+If ngrok shows connection refused:
+- start the app first
+- then run bash ./start-live.sh
+- do not let the tunnel script restart the main app
+
+Notes:
+- This app is expected to bind to port 3000.
+- The external tunnel is optional and separate from local app startup.

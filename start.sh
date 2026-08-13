@@ -7,12 +7,6 @@ nvm use 22 >/dev/null 2>&1 || true
 
 PROJECT_DIR="/Users/ravinair/Desktop/MANDAR/MyCodexProject"
 PORT=3000
-RESTART_DELAY=3
-MODE="loop"
-
-if [ "${1:-}" = "--once" ]; then
-  MODE="once"
-fi
 
 cleanup_port() {
   local pids=()
@@ -23,7 +17,7 @@ cleanup_port() {
   if [ "${#pids[@]}" -gt 0 ]; then
     echo "Stopping stale process(es) on port ${PORT} (PIDs: ${pids[*]})"
     for pid in "${pids[@]}"; do
-      kill "$pid" || true
+      kill -TERM "$pid" || true
     done
     sleep 2
   fi
@@ -36,15 +30,4 @@ run_app() {
 }
 
 cleanup_port
-
-if [ "$MODE" = "once" ]; then
-  run_app
-  exit $?
-fi
-
-while true; do
-  run_app
-  status=$?
-  echo "CaseZero app exited with code ${status} at $(date). Restarting in ${RESTART_DELAY}s..."
-  sleep "$RESTART_DELAY"
-done
+run_app
