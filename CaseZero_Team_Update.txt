@@ -1,0 +1,89 @@
+==========================================================
+CASEZERO MVP — TEAM UPDATE
+August 13, 2026
+==========================================================
+
+Hi Team,
+
+I wanted to share a quick update on the CaseZero MVP project.
+We now have a fully automated, permanently hosted version live
+and the full codebase is on GitHub.
+
+----------------------------------------------------------
+LIVE SITE
+----------------------------------------------------------
+
+The app is now permanently hosted on Cloudflare Workers:
+
+  https://casezero-mvp.raknair.workers.dev
+
+This replaces the previous local/ngrok setup. The site is
+always available — no Mac, no local server, no ngrok needed.
+
+Working sections:
+  - Cases       https://casezero-mvp.raknair.workers.dev/
+  - Dashboard   https://casezero-mvp.raknair.workers.dev/dashboard
+  - Workflows   https://casezero-mvp.raknair.workers.dev/workflows
+  - Evidence    https://casezero-mvp.raknair.workers.dev/evidence
+  - Policies    https://casezero-mvp.raknair.workers.dev/policies
+  - Telemetry   https://casezero-mvp.raknair.workers.dev/telemetry
+
+----------------------------------------------------------
+GITHUB REPOSITORY
+----------------------------------------------------------
+
+Full source code is on GitHub:
+
+  https://github.com/ravinknair/casezero-mvp
+
+----------------------------------------------------------
+WHAT CHANGED
+----------------------------------------------------------
+
+Hosting
+  - Deployed to Cloudflare Workers (permanent, always on)
+  - Replaced ngrok tunnel with a real production deployment
+  - All 6 sections now live and working
+
+Application
+  - All sections wired up: telemetry, evidence, policies,
+    workflows, case detail, dashboard
+  - API routes migrated to mock data (no database required)
+  - Full approval, rejection, and rollback workflow working
+
+Automation
+  - GitHub Actions CI runs on every push:
+      lint → test → build
+  - Makefile commands for local use:
+      make dev       start local server
+      make test      run tests
+      make build     build for production
+      make deploy    build and push to Cloudflare
+  - Shell scripts for clean restarts:
+      ./start.sh     start the app
+      ./stop.sh      stop the app
+      ./restart.sh   restart cleanly
+
+Code quality
+  - Lint, tests and build all passing
+  - README updated with portfolio pitch and how-it-works
+  - MIT License added
+  - .gitignore configured for Node/Next/Cloudflare projects
+
+----------------------------------------------------------
+TO RUN LOCALLY
+----------------------------------------------------------
+
+Requirements: Node.js 22+ (install via nvm)
+
+  cd /path/to/casezero-mvp
+  npm install
+  npm run dev
+  open http://localhost:3000
+
+----------------------------------------------------------
+QUESTIONS
+----------------------------------------------------------
+
+Please reach out if you have any questions or want a walkthrough.
+
