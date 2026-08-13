@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { CaseCard } from "@/components/CaseCard";
 import { Sidebar } from "@/components/Sidebar";
 
@@ -16,6 +17,7 @@ interface Case {
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [cases, setCases] = useState<Case[]>([]);
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,11 +44,11 @@ export default function DashboardPage() {
   };
 
   const sidebarItems = [
-    { icon: "◫", label: "Cases", count: cases.length, active: true },
-    { icon: "⌁", label: "Workflows", count: 6 },
-    { icon: "◎", label: "Evidence", count: 42 },
-    { icon: "◇", label: "Policies", count: 8 },
-    { icon: "↗", label: "Telemetry" },
+    { icon: "◫", label: "Cases", href: "/dashboard", count: cases.length, active: true },
+    { icon: "⌁", label: "Workflows", href: "/workflows", count: 6 },
+    { icon: "◎", label: "Evidence", href: "/evidence", count: 42 },
+    { icon: "◇", label: "Policies", href: "/policies", count: 8 },
+    { icon: "↗", label: "Telemetry", href: "/telemetry" },
   ];
 
   const statusCounts = {
@@ -114,7 +116,10 @@ export default function DashboardPage() {
                   <CaseCard
                     key={caseItem.id}
                     {...caseItem}
-                    onClick={() => setSelectedCaseId(caseItem.id)}
+                    onClick={() => {
+                      setSelectedCaseId(caseItem.id);
+                      router.push(`/case/${caseItem.id}`);
+                    }}
                   />
                 ))}
               </div>

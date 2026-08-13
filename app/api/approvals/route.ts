@@ -1,6 +1,4 @@
-import { db } from "@/db";
-import { approvals, cases } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { mockApprovals, mockCases } from "@/lib/mockData";
 
 export async function GET(request: Request) {
   try {
@@ -8,15 +6,10 @@ export async function GET(request: Request) {
     const caseId = searchParams.get("caseId");
 
     if (caseId) {
-      const caseApprovals = await db
-        .select()
-        .from(approvals)
-        .where(eq(approvals.caseId, caseId));
-      return Response.json(caseApprovals);
+      return Response.json(mockApprovals.filter((item) => item.caseId === caseId));
     }
 
-    const allApprovals = await db.select().from(approvals);
-    return Response.json(allApprovals);
+    return Response.json(mockApprovals);
   } catch (error) {
     return Response.json({ error: "Failed to fetch approvals" }, { status: 500 });
   }
@@ -30,20 +23,18 @@ export async function POST(request: Request) {
     const newApproval = {
       id: `approval-${Date.now()}`,
       caseId,
-      recommendationId,
+      recommendationId: recommendationId ?? null,
       status,
-      approvedBy,
-      approvalNotes,
-      decidedAt: status !== "pending" ? new Date() : null,
+      approvedBy: approvedBy ?? "user-default",
+      approvalNotes: approvalNotes ?? null,
+      decidedAt: status !== "pending" ? new Date().toISOString() : null,
     };
 
-    await db.insert(approvals).values(newApproval);
+    mockApprovals.unshift(newApproval);
 
-    // Update case status based on approval
-    if (status === "approved") {
-      await db.update(cases).set({ status: "act" }).where(eq(cases.id, caseId));
-    } else if (status === "rejected") {
-      await db.update(cases).set({ status: "rejected" }).where(eq(cases.id, caseId));
+    const caseFound = mockCases.find((item) => item.id === caseId || item.caseId === caseId);
+    if (caseFound) {
+      caseFound.status = status === "approved" ? "act" : "rejected";
     }
 
     return Response.json(newApproval, { status: 201 });
@@ -58,15 +49,17 @@ export async function PATCH(request: Request) {
     const body = await request.json();
     const { id, status, approvedBy, approvalNotes } = body;
 
-    await db.update(approvals).set({
-      status,
-      approvedBy,
-      approvalNotes,
-      decidedAt: new Date(),
-    }).where(eq(approvals.id, id));
+    const approvalToUpdate = mockApprovals.find((item) => item.id === id);
+    if (!approvalToUpdate) {
+      return Response.json({ error: "Approval not found" }, { status: 404 });
+    }
 
-    const updated = await db.select().from(approvals).where(eq(approvals.id, id));
-    return Response.json(updated[0]);
+    approvalToUpdate.status = status;
+    approvalToUpdate.approvedBy = approvedBy ?? approvalToUpdate.approvedBy;
+    approvalToUpdate.approvalNotes = approvalNotes ?? approvalToUpdate.approvalNotes;
+    approvalToUpdate.decidedAt = new Date().toISOString();
+
+    return Response.json(approvalToUpdate);
   } catch (error) {
     console.error("Error updating approval:", error);
     return Response.json({ error: "Failed to update approval" }, { status: 500 });

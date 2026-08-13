@@ -38,7 +38,7 @@ export default function CaseDetailPage() {
 
   const handleApprove = async () => {
     try {
-      await fetch("/api/approvals", {
+      const response = await fetch("/api/approvals", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -48,8 +48,16 @@ export default function CaseDetailPage() {
           approvalNotes: "Proceeding with recommended action",
         }),
       });
+
+      if (!response.ok) {
+        throw new Error("Approval request failed");
+      }
+
       setApprovalStatus("approved");
-      fetchCaseDetail();
+      const updated = await fetchCaseDetail();
+      if (updated) {
+        setCaseData(updated);
+      }
     } catch (error) {
       console.error("Failed to approve:", error);
     }
@@ -57,7 +65,7 @@ export default function CaseDetailPage() {
 
   const handleReject = async () => {
     try {
-      await fetch("/api/approvals", {
+      const response = await fetch("/api/approvals", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -67,8 +75,16 @@ export default function CaseDetailPage() {
           approvalNotes: "Keeping case under observation",
         }),
       });
+
+      if (!response.ok) {
+        throw new Error("Rejection request failed");
+      }
+
       setApprovalStatus("rejected");
-      fetchCaseDetail();
+      const updated = await fetchCaseDetail();
+      if (updated) {
+        setCaseData(updated);
+      }
     } catch (error) {
       console.error("Failed to reject:", error);
     }
@@ -86,13 +102,14 @@ export default function CaseDetailPage() {
   const diagnosis = diagnoses?.[0];
   const recommendation = recommendations?.[0];
   const approval = approvals?.[0];
+  const canDecide = approvalStatus === "pending" && !["resolved", "rejected"].includes(caseInfo?.status);
 
   const sidebarItems = [
-    { icon: "◫", label: "Cases" },
-    { icon: "⌁", label: "Workflows" },
-    { icon: "◎", label: "Evidence", count: evidence?.length || 0 },
-    { icon: "◇", label: "Policies" },
-    { icon: "↗", label: "Telemetry" },
+    { icon: "◫", label: "Cases", href: "/dashboard" },
+    { icon: "⌁", label: "Workflows", href: "/workflows" },
+    { icon: "◎", label: "Evidence", href: "/evidence", count: evidence?.length || 0 },
+    { icon: "◇", label: "Policies", href: "/policies" },
+    { icon: "↗", label: "Telemetry", href: "/telemetry" },
   ];
 
   return (
@@ -193,7 +210,7 @@ export default function CaseDetailPage() {
               note={recommendation.note}
               onApprove={handleApprove}
               onReject={handleReject}
-              isDeciding={caseInfo.status === "decide" && approvalStatus === "pending"}
+              isDeciding={canDecide}
             />
           )}
 

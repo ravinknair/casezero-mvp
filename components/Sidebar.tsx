@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 interface SidebarItem {
@@ -31,27 +32,46 @@ export function Sidebar({ items, userName, caseCount }: SidebarProps) {
 
       {/* Main sections */}
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-        {items.map((item, index) => (
-          <button
-            key={index}
-            onClick={item.onClick}
-            className={`w-full text-left px-4 py-3 rounded transition flex items-center justify-between ${
-              item.active
-                ? "bg-blue-600 text-white"
-                : "text-gray-300 hover:bg-gray-800"
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-lg">{item.icon}</span>
-              <span className="font-medium">{item.label}</span>
-            </div>
-            {item.count !== undefined && (
-              <span className="bg-gray-700 px-2 py-0.5 rounded text-xs font-semibold">
-                {item.count}
-              </span>
-            )}
-          </button>
-        ))}
+        {items.map((item, index) => {
+          const classes = `w-full text-left px-4 py-3 rounded transition flex items-center justify-between ${
+            item.active ? "bg-blue-600 text-white" : "text-gray-300 hover:bg-gray-800"
+          }`;
+
+          if (item.href) {
+            return (
+              <Link key={index} href={item.href} className={classes}>
+                <div className="flex items-center gap-3">
+                  <span className="text-lg">{item.icon}</span>
+                  <span className="font-medium">{item.label}</span>
+                </div>
+                {item.count !== undefined && (
+                  <span className="bg-gray-700 px-2 py-0.5 rounded text-xs font-semibold">
+                    {item.count}
+                  </span>
+                )}
+              </Link>
+            );
+          }
+
+          return (
+            <button
+              key={index}
+              type="button"
+              onClick={item.onClick}
+              className={classes}
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-lg">{item.icon}</span>
+                <span className="font-medium">{item.label}</span>
+              </div>
+              {item.count !== undefined && (
+                <span className="bg-gray-700 px-2 py-0.5 rounded text-xs font-semibold">
+                  {item.count}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </nav>
 
       {/* Footer stats */}

@@ -13,3 +13,39 @@ assert.ok(data.some((item: { id: string }) => item.id === "case-pipeline-1"), "m
 test("dashboard returns all six seeded cases", () => {
   assert.equal(data.length, 6);
 });
+
+test("case detail route handles cases without a recommendation payload", async () => {
+  const routeModule = await import("../app/api/cases/[id]/route.ts");
+  const response = await routeModule.GET(
+    new Request("http://localhost/api/cases/case-pipeline-1"),
+    { params: Promise.resolve({ id: "case-pipeline-1" }) }
+  );
+
+  assert.equal(response.status, 200, "pipeline case should load without crashing");
+  const payload = await response.json();
+  assert.equal(payload.case.id, "case-pipeline-1");
+  assert.deepEqual(payload.recommendations, []);
+  assert.deepEqual(payload.evidence, []);
+  assert.deepEqual(payload.metrics, []);
+});
+
+test("approvals route can approve a case without the D1 database", async () => {
+  const routeModule = await import("../app/api/approvals/route.ts");
+  const response = await routeModule.POST(
+    new Request("http://localhost/api/approvals", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        caseId: "case-cert-1",
+        status: "approved",
+        approvedBy: "user-default",
+        approvalNotes: "Proceeding with recommended action",
+      }),
+    })
+  );
+
+  assert.equal(response.status, 201, "approval POST should succeed");
+  const payload = await response.json();
+  assert.equal(payload.status, "approved");
+  assert.equal(payload.caseId, "case-cert-1");
+});

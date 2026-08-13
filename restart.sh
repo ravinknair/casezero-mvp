@@ -1,17 +1,20 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+PROJECT_DIR="/Users/ravinair/Desktop/MANDAR/MyCodexProject"
+PORT=3000
 
-nvm use 22 >/dev/null
+pids=()
+while IFS= read -r pid; do
+  [ -n "$pid" ] && pids+=("$pid")
+done < <(lsof -ti tcp:"${PORT}" || true)
 
-PORT_PID=$(lsof -ti :3000 || true)
-if [ -n "$PORT_PID" ]; then
-  echo "Restarting dev server on port 3000 (stopping PID $PORT_PID)"
-  kill "$PORT_PID"
-  sleep 1
+if [ "${#pids[@]}" -gt 0 ]; then
+  echo "Restarting CaseZero app on port ${PORT} (stopping PIDs: ${pids[*]})"
+  for pid in "${pids[@]}"; do
+    kill "$pid" || true
+  done
+  sleep 2
 fi
 
-cd /Users/ravinair/Desktop/MANDAR/MyCodexProject/casezero-mvp
-npm run dev
+exec bash "$PROJECT_DIR/start.sh"
