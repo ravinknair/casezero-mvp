@@ -24,7 +24,7 @@ You'll receive a GitHub invitation email. Accept it to get code access.
 
 1. Clone the repo:
    git clone https://github.com/ravinknair/casezero-mvp.git
-   cd MyCodexProject
+   cd casezero-mvp
 
 2. Run setup script:
    chmod +x setup-collaborator.sh
@@ -139,7 +139,7 @@ MyCodexProject/
 5. **Test Dashboard:** After running tests, open:
    ```bash
    cd casezero-mvp
-   npm run test:view
+   npm run test:dashboard
    ```
 
 ---

@@ -130,7 +130,7 @@ Once you add them as collaborators:
 2. **They clone the repository:**
    ```bash
    git clone https://github.com/ravinknair/casezero-mvp.git
-   cd MyCodexProject
+   cd casezero-mvp
    ```
 
 3. **They run setup:**

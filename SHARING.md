@@ -85,7 +85,7 @@ Live Demo:
 
 To run locally:
 1. Clone: git clone https://github.com/ravinknair/casezero-mvp
-2. Install: npm install (from root) or cd casezero-mvp && npm install
+2. Install: make install
 3. Start dev: npm run dev
 4. Open: http://localhost:3000
 5. Run tests: npm run test

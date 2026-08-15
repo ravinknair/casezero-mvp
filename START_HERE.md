@@ -177,7 +177,7 @@ Accept the GitHub invitation email to get started.
 
 🚀 QUICK SETUP (1 minute)
 1. Clone: git clone https://github.com/ravinknair/casezero-mvp.git
-2. Navigate: cd MyCodexProject
+2. Navigate: cd casezero-mvp
 3. Setup: chmod +x setup-collaborator.sh && ./setup-collaborator.sh
 4. Run: npm run dev
 5. Open: http://localhost:3000
@@ -251,14 +251,14 @@ REPO STATS:
 2. **Keep dev server running** - If using ngrok, keep terminal open
 3. **Update GitHub often** - Push changes so collaborators stay in sync
 4. **Use Pull Requests** - Even for small changes, maintains history
-5. **Test before sharing** - Run `npm run test` to ensure all tests pass
+5. **Test before sharing** - Run `npm run check` to ensure lint, tests, and build all pass
 
 ---
 
 ## 🎯 NEXT IMMEDIATE STEPS
 
 1. **Right now:** Add them to GitHub (2 minutes)
-2. **Before sending:** Test locally with `npm run test`
+2. **Before sending:** Test locally with `npm run check`
 3. **Optional:** Set up ngrok or Vercel (5-10 minutes)
 4. **Send:** Message template from Step 3 above
 5. **Done:** They're ready to collaborate!
@@ -286,9 +286,9 @@ Before you hit send:
 **"Tests fail locally"**
 ```bash
 git pull origin main
-rm -rf node_modules .next
-npm install
-npm run test
+rm -rf casezero-mvp/node_modules casezero-mvp/.next
+make install
+npm run check
 ```
 
 **"Port 3000 is in use"**

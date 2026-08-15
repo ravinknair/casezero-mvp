@@ -62,17 +62,14 @@ When you receive an invitation:
 git clone https://github.com/ravinknair/casezero-mvp.git
 
 # Navigate to project
-cd MyCodexProject
+cd casezero-mvp
 ```
 
 ### Install Dependencies
 
 ```bash
-# From project root (MyCodexProject folder)
-npm install
-
-# If using pnpm workspaces (already set up):
-pnpm install
+# From project root
+make install
 ```
 
 ### Start Development Server
@@ -99,9 +96,8 @@ npm run test
 # Or with make
 make test
 
-# Or view test dashboard
-cd casezero-mvp
-npm run test:view  # Runs tests and opens HTML report
+# Or open the test dashboard
+npm run test:dashboard
 ```
 
 ### Build for Production
@@ -210,7 +206,7 @@ GitHub: https://github.com/ravinknair/casezero-mvp
 
 🚀 TO RUN LOCALLY
 1. Clone: git clone https://github.com/ravinknair/casezero-mvp.git
-2. Install: npm install
+2. Install: make install
 3. Start: npm run dev
 4. Open: http://localhost:3000
 
@@ -225,7 +221,7 @@ npm run test
 📚 PROJECT STRUCTURE
 - casezero-mvp/ - Main Next.js application
 - .github/workflows/ci.yml - Automated CI/CD pipeline
-- tests/ - Test suite (9 deterministic tests)
+- casezero-mvp/tests/ - Deterministic test suite
 - README.md - Full project documentation
 
 💬 QUESTIONS?
@@ -360,11 +356,11 @@ npm run dev
 git pull origin main
 
 # Clear cache and reinstall
-rm -rf node_modules .next
-npm install
+rm -rf casezero-mvp/node_modules casezero-mvp/.next
+make install
 
 # Run tests again
-npm run test
+npm run check
 ```
 
 ### "Can't connect to ngrok link"

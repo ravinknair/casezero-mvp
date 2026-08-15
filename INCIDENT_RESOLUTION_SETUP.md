@@ -38,17 +38,17 @@ A production-ready incident resolution dashboard built with Next.js, Drizzle ORM
 
 1. **Install dependencies:**
    ```bash
-   pnpm install
+   make install
    ```
 
 2. **Generate database migrations:**
    ```bash
-   pnpm run db:generate
+   npm run db:generate
    ```
 
 3. **Start development server:**
    ```bash
-   pnpm run dev
+   npm run dev
    ```
 
 4. **Seed sample data:**
@@ -232,7 +232,7 @@ Each case includes:
 
 ### Generate Database Migrations
 ```bash
-pnpm run db:generate
+npm run db:generate
 ```
 
 ### Lint Code
@@ -242,7 +242,7 @@ pnpm run lint
 
 ### Run Tests
 ```bash
-pnpm run test
+npm run test
 ```
 
 ## Support

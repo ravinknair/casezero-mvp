@@ -14,7 +14,7 @@ https://github.com/ravinknair/casezero-mvp
 ```bash
 # 1. Clone
 git clone https://github.com/ravinknair/casezero-mvp.git
-cd MyCodexProject
+cd casezero-mvp
 
 # 2. Setup (auto-installs dependencies)
 chmod +x setup-collaborator.sh
@@ -30,7 +30,7 @@ http://localhost:3000
 ### 🧪 TESTING
 ```bash
 npm run test        # Run all tests
-npm run test:view   # Run tests + view dashboard
+npm run test:dashboard   # Open the test dashboard
 npm run lint        # Check code style
 npm run build       # Build for production
 ```
