@@ -44,7 +44,7 @@ This creates a compact, high-signal demo of trustable automation in operations.
 
 ```bash
 nvm use 22
-npm install
+make install
 npm run dev
 ```
 
@@ -56,9 +56,9 @@ npm run check
 
 ## Project structure
 
-- `app/` — UI and simulation logic
+- `casezero-mvp/` — canonical application source, tests, and build configuration
 - `.github/workflows/ci.yml` — CI for lint, test, and build
-- `Makefile` — local project commands
+- `Makefile` — root wrapper commands for the canonical app
 - `start.sh`, `stop.sh`, `restart.sh` — clean restart flow
 
 ## License
