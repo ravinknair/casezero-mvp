@@ -15,15 +15,28 @@ export async function GET(
 
     const diagnoses = caseFound.diagnosis ? [caseFound.diagnosis] : [];
     const recommendations = caseFound.recommendation ? [caseFound.recommendation] : [];
+    const evidence = (caseFound.recommendation?.evidence ?? []).map(([type, title, description, timestamp, color]) => ({
+      type,
+      title,
+      description,
+      timestamp,
+      color,
+    }));
+    const metrics = (caseFound.recommendation?.metrics ?? []).map(([name, value, change, status]) => ({
+      name,
+      value,
+      change,
+      status,
+    }));
 
     return Response.json({
       case: caseFound,
       diagnoses,
       recommendations,
-      evidence: caseFound.recommendation?.evidence ?? [],
+      evidence,
       activities: [],
       approvals: [],
-      metrics: caseFound.recommendation?.metrics ?? [],
+      metrics,
     });
   } catch {
     return Response.json({ error: "Failed to fetch case" }, { status: 500 });

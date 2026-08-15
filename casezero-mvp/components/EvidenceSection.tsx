@@ -24,6 +24,9 @@ export function EvidenceSection({ items }: EvidenceSectionProps) {
       <h2 className="text-2xl font-bold text-gray-900 mb-4">Evidence Trail</h2>
 
       <div className="space-y-4">
+        {items.length === 0 && (
+          <p className="text-sm text-gray-600">No evidence has been attached to this case yet.</p>
+        )}
         {items.map((item, index) => {
           const colorClass = colorClasses[item.color || "blue"] || colorClasses.blue;
           return (

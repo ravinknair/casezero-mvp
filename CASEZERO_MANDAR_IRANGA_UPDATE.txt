@@ -17,6 +17,8 @@ stage counters open their destination in separate browser tabs.
 Each of the six incident case cards also opens its case detail in a distinct tab.
 Telemetry, Evidence, Policies, Workflows, and Demo Guide drill-down links also
 open directly in separate tabs.
+All six case detail pages now show populated Evidence Trail entries and named
+metric values from their case data.
 
 Live test dashboard:
 https://casezero-mvp.raknair.workers.dev/status
