@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PROJECT_DIR="/Users/ravinair/Desktop/MANDAR/MyCodexProject"
-PORT=3000
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PORT="${PORT:-3000}"
 NGROK_DOMAIN="twiddling-lifter-evolve.ngrok-free.dev"
 NGROK_LOG="$PROJECT_DIR/.ngrok.log"
 

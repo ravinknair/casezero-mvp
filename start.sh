@@ -5,8 +5,8 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 nvm use 22 >/dev/null 2>&1 || true
 
-PROJECT_DIR="/Users/ravinair/Desktop/MANDAR/MyCodexProject"
-PORT=3000
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PORT="${PORT:-3000}"
 
 cleanup_port() {
   local pids=()
