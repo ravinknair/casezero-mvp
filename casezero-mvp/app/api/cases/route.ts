@@ -1,4 +1,5 @@
 import { mockCases } from "@/lib/mockData";
+import { trackEvent } from "@/lib/telemetry";
 
 export async function GET() {
   return Response.json(mockCases);
@@ -32,6 +33,11 @@ export async function POST(request: Request) {
     };
 
     mockCases.unshift(newCase);
+    await trackEvent("CaseCreated", {
+      caseId: newCase.caseId,
+      type: newCase.type,
+      severity: newCase.severity,
+    }, { confidence: newCase.confidence, sources: newCase.sources });
     return Response.json(newCase, { status: 201 });
   } catch {
     return Response.json({ error: "Failed to create case" }, { status: 500 });

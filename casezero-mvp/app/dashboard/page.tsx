@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { CaseCard } from "@/components/CaseCard";
 import { Sidebar } from "@/components/Sidebar";
 
@@ -46,6 +47,8 @@ export default function DashboardPage() {
     { icon: "◎", label: "Evidence", href: "/evidence", count: 42 },
     { icon: "◇", label: "Policies", href: "/policies", count: 8 },
     { icon: "↗", label: "Telemetry", href: "/telemetry" },
+    { icon: "▶", label: "Demo Guide", href: "/demo" },
+    { icon: "✓", label: "Test Status", href: "/status" },
   ];
 
   const statusCounts = {
@@ -101,6 +104,35 @@ export default function DashboardPage() {
 
         {/* Main content */}
         <div className="p-8">
+          <section className="mb-8 border border-blue-200 bg-blue-50 p-6 shadow-sm">
+            <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">Client readiness</p>
+                <h2 className="mt-1 text-xl font-bold text-gray-900">CaseZero operational control overview</h2>
+                <p className="mt-2 max-w-2xl text-sm text-gray-700">
+                  Six evidence-driven use cases are ready to demonstrate, with governed approvals, outcome verification,
+                  live deployment checks, and Azure Application Insights telemetry.
+                </p>
+                <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+                  <span><strong className="text-gray-900">6</strong> use cases</span>
+                  <span><strong className="text-green-700">16 / 16</strong> live checks passing</span>
+                  <span><strong className="text-gray-900">Azure</strong> telemetry connected</span>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Link href="/demo" className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+                  Open demo guide
+                </Link>
+                <Link href="/status" className="rounded-md border border-blue-300 bg-white px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-100">
+                  View test results
+                </Link>
+                <Link href="/telemetry" className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100">
+                  View telemetry
+                </Link>
+              </div>
+            </div>
+          </section>
+
           {loading ? (
             <div className="text-center py-12">
               <div className="text-gray-600">Loading cases...</div>

@@ -139,6 +139,8 @@ export default function CaseDetailPage() {
     { icon: "◎", label: "Evidence", href: "/evidence", count: evidence?.length || 0 },
     { icon: "◇", label: "Policies", href: "/policies" },
     { icon: "↗", label: "Telemetry", href: "/telemetry" },
+    { icon: "▶", label: "Demo Guide", href: "/demo" },
+    { icon: "✓", label: "Test Status", href: "/status" },
   ];
 
   return (
@@ -179,6 +181,21 @@ export default function CaseDetailPage() {
             </div>
           </div>
         </div>
+
+        {/* Use case brief */}
+        {caseInfo.useCase && (
+          <div className="bg-blue-50 border-b border-blue-100 px-8 py-5">
+            <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">Use case</p>
+            <h2 className="mt-1 text-lg font-bold text-gray-900">{caseInfo.useCase.name}</h2>
+            <p className="mt-2 text-sm text-gray-700">{caseInfo.useCase.clientProblem}</p>
+            <div className="mt-3 grid gap-3 text-sm text-gray-700 md:grid-cols-2">
+              <div><span className="font-semibold text-gray-900">Primary actor:</span> {caseInfo.useCase.primaryActor}</div>
+              <div><span className="font-semibold text-gray-900">Trigger:</span> {caseInfo.useCase.trigger}</div>
+              <div><span className="font-semibold text-gray-900">Integrations:</span> {caseInfo.useCase.integrations?.join(", ")}</div>
+              <div><span className="font-semibold text-gray-900">MVP build scope:</span> {caseInfo.useCase.mvpBuildScope}</div>
+            </div>
+          </div>
+        )}
 
         {/* Workflow progress */}
         <div className="bg-gray-50 border-b border-gray-200 px-8 py-4">

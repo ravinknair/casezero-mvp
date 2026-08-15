@@ -8,6 +8,8 @@ const sidebarItems = [
   { icon: "◎", label: "Evidence", href: "/evidence", count: mockCases.reduce((sum, item) => sum + (item.recommendation?.evidence?.length ?? 0), 0) },
   { icon: "◇", label: "Policies", href: "/policies", count: mockCases.length },
   { icon: "↗", label: "Telemetry", href: "/telemetry" },
+  { icon: "▶", label: "Demo Guide", href: "/demo" },
+  { icon: "✓", label: "Test Status", href: "/status" },
 ];
 
 export default function WorkflowsPage() {

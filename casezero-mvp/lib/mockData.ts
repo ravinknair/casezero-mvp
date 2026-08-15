@@ -10,6 +10,15 @@ export const mockCases = [
     confidence: 96,
     sources: 12,
     activity: 9,
+    useCase: {
+      name: "Certificate risk prevention",
+      clientProblem: "A public certificate is nearing expiry because automated renewal lost access to the DNS validation path.",
+      primaryActor: "Platform engineer, infrastructure owner, operations approver",
+      trigger: "Certificate monitor detects impending expiry and failed renewal attempts.",
+      integrations: ["Certificate monitoring", "DNS provider", "Vault / KMS", "Edge delivery platform", "Synthetic monitoring"],
+      mvpBuildScope: "Build case creation from expiry signals, policy checks, staged approval flow, and canary verification.",
+      demoValue: "Strong governance-focused demo for infrastructure, reliability, and enterprise control conversations.",
+    },
     diagnosis: {
       title: "Renewal automation lost access to the DNS validation zone",
       description:
@@ -57,6 +66,15 @@ export const mockCases = [
     confidence: 91,
     sources: 14,
     activity: 8,
+    useCase: {
+      name: "Production incident rollback",
+      clientProblem: "A production deployment causes elevated 5xx errors and degraded checkout performance. Teams need to act fast without making the incident worse.",
+      primaryActor: "Incident commander, SRE lead, engineering manager",
+      trigger: "Monitoring detects a post-deploy spike in error rate, latency, and failed transactions.",
+      integrations: ["Datadog", "Grafana", "Deployment system", "Service logs", "Incident management tools"],
+      mvpBuildScope: "Detection, diagnosis summary, approval screen, bounded rollback action, verification dashboard.",
+      demoValue: "Best flagship demo for engineering and operations buyers because it shows urgency, AI guidance, and controlled execution.",
+    },
     diagnosis: {
       title: "Connection pool exhaustion in the payment adapter",
       description:
@@ -104,6 +122,15 @@ export const mockCases = [
     confidence: 88,
     sources: 18,
     activity: 12,
+    useCase: {
+      name: "Database saturation response",
+      clientProblem: "The orders database is saturating under load and background jobs are making the problem worse.",
+      primaryActor: "Database reliability engineer, platform team, incident approver",
+      trigger: "Pool utilization, queue depth, and replica lag breach safe thresholds.",
+      integrations: ["Database telemetry", "Query observability", "Background job scheduler", "Infrastructure scaling controls"],
+      mvpBuildScope: "Build multi-signal diagnosis, suggested recovery action, drain window controls, and verification metrics.",
+      demoValue: "Good proof that CaseZero can handle complicated platform decisions, not only simple alerts.",
+    },
     diagnosis: {
       title: "Replica lag and queue backlog are amplifying DB saturation",
       description:
@@ -151,6 +178,15 @@ export const mockCases = [
     confidence: 78,
     sources: 5,
     activity: 3,
+    useCase: {
+      name: "Customer financial exception handling",
+      clientProblem: "A customer is charged twice due to a retry-path failure and the business needs to resolve it accurately and safely.",
+      primaryActor: "Customer operations lead, finance approver, billing support team",
+      trigger: "Support case, payment event anomaly, or duplicate settlement detection.",
+      integrations: ["Billing platform", "Payment gateway", "CRM / support system", "Notification tooling"],
+      mvpBuildScope: "Build evidence review, approval workflow, refund action logging, and customer communication checkpoint.",
+      demoValue: "Useful to show that CaseZero applies beyond infrastructure into customer and finance operations.",
+    },
     diagnosis: {
       title: "Idempotency key mismatch caused a second settlement request",
       description:
@@ -198,6 +234,15 @@ export const mockCases = [
     confidence: 100,
     sources: 8,
     activity: 6,
+    useCase: {
+      name: "Access remediation and credential revocation",
+      clientProblem: "Dormant administrative access remains active after a contractor or employee should have been removed.",
+      primaryActor: "Security operations lead, IAM owner, compliance approver",
+      trigger: "Access review, dormant identity detection, or HR offboarding mismatch.",
+      integrations: ["Okta / Entra / IAM tools", "HR systems", "PAM tools", "Session management"],
+      mvpBuildScope: "Build entitlement evidence, approval controls, narrow revoke action, and verification workflow.",
+      demoValue: "Strong for CISO and compliance audiences because it highlights governed AI rather than autonomous AI.",
+    },
     diagnosis: {
       title: "Nested production-admin path remained active after contract closure",
       description:
@@ -245,6 +290,15 @@ export const mockCases = [
     confidence: 92,
     sources: 11,
     activity: 7,
+    useCase: {
+      name: "Data pipeline recovery",
+      clientProblem: "A revenue pipeline fails due to schema drift, and replaying data without validation could create downstream business errors.",
+      primaryActor: "Data platform engineer, analytics engineering lead, business operations approver",
+      trigger: "Pipeline orchestrator failure, schema mismatch, or reconciliation failure.",
+      integrations: ["Airflow / Dagster / dbt", "Schema registry", "Data quality tooling", "Warehouse telemetry"],
+      mvpBuildScope: "Build failure case intake, compatibility validation, replay approval, and reconciliation reporting.",
+      demoValue: "Good expansion story for data teams and business operations stakeholders.",
+    },
     diagnosis: {
       title: "Schema drift on the revenue aggregate field map caused the daily job to fail",
       description:

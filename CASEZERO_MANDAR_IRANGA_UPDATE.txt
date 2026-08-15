@@ -1,0 +1,79 @@
+Subject: CaseZero live test dashboard, GitHub sync, and Azure telemetry
+
+Hi Mandar and Iranga,
+
+The latest CaseZero MVP update is ready.
+
+LIVE APPLICATION
+----------------
+Main dashboard:
+https://casezero-mvp.raknair.workers.dev/dashboard
+
+The main dashboard now includes a clickable Client Readiness overview box with
+high-level information on the six use cases, 16/16 live test health, and Azure
+telemetry. It links directly to the Demo Guide, Test Status, and Telemetry pages.
+
+Live test dashboard:
+https://casezero-mvp.raknair.workers.dev/status
+
+The Test Status page runs all tests directly against the deployed website:
+- 9 case-workflow simulation tests
+- 7 live API integration smoke tests
+- 16 total checks
+
+The current verified result is 16 / 16 checks passed. Use the "Run all tests"
+button on the page to rerun the complete suite. Temporary smoke-test cases are
+removed automatically after each run.
+
+USE CASES AND DEMO
+------------------
+All six client use cases are represented:
+1. Production incident rollback
+2. Certificate risk prevention
+3. Database saturation response
+4. Customer financial exception handling
+5. Access remediation and credential revocation
+6. Data pipeline recovery
+
+The client-meeting walkthrough is available at:
+https://casezero-mvp.raknair.workers.dev/demo
+
+GITHUB
+------
+Repository:
+https://github.com/ravinknair/casezero-mvp
+
+Branch: main
+The source, test dashboard, documentation, and deployed Worker are synchronized.
+
+AZURE APPLICATION INSIGHTS
+--------------------------
+Tenant: GoMandy101
+Tenant ID: d892a360-5bae-41f6-b8ed-57517f983e1d
+Subscription: Visual Studio Enterprise
+Subscription ID: 98e7ce32-26bc-489f-a606-88cb260597f0
+Resource group: casezero-rg
+Application Insights resource: casezero-appinsights
+Region: East US
+Log Analytics workspace:
+DefaultWorkspace-98e7ce32-26bc-489f-a606-88cb260597f0-EUS
+
+Instrumentation key:
+817f2602-ab2f-41fe-a09a-3543a03c4c9e
+
+Application ID:
+22dbeda5-4339-494b-af55-769bbf5c39ec
+
+Connection string:
+InstrumentationKey=817f2602-ab2f-41fe-a09a-3543a03c4c9e;IngestionEndpoint=https://eastus-8.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus.livediagnostics.monitor.azure.com/;ApplicationId=22dbeda5-4339-494b-af55-769bbf5c39ec
+
+To view telemetry:
+1. Sign in at https://portal.azure.com.
+2. Switch to the GoMandy101 directory.
+3. Search for and open casezero-appinsights.
+4. Use Live Metrics for near-real-time activity.
+5. Use Logs and query customEvents for historical CaseCreated,
+   CaseStatusChanged, and ApprovalDecision events.
+
+Regards,
+Ravi

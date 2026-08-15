@@ -1,4 +1,5 @@
 import { mockApprovals, mockCases } from "@/lib/mockData";
+import { trackEvent } from "@/lib/telemetry";
 
 export async function GET(request: Request) {
   try {
@@ -36,6 +37,12 @@ export async function POST(request: Request) {
     if (caseFound) {
       caseFound.status = status === "approved" ? "act" : "rejected";
     }
+
+    await trackEvent("ApprovalDecision", {
+      caseId: caseFound?.caseId ?? caseId,
+      status,
+      approvedBy,
+    });
 
     return Response.json(newApproval, { status: 201 });
   } catch (error) {
