@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { mockCases } from "@/lib/mockData";
@@ -93,13 +92,15 @@ export default function DemoGuidePage() {
                     {step.links.length > 0 && (
                       <div className="mt-3 flex flex-wrap gap-2">
                         {step.links.map((link) => (
-                          <Link
+                          <a
                             key={link.href}
                             href={link.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="rounded-md border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700 hover:bg-blue-100"
                           >
                             {link.label}
-                          </Link>
+                          </a>
                         ))}
                       </div>
                     )}

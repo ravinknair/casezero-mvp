@@ -1,5 +1,5 @@
 interface CaseCardProps {
-  id: string;
+  href: string;
   caseId: string;
   type: string;
   severity: string;
@@ -7,10 +7,10 @@ interface CaseCardProps {
   status: string;
   confidence: number;
   sources: number;
-  onClick?: () => void;
 }
 
 export function CaseCard({
+  href,
   caseId,
   type,
   severity,
@@ -18,7 +18,6 @@ export function CaseCard({
   status,
   confidence,
   sources,
-  onClick,
 }: CaseCardProps) {
   const statusColors: Record<string, string> = {
     detect: "bg-blue-100 text-blue-800",
@@ -31,10 +30,11 @@ export function CaseCard({
   };
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="border rounded-lg p-4 hover:shadow-lg transition-shadow cursor-pointer bg-white"
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block border rounded-lg p-4 hover:shadow-lg transition-shadow cursor-pointer bg-white"
     >
       <div className="flex justify-between items-start mb-3">
         <div>
@@ -63,6 +63,6 @@ export function CaseCard({
           <span className="font-semibold">{sources}</span> sources
         </div>
       </div>
-    </button>
+    </a>
   );
 }

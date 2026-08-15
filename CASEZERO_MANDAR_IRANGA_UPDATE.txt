@@ -12,6 +12,11 @@ https://casezero-mvp.raknair.workers.dev/dashboard
 The main dashboard now includes a clickable Client Readiness overview box with
 high-level information on the six use cases, 16/16 live test health, and Azure
 telemetry. It links directly to the Demo Guide, Test Status, and Telemetry pages.
+All seven navigation items and the Detect, Diagnose, Decide, Act, and Verify
+stage counters open their destination in separate browser tabs.
+Each of the six incident case cards also opens its case detail in a distinct tab.
+Telemetry, Evidence, Policies, Workflows, and Demo Guide drill-down links also
+open directly in separate tabs.
 
 Live test dashboard:
 https://casezero-mvp.raknair.workers.dev/status

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Sidebar } from "@/components/Sidebar";
 import { mockCases } from "@/lib/mockData";
 
@@ -10,6 +9,14 @@ const sidebarItems = [
   { icon: "↗", label: "Telemetry", href: "/telemetry" },
   { icon: "▶", label: "Demo Guide", href: "/demo" },
   { icon: "✓", label: "Test Status", href: "/status" },
+];
+
+const workflowStages = [
+  { id: "detect", label: "Detect", description: "Capture signals, establish severity, and assemble initial evidence." },
+  { id: "diagnose", label: "Diagnose", description: "Correlate evidence, identify root cause, and establish confidence." },
+  { id: "decide", label: "Decide", description: "Review policy checks, blast radius, and the bounded recommendation." },
+  { id: "act", label: "Act", description: "Execute the approved action with explicit scope and stop conditions." },
+  { id: "verify", label: "Verify", description: "Confirm the outcome, retain evidence, and close or roll back safely." },
 ];
 
 export default function WorkflowsPage() {
@@ -34,11 +41,23 @@ export default function WorkflowsPage() {
             <p className="mt-2 text-gray-600">Resolution flows, decision states, and bounded actions across the active incident portfolio.</p>
           </div>
 
+          <div className="mb-8 grid gap-3 md:grid-cols-5">
+            {workflowStages.map((stage, index) => (
+              <section id={stage.id} key={stage.id} className="scroll-mt-6 border border-gray-200 bg-white p-4 shadow-sm target:border-blue-500 target:bg-blue-50">
+                <div className="text-xs font-semibold uppercase tracking-wide text-blue-600">Stage {index + 1}</div>
+                <h2 className="mt-1 text-lg font-semibold text-gray-900">{stage.label}</h2>
+                <p className="mt-2 text-sm text-gray-600">{stage.description}</p>
+              </section>
+            ))}
+          </div>
+
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {workflowRows.map((row) => (
-              <Link
+              <a
                 key={row.id}
                 href={`/case/${row.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="block rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-blue-300 hover:shadow-md"
               >
                 <div className="mb-3 flex items-center justify-between gap-3">
@@ -57,7 +76,7 @@ export default function WorkflowsPage() {
                   <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">Recommended action</div>
                   <div className="mt-1 font-medium text-gray-900">{row.actionLabel}</div>
                 </div>
-              </Link>
+              </a>
             ))}
           </div>
         </div>

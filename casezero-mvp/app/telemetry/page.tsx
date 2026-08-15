@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Sidebar } from "@/components/Sidebar";
 import { mockCases } from "@/lib/mockData";
 
@@ -54,9 +53,9 @@ export default function TelemetryPage() {
                   {row.caseTitle}
                 </div>
                 <div className="mt-2">
-                  <Link href={`/case/${mockCases.find((item) => item.caseId === row.caseId)?.id ?? row.caseId}`} className="text-sm font-medium text-blue-600 hover:text-blue-700">
+                  <a href={`/case/${mockCases.find((item) => item.caseId === row.caseId)?.id ?? row.caseId}`} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-blue-600 hover:text-blue-700">
                     Open case
-                  </Link>
+                  </a>
                 </div>
               </div>
             ))}

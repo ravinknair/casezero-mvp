@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Sidebar } from "@/components/Sidebar";
 import { mockCases } from "@/lib/mockData";
 
@@ -52,9 +51,9 @@ export default function EvidencePage() {
                     </div>
                   </div>
 
-                  <Link href={`/case/${mockCases.find((x) => x.caseId === item.caseId)?.id ?? item.caseId}`} className="text-sm font-medium text-blue-600 hover:text-blue-700">
+                  <a href={`/case/${mockCases.find((x) => x.caseId === item.caseId)?.id ?? item.caseId}`} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-blue-600 hover:text-blue-700">
                     Open case
-                  </Link>
+                  </a>
                 </div>
 
                 <p className="mt-3 text-gray-700">{item.description}</p>

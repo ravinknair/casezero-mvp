@@ -1,9 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
 import { CaseCard } from "@/components/CaseCard";
 import { Sidebar } from "@/components/Sidebar";
 
@@ -19,7 +17,6 @@ interface Case {
 }
 
 export default function DashboardPage() {
-  const router = useRouter();
   const [cases, setCases] = useState<Case[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -88,16 +85,22 @@ export default function DashboardPage() {
         <div className="bg-gray-50 border-b border-gray-200 px-8 py-4">
           <div className="grid grid-cols-5 gap-4">
             {[
-              ["Detect", statusCounts.detect, "bg-blue-50"],
-              ["Diagnose", statusCounts.diagnose, "bg-purple-50"],
-              ["Decide", statusCounts.decide, "bg-yellow-50"],
-              ["Act", statusCounts.act, "bg-orange-50"],
-              ["Verify", statusCounts.verify, "bg-green-50"],
-            ].map(([label, count, bgClass]) => (
-              <div key={label} className={`${bgClass} p-3 rounded border border-gray-300`}>
+              ["Detect", statusCounts.detect, "bg-blue-50", "detect"],
+              ["Diagnose", statusCounts.diagnose, "bg-purple-50", "diagnose"],
+              ["Decide", statusCounts.decide, "bg-yellow-50", "decide"],
+              ["Act", statusCounts.act, "bg-orange-50", "act"],
+              ["Verify", statusCounts.verify, "bg-green-50", "verify"],
+            ].map(([label, count, bgClass, stage]) => (
+              <a
+                key={label}
+                href={`/workflows#${stage}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${bgClass} block rounded border border-gray-300 p-3 transition hover:border-blue-400 hover:shadow-sm`}
+              >
                 <div className="text-xs font-semibold text-gray-600 mb-1">{label}</div>
                 <div className="text-2xl font-bold text-gray-900">{count}</div>
-              </div>
+              </a>
             ))}
           </div>
         </div>
@@ -120,15 +123,15 @@ export default function DashboardPage() {
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                <Link href="/demo" className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+                <a href="/demo" target="_blank" rel="noopener noreferrer" className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
                   Open demo guide
-                </Link>
-                <Link href="/status" className="rounded-md border border-blue-300 bg-white px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-100">
+                </a>
+                <a href="/status" target="_blank" rel="noopener noreferrer" className="rounded-md border border-blue-300 bg-white px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-100">
                   View test results
-                </Link>
-                <Link href="/telemetry" className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100">
+                </a>
+                <a href="/telemetry" target="_blank" rel="noopener noreferrer" className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100">
                   View telemetry
-                </Link>
+                </a>
               </div>
             </div>
           </section>
@@ -155,9 +158,7 @@ export default function DashboardPage() {
                   <CaseCard
                     key={caseItem.id}
                     {...caseItem}
-                    onClick={() => {
-                      router.push(`/case/${caseItem.id}`);
-                    }}
+                    href={`/case/${caseItem.id}`}
                   />
                 ))}
               </div>
