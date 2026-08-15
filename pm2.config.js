@@ -4,7 +4,7 @@ module.exports = {
       name: "casezero-dashboard",
       script: "npm",
       args: "run start -- --host 0.0.0.0",
-      cwd: "/Users/ravinair/Desktop/MANDAR/MyCodexProject",
+      cwd: __dirname,
       watch: false,
       autorestart: true,
       restart_delay: 3000,

@@ -156,7 +156,7 @@ npm run db:generate
 npm run lint
 
 # Build for production
-npm run build
+npm run check
 ```
 
 ---

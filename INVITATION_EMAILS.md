@@ -23,7 +23,7 @@ Once you accept the GitHub invitation, you can:
 
 1. Clone the project:
    git clone https://github.com/ravinknair/casezero-mvp.git
-   cd MyCodexProject
+   cd casezero-mvp
 
 2. Run the setup script (auto-installs dependencies):
    chmod +x setup-collaborator.sh
@@ -73,7 +73,7 @@ Once you accept the GitHub invitation, you can:
 
 1. Clone the project:
    git clone https://github.com/ravinknair/casezero-mvp.git
-   cd MyCodexProject
+   cd casezero-mvp
 
 2. Run the setup script (auto-installs dependencies):
    chmod +x setup-collaborator.sh

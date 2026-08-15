@@ -119,7 +119,7 @@ They can:
 They run:
 ```bash
 git clone https://github.com/ravinknair/casezero-mvp.git
-cd MyCodexProject
+cd casezero-mvp
 ./setup-collaborator.sh
 npm run dev
 ```

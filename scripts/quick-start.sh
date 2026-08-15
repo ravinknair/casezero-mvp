@@ -5,6 +5,10 @@
 
 set -e
 
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+cd "$PROJECT_DIR"
+
 echo "🚀 CaseZero Incident Resolution - Quick Start"
 echo "=============================================="
 echo ""
@@ -18,26 +22,19 @@ if [ "$NODE_VERSION" -lt 22 ]; then
 fi
 echo "✓ Node.js $(node -v) OK"
 
-# Check pnpm
-if ! command -v pnpm &> /dev/null; then
-    echo "❌ pnpm not found. Install with: npm install -g pnpm"
-    exit 1
-fi
-echo "✓ pnpm $(pnpm -v) OK"
-
 echo ""
 echo "📦 Installing dependencies..."
-pnpm install
+make install
 
 echo ""
 echo "📝 Generating database schema..."
-pnpm run db:generate
+npm run db:generate
 
 echo ""
 echo "✅ Setup complete!"
 echo ""
 echo "🎯 Next steps:"
-echo "1. Start development server:  pnpm run dev"
+echo "1. Start development server:  npm run dev"
 echo "2. Once running, seed sample data:"
 echo "   curl -X POST http://localhost:3000/api/seed"
 echo "3. Open dashboard:  http://localhost:3000/dashboard"

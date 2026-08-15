@@ -5,6 +5,10 @@
 
 set -e
 
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+cd "$PROJECT_DIR"
+
 echo "🚀 CaseZero MVP - Team Setup"
 echo "================================"
 echo ""
@@ -40,7 +44,7 @@ echo "✓ Git $(git --version | cut -d' ' -f3) available"
 
 echo ""
 echo "📦 Installing dependencies..."
-npm install || { echo "❌ Installation failed"; exit 1; }
+make install || { echo "❌ Installation failed"; exit 1; }
 echo "✓ Dependencies installed"
 
 echo ""
