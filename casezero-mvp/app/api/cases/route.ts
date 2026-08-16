@@ -37,6 +37,7 @@ export async function POST(request: Request) {
       type: type || "PRODUCTION INCIDENT",
       severity: severity || "SEV-2",
       title: title || "New incident",
+      clientEnvironment: typeof clientEnvironment === "string" ? clientEnvironment.trim() : undefined,
       subtitle:
         [subtitle || "Created from the local preview environment", supportNotes]
           .filter(Boolean)
