@@ -161,6 +161,8 @@ export default function DashboardPage() {
                 </span>
                 <a
                   href="/telemetry"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="px-3 py-2 rounded bg-gray-900 text-white text-sm font-semibold hover:bg-gray-800 inline-block"
                 >
                   Open telemetry log
