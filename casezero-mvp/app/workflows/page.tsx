@@ -18,6 +18,21 @@ export default function WorkflowsPage({
 }) {
   const stageFilter = (searchParams?.stage ?? "").toLowerCase();
   const normalizedStageFilter = validStages.has(stageFilter) ? stageFilter : "";
+  const stageTabs = [
+    { key: "", label: "All" },
+    { key: "detect", label: "Detect" },
+    { key: "diagnose", label: "Diagnose" },
+    { key: "decide", label: "Decide" },
+    { key: "act", label: "Act" },
+    { key: "verify", label: "Verify" },
+    { key: "resolved", label: "Resolved" },
+  ];
+
+  const stageCounts = mockCases.reduce<Record<string, number>>((acc, item) => {
+    const key = item.status.toLowerCase();
+    acc[key] = (acc[key] ?? 0) + 1;
+    return acc;
+  }, {});
 
   const workflowRows = mockCases
     .filter((item) => (normalizedStageFilter ? item.status.toLowerCase() === normalizedStageFilter : true))
@@ -45,6 +60,30 @@ export default function WorkflowsPage({
                Filtered stage: <span className="font-semibold">{normalizedStageFilter}</span>
              </p>
             )}
+          </div>
+
+          <div className="mb-6 flex flex-wrap gap-2">
+            {stageTabs.map((tab) => {
+             const isActive = tab.key === normalizedStageFilter || (tab.key === "" && normalizedStageFilter === "");
+             const count = tab.key === "" ? mockCases.length : (stageCounts[tab.key] ?? 0);
+
+             return (
+               <a
+                 key={tab.label}
+                 href={tab.key ? `/workflows?stage=${tab.key}` : "/workflows"}
+                 className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition ${
+                   isActive
+                     ? "border-blue-300 bg-blue-50 text-blue-700"
+                     : "border-gray-300 bg-white text-gray-700 hover:border-blue-300 hover:text-blue-700"
+                 }`}
+               >
+                 <span>{tab.label}</span>
+                 <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-700">
+                   {count}
+                 </span>
+               </a>
+             );
+            })}
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">

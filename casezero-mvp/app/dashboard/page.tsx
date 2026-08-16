@@ -198,7 +198,7 @@ export default function DashboardPage() {
                     key={caseItem.id}
                     {...caseItem}
                     onClick={() => {
-                      router.push(`/case/${caseItem.id}`);
+                      window.open(`/case/${caseItem.id}`, "_blank", "noopener,noreferrer");
                     }}
                   />
                 ))}
