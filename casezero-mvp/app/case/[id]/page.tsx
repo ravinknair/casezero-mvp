@@ -9,6 +9,10 @@ import { MetricsCard } from "@/components/MetricsCard";
 import { PoliciesSection } from "@/components/PoliciesSection";
 import { Sidebar } from "@/components/Sidebar";
 import { normalizeChain } from "@/lib/caseChain";
+import {
+  clientEnvironmentOptions,
+  type ClientEnvironmentOptionValue,
+} from "@/lib/clientEnvironments";
 
 interface CaseDetailData {
   case: {
@@ -91,7 +95,8 @@ export default function CaseDetailPage() {
   const [supportEvents, setSupportEvents] = useState<SupportTelemetryEvent[]>([]);
   const [supportActionLoading, setSupportActionLoading] = useState(false);
   const [supportError, setSupportError] = useState("");
-  const [clientEnvironment, setClientEnvironment] = useState("client-production");
+  const [clientEnvironment, setClientEnvironment] = useState<ClientEnvironmentOptionValue>("production");
+  const [customClientEnvironment, setCustomClientEnvironment] = useState("");
 
   const fetchCaseDetail = useCallback(async () => {
     try {
@@ -117,6 +122,17 @@ export default function CaseDetailPage() {
       const trackingState = data as SupportTrackingResponse;
       setSupportPack(trackingState.pack);
       setSupportEvents(trackingState.events);
+      const trackedEnvironment = trackingState.pack.clientEnvironment?.trim() ?? "";
+      const hasPresetEnvironment = clientEnvironmentOptions.some(
+        (option) => option.value !== "custom" && option.value === trackedEnvironment
+      );
+      if (trackedEnvironment && !hasPresetEnvironment) {
+        setClientEnvironment("custom");
+        setCustomClientEnvironment(trackedEnvironment);
+      } else if (trackedEnvironment) {
+        setClientEnvironment(trackedEnvironment as ClientEnvironmentOptionValue);
+        setCustomClientEnvironment("");
+      }
       setSupportError("");
     } catch (error) {
       console.error("Failed to fetch support tracking state:", error);
@@ -184,7 +200,10 @@ export default function CaseDetailPage() {
     sourceType?: "provider" | "channel",
     sourceName?: string
   ) => {
-    if (!clientEnvironment.trim()) {
+    const resolvedClientEnvironment =
+      clientEnvironment === "custom" ? customClientEnvironment.trim() : clientEnvironment;
+
+    if (!resolvedClientEnvironment) {
       setSupportError("Client environment is required before collecting logs.");
       return;
     }
@@ -192,33 +211,22 @@ export default function CaseDetailPage() {
     setSupportActionLoading(true);
     setSupportError("");
     try {
-      const runSupportAction = async (
-        supportAction: "collect_source" | "collect_all_sources" | "prepare_ticket_bundle"
-      ) => {
-        const response = await fetch("/api/support-tracking", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            caseId,
-            action: supportAction,
-            sourceType,
-            sourceName,
-            createdBy: "Mandar Pophali",
-            clientEnvironment,
-          }),
-        });
+      const response = await fetch("/api/support-tracking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          caseId,
+          action,
+          sourceType,
+          sourceName,
+          createdBy: "Mandar Pophali",
+          clientEnvironment: resolvedClientEnvironment,
+        }),
+      });
 
-        if (!response.ok) {
-          const errorBody = await response.json();
-          throw new Error(errorBody.error ?? "Support tracking action failed");
-        }
-      };
-
-      if (action === "prepare_ticket_bundle") {
-        await runSupportAction("collect_all_sources");
-        await runSupportAction("prepare_ticket_bundle");
-      } else {
-        await runSupportAction(action);
+      if (!response.ok) {
+        const errorBody = await response.json();
+        throw new Error(errorBody.error ?? "Support tracking action failed");
       }
 
       await fetchSupportArtifacts();
@@ -384,19 +392,34 @@ export default function CaseDetailPage() {
               <div>
                 <h2 className="text-xl font-bold text-gray-900">External Support Evidence Pack</h2>
                 <p className="text-sm text-gray-600 mt-1">
-                  Collect logs from the client environment and communication records, then prepare a comprehensive bundle for external support escalation.
+                  Collect provider logs and communication records, then prepare a bundle from your selected sources for external support escalation.
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
-                <input
-                  type="text"
+                <select
                   value={clientEnvironment}
                   onChange={(event) => {
-                    setClientEnvironment(event.target.value);
+                    setClientEnvironment(event.target.value as ClientEnvironmentOptionValue);
                   }}
                   className="px-3 py-2 rounded border border-gray-300 text-sm text-gray-700 min-w-64"
-                  placeholder="client environment (example: acme-prod-us-east)"
-                />
+                >
+                  {clientEnvironmentOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                {clientEnvironment === "custom" && (
+                  <input
+                    type="text"
+                    value={customClientEnvironment}
+                    onChange={(event) => {
+                      setCustomClientEnvironment(event.target.value);
+                    }}
+                    className="px-3 py-2 rounded border border-gray-300 text-sm text-gray-700 min-w-64"
+                    placeholder="custom client environment"
+                  />
+                )}
                 <button
                   type="button"
                   className="px-4 py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:bg-blue-300"
@@ -462,7 +485,7 @@ export default function CaseDetailPage() {
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Cloud providers (click to collect)</h3>
+                  <h3 className="font-semibold text-gray-900 mb-2">Cloud providers (click to select/deselect)</h3>
                   <div className="flex flex-wrap gap-2">
                     {providerSources.map((source) => (
                       <button
@@ -478,14 +501,14 @@ export default function CaseDetailPage() {
                           void handleSupportAction("collect_source", "provider", source.name);
                         }}
                       >
-                        {source.collected ? `✓ ${source.name}` : `Collect ${source.name}`}
+                        {source.collected ? `✓ ${source.name}` : `Select ${source.name}`}
                       </button>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Communication channels (click to capture)</h3>
+                  <h3 className="font-semibold text-gray-900 mb-2">Communication channels (click to select/deselect)</h3>
                   <div className="flex flex-wrap gap-2">
                     {channelSources.map((source) => (
                       <button
@@ -501,7 +524,7 @@ export default function CaseDetailPage() {
                           void handleSupportAction("collect_source", "channel", source.name);
                         }}
                       >
-                        {source.collected ? `✓ ${source.name}` : `Capture ${source.name}`}
+                        {source.collected ? `✓ ${source.name}` : `Select ${source.name}`}
                       </button>
                     ))}
                   </div>

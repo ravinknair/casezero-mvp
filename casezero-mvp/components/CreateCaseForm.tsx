@@ -2,23 +2,13 @@
 
 import { useState } from "react";
 import { externalSupportProviders } from "@/lib/externalSupport";
+import { clientEnvironmentOptions } from "@/lib/clientEnvironments";
 
 interface CreateCaseFormProps {
   onSuccess?: (caseData: unknown) => void;
 }
 
 export function CreateCaseForm({ onSuccess }: CreateCaseFormProps) {
-  const environmentOptions = [
-    { value: "production", label: "Production" },
-    { value: "pre-production", label: "Pre-Production" },
-    { value: "staging", label: "Staging" },
-    { value: "uat", label: "UAT" },
-    { value: "test", label: "Test" },
-    { value: "development", label: "Development" },
-    { value: "sandbox", label: "Sandbox" },
-    { value: "custom", label: "Custom (enter manually)" },
-  ] as const;
-
   const severityOptions = [
     { value: "SEV-0", label: "SEV-0 — All production systems down" },
     { value: "SEV-1", label: "SEV-1 — Critical outage with broad customer impact" },
@@ -221,7 +211,7 @@ export function CreateCaseForm({ onSuccess }: CreateCaseFormProps) {
           onChange={handleChange}
           className="w-full px-3 py-2 border border-gray-300 rounded"
         >
-          {environmentOptions.map((option) => (
+          {clientEnvironmentOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
