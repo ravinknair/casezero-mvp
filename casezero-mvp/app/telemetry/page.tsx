@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { mockCases } from "@/lib/mockData";
@@ -88,9 +87,14 @@ export default function TelemetryPage() {
                   {row.caseTitle}
                 </div>
                 <div className="mt-2">
-                  <Link href={`/case/${mockCases.find((item) => item.caseId === row.caseId)?.id ?? row.caseId}`} className="text-sm font-medium text-blue-600 hover:text-blue-700">
+                  <a
+                    href={`/case/${mockCases.find((item) => item.caseId === row.caseId)?.id ?? row.caseId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-medium text-blue-600 hover:text-blue-700"
+                  >
                     Open case
-                  </Link>
+                  </a>
                 </div>
               </div>
             ))}
@@ -141,9 +145,14 @@ export default function TelemetryPage() {
                           {new Date(event.createdAt).toISOString().replace("T", " ").slice(0, 19)}
                         </td>
                         <td className="py-3 pr-4 font-medium text-gray-900">
-                          <Link href={`/case/${event.caseId}`} className="text-blue-600 hover:text-blue-700">
+                          <a
+                            href={`/case/${event.caseId}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-700"
+                          >
                             {event.caseId}
-                          </Link>
+                          </a>
                         </td>
                         <td className="py-3 pr-4 text-gray-700">{event.actor}</td>
                         <td className="py-3 pr-4 text-gray-700">

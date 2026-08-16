@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Sidebar } from "@/components/Sidebar";
 import { mockCases } from "@/lib/mockData";
 
@@ -52,9 +51,14 @@ export default function PoliciesPage() {
 
                 <div className="mt-4 flex items-center justify-between text-sm text-gray-500">
                   <span>{policy.caseTitle}</span>
-                  <Link href={`/case/${mockCases.find((item) => item.caseId === policy.caseId)?.id ?? policy.caseId}`} className="font-medium text-blue-600 hover:text-blue-700">
+                  <a
+                    href={`/case/${mockCases.find((item) => item.caseId === policy.caseId)?.id ?? policy.caseId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-blue-600 hover:text-blue-700"
+                  >
                     Review case
-                  </Link>
+                  </a>
                 </div>
               </div>
             ))}

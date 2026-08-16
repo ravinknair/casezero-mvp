@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Sidebar } from "@/components/Sidebar";
 import { mockCases } from "@/lib/mockData";
 
@@ -50,11 +49,13 @@ export default function WorkflowsPage({
 
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {workflowRows.map((row) => (
-             <Link
+             <a
                key={row.id}
                href={`/case/${row.id}`}
-                className="block rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-blue-300 hover:shadow-md"
-              >
+               target="_blank"
+               rel="noopener noreferrer"
+               className="block rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-blue-300 hover:shadow-md"
+             >
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <span className="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-blue-700">
                     {row.caseId}
@@ -71,7 +72,7 @@ export default function WorkflowsPage({
                   <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">Recommended action</div>
                   <div className="mt-1 font-medium text-gray-900">{row.actionLabel}</div>
                 </div>
-              </Link>
+              </a>
             ))}
             {workflowRows.length === 0 && (
               <div className="rounded-xl border border-gray-200 bg-white p-5 text-sm text-gray-600">
