@@ -10,8 +10,19 @@ const sidebarItems = [
   { icon: "↗", label: "Telemetry", href: "/telemetry" },
 ];
 
-export default function WorkflowsPage() {
-  const workflowRows = mockCases.map((item) => ({
+const validStages = new Set(["detect", "diagnose", "decide", "act", "verify", "resolved", "rejected"]);
+
+export default function WorkflowsPage({
+  searchParams,
+}: {
+  searchParams?: { stage?: string };
+}) {
+  const stageFilter = (searchParams?.stage ?? "").toLowerCase();
+  const normalizedStageFilter = validStages.has(stageFilter) ? stageFilter : "";
+
+  const workflowRows = mockCases
+    .filter((item) => (normalizedStageFilter ? item.status.toLowerCase() === normalizedStageFilter : true))
+    .map((item) => ({
     id: item.id,
     caseId: item.caseId,
     title: item.title,
@@ -30,13 +41,18 @@ export default function WorkflowsPage() {
             <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">Operations</p>
             <h1 className="mt-2 text-3xl font-bold text-gray-900">Workflows</h1>
             <p className="mt-2 text-gray-600">Resolution flows, decision states, and bounded actions across the active incident portfolio.</p>
+            {normalizedStageFilter && (
+             <p className="mt-2 inline-block rounded bg-blue-50 px-3 py-1 text-sm text-blue-700">
+               Filtered stage: <span className="font-semibold">{normalizedStageFilter}</span>
+             </p>
+            )}
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {workflowRows.map((row) => (
-              <Link
-                key={row.id}
-                href={`/case/${row.id}`}
+             <Link
+               key={row.id}
+               href={`/case/${row.id}`}
                 className="block rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-blue-300 hover:shadow-md"
               >
                 <div className="mb-3 flex items-center justify-between gap-3">
@@ -57,6 +73,11 @@ export default function WorkflowsPage() {
                 </div>
               </Link>
             ))}
+            {workflowRows.length === 0 && (
+              <div className="rounded-xl border border-gray-200 bg-white p-5 text-sm text-gray-600">
+                No workflows found for stage <span className="font-semibold">{normalizedStageFilter}</span>.
+              </div>
+            )}
           </div>
         </div>
       </main>

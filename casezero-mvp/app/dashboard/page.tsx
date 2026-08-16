@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
 import { CaseCard } from "@/components/CaseCard";
 import { Sidebar } from "@/components/Sidebar";
@@ -126,20 +125,22 @@ export default function DashboardPage() {
         <div className="bg-gray-50 border-b border-gray-200 px-8 py-4">
           <div className="grid grid-cols-5 gap-4">
             {[
-              ["Detect", statusCounts.detect, "bg-blue-50"],
-              ["Diagnose", statusCounts.diagnose, "bg-purple-50"],
-              ["Decide", statusCounts.decide, "bg-yellow-50"],
-              ["Act", statusCounts.act, "bg-orange-50"],
-              ["Verify", statusCounts.verify, "bg-green-50"],
-            ].map(([label, count, bgClass]) => (
-              <Link
-                key={label}
-                href={`/workflows#${String(label).toLowerCase()}`}
+              ["Detect", statusCounts.detect, "bg-blue-50", "detect"],
+              ["Diagnose", statusCounts.diagnose, "bg-purple-50", "diagnose"],
+              ["Decide", statusCounts.decide, "bg-yellow-50", "decide"],
+              ["Act", statusCounts.act, "bg-orange-50", "act"],
+              ["Verify", statusCounts.verify, "bg-green-50", "verify"],
+            ].map(([label, count, bgClass, stage]) => (
+              <a
+                key={String(label)}
+                href={`/workflows?stage=${String(stage)}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className={`${bgClass} p-3 rounded border border-gray-300 block hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500`}
               >
                 <div className="text-xs font-semibold text-gray-600 mb-1">{label}</div>
                 <div className="text-2xl font-bold text-gray-900">{count}</div>
-              </Link>
+              </a>
             ))}
           </div>
         </div>
