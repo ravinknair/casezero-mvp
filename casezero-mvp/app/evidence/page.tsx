@@ -7,8 +7,6 @@ const sidebarItems = [
   { icon: "◎", label: "Evidence", href: "/evidence", count: mockCases.reduce((sum, item) => sum + (item.recommendation?.evidence?.length ?? 0), 0), active: true },
   { icon: "◇", label: "Policies", href: "/policies", count: mockCases.length },
   { icon: "↗", label: "Telemetry", href: "/telemetry" },
-  { icon: "▶", label: "Demo Guide", href: "/demo" },
-  { icon: "✓", label: "Test Status", href: "/status" },
 ];
 
 export default function EvidencePage() {
@@ -51,7 +49,12 @@ export default function EvidencePage() {
                     </div>
                   </div>
 
-                  <a href={`/case/${mockCases.find((x) => x.caseId === item.caseId)?.id ?? item.caseId}`} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-blue-600 hover:text-blue-700">
+                  <a
+                    href={`/case/${mockCases.find((x) => x.caseId === item.caseId)?.id ?? item.caseId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-medium text-blue-600 hover:text-blue-700"
+                  >
                     Open case
                   </a>
                 </div>

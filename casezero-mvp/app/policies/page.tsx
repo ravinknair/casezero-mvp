@@ -7,8 +7,6 @@ const sidebarItems = [
   { icon: "◎", label: "Evidence", href: "/evidence", count: mockCases.reduce((sum, item) => sum + (item.recommendation?.evidence?.length ?? 0), 0) },
   { icon: "◇", label: "Policies", href: "/policies", count: mockCases.length, active: true },
   { icon: "↗", label: "Telemetry", href: "/telemetry" },
-  { icon: "▶", label: "Demo Guide", href: "/demo" },
-  { icon: "✓", label: "Test Status", href: "/status" },
 ];
 
 export default function PoliciesPage() {
@@ -53,7 +51,12 @@ export default function PoliciesPage() {
 
                 <div className="mt-4 flex items-center justify-between text-sm text-gray-500">
                   <span>{policy.caseTitle}</span>
-                  <a href={`/case/${mockCases.find((item) => item.caseId === policy.caseId)?.id ?? policy.caseId}`} target="_blank" rel="noopener noreferrer" className="font-medium text-blue-600 hover:text-blue-700">
+                  <a
+                    href={`/case/${mockCases.find((item) => item.caseId === policy.caseId)?.id ?? policy.caseId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-blue-600 hover:text-blue-700"
+                  >
                     Review case
                   </a>
                 </div>

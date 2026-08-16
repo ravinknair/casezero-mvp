@@ -61,7 +61,13 @@ export function Sidebar({
 
           if (item.href) {
             return (
-              <a key={index} href={item.href} target="_blank" rel="noopener noreferrer" className={classes}>
+              <a
+                key={index}
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={classes}
+              >
                 <div className="flex items-center gap-3">
                   <span className="text-lg">{item.icon}</span>
                   <span className="app-sidebar-label font-medium">{item.label}</span>

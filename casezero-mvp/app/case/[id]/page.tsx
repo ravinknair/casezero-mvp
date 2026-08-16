@@ -45,12 +45,53 @@ interface CaseDetailData {
   }>;
 }
 
+interface SupportSourceStatus {
+  type: "provider" | "channel";
+  name: string;
+  collected: boolean;
+  collectedAt: string | null;
+  collectedBy: string | null;
+}
+
+interface SupportPack {
+  caseId: string;
+  clientEnvironment: string | null;
+  providers: SupportSourceStatus[];
+  communicationChannels: SupportSourceStatus[];
+  bundleReady: boolean;
+  ticketBundleId?: string;
+  lastUpdatedAt: string;
+}
+
+interface SupportTelemetryEvent {
+  id: string;
+  caseId: string;
+  eventType: "collect_source" | "collect_all_sources" | "prepare_ticket_bundle";
+  actor: string;
+  targetType: "provider" | "channel" | "bundle" | "all_sources";
+  targetName: string;
+  status: "recorded" | "ready" | "blocked";
+  message: string;
+  createdAt: string;
+  metadata: Record<string, string | number>;
+}
+
+interface SupportTrackingResponse {
+  pack: SupportPack;
+  events: SupportTelemetryEvent[];
+}
+
 export default function CaseDetailPage() {
   const params = useParams();
   const caseId = params.id as string;
   const [caseData, setCaseData] = useState<CaseDetailData | null>(null);
   const [loading, setLoading] = useState(true);
   const [approvalStatus, setApprovalStatus] = useState<"pending" | "approved" | "rejected">("pending");
+  const [supportPack, setSupportPack] = useState<SupportPack | null>(null);
+  const [supportEvents, setSupportEvents] = useState<SupportTelemetryEvent[]>([]);
+  const [supportActionLoading, setSupportActionLoading] = useState(false);
+  const [supportError, setSupportError] = useState("");
+  const [clientEnvironment, setClientEnvironment] = useState("client-production");
 
   const fetchCaseDetail = useCallback(async () => {
     try {
@@ -66,11 +107,29 @@ export default function CaseDetailPage() {
     }
   }, [caseId]);
 
+  const fetchSupportArtifacts = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/support-tracking?caseId=${caseId}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch support tracking state");
+      }
+      const data = await response.json();
+      const trackingState = data as SupportTrackingResponse;
+      setSupportPack(trackingState.pack);
+      setSupportEvents(trackingState.events);
+      setSupportError("");
+    } catch (error) {
+      console.error("Failed to fetch support tracking state:", error);
+      setSupportError("Unable to load external support tracking state.");
+    }
+  }, [caseId]);
+
   useEffect(() => {
     if (caseId) {
       void fetchCaseDetail();
+      void fetchSupportArtifacts();
     }
-  }, [caseId, fetchCaseDetail]);
+  }, [caseId, fetchCaseDetail, fetchSupportArtifacts]);
 
   const handleApprove = async () => {
     try {
@@ -120,6 +179,58 @@ export default function CaseDetailPage() {
     }
   };
 
+  const handleSupportAction = async (
+    action: "collect_source" | "collect_all_sources" | "prepare_ticket_bundle",
+    sourceType?: "provider" | "channel",
+    sourceName?: string
+  ) => {
+    if (!clientEnvironment.trim()) {
+      setSupportError("Client environment is required before collecting logs.");
+      return;
+    }
+
+    setSupportActionLoading(true);
+    setSupportError("");
+    try {
+      const runSupportAction = async (
+        supportAction: "collect_source" | "collect_all_sources" | "prepare_ticket_bundle"
+      ) => {
+        const response = await fetch("/api/support-tracking", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            caseId,
+            action: supportAction,
+            sourceType,
+            sourceName,
+            createdBy: "Mandar Pophali",
+            clientEnvironment,
+          }),
+        });
+
+        if (!response.ok) {
+          const errorBody = await response.json();
+          throw new Error(errorBody.error ?? "Support tracking action failed");
+        }
+      };
+
+      if (action === "prepare_ticket_bundle") {
+        await runSupportAction("collect_all_sources");
+        await runSupportAction("prepare_ticket_bundle");
+      } else {
+        await runSupportAction(action);
+      }
+
+      await fetchSupportArtifacts();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Support tracking action failed";
+      console.error("Failed support tracking action:", error);
+      setSupportError(message);
+    } finally {
+      setSupportActionLoading(false);
+    }
+  };
+
   if (loading) {
     return <div className="flex items-center justify-center h-screen">Loading case...</div>;
   }
@@ -132,6 +243,8 @@ export default function CaseDetailPage() {
   const diagnosis = diagnoses?.[0];
   const recommendation = recommendations?.[0];
   const canDecide = approvalStatus === "pending" && !["resolved", "rejected"].includes(caseInfo?.status);
+  const providerSources = supportPack?.providers ?? [];
+  const channelSources = supportPack?.communicationChannels ?? [];
 
   const sidebarItems = [
     { icon: "◫", label: "Cases", href: "/dashboard" },
@@ -282,6 +395,175 @@ export default function CaseDetailPage() {
               ]}
             />
           )}
+
+          <section className="bg-white border border-gray-200 rounded-lg p-6">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">External Support Evidence Pack</h2>
+                <p className="text-sm text-gray-600 mt-1">
+                  Collect logs from the client environment and communication records, then prepare a comprehensive bundle for external support escalation.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <input
+                  type="text"
+                  value={clientEnvironment}
+                  onChange={(event) => {
+                    setClientEnvironment(event.target.value);
+                  }}
+                  className="px-3 py-2 rounded border border-gray-300 text-sm text-gray-700 min-w-64"
+                  placeholder="client environment (example: acme-prod-us-east)"
+                />
+                <button
+                  type="button"
+                  className="px-4 py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:bg-blue-300"
+                  onClick={() => {
+                    void handleSupportAction("collect_all_sources");
+                  }}
+                  disabled={supportActionLoading}
+                >
+                  {supportActionLoading ? "Processing..." : "Collect All Sources"}
+                </button>
+                <button
+                  type="button"
+                  className="px-4 py-2 rounded bg-emerald-600 text-white font-semibold hover:bg-emerald-700 disabled:bg-emerald-300"
+                  onClick={() => {
+                    void handleSupportAction("prepare_ticket_bundle");
+                  }}
+                  disabled={supportActionLoading}
+                >
+                  {supportActionLoading ? "Processing..." : "Prepare Ticket Bundle"}
+                </button>
+              </div>
+            </div>
+
+            {supportError && (
+              <div className="mt-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                {supportError}
+              </div>
+            )}
+
+            {supportPack ? (
+              <div className="mt-5 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                  <div className="rounded border border-gray-200 bg-gray-50 p-3">
+                    <div className="text-xs text-gray-500 uppercase tracking-wide">Providers collected</div>
+                    <div className="mt-1 font-semibold text-gray-900">
+                      {providerSources.filter((item) => item.collected).length} / {providerSources.length}
+                    </div>
+                  </div>
+                  <div className="rounded border border-gray-200 bg-gray-50 p-3">
+                    <div className="text-xs text-gray-500 uppercase tracking-wide">Channels collected</div>
+                    <div className="mt-1 font-semibold text-gray-900">
+                      {channelSources.filter((item) => item.collected).length} / {channelSources.length}
+                    </div>
+                  </div>
+                  <div className="rounded border border-gray-200 bg-gray-50 p-3">
+                    <div className="text-xs text-gray-500 uppercase tracking-wide">Bundle status</div>
+                    <div className="mt-1 font-semibold text-gray-900">
+                      {supportPack.bundleReady ? `Ready (${supportPack.ticketBundleId})` : "In progress"}
+                    </div>
+                  </div>
+                  <div className="rounded border border-gray-200 bg-gray-50 p-3">
+                    <div className="text-xs text-gray-500 uppercase tracking-wide">Last update</div>
+                    <div className="mt-1 font-semibold text-gray-900">
+                      {new Date(supportPack.lastUpdatedAt).toISOString().replace("T", " ").slice(0, 19)} UTC
+                    </div>
+                  </div>
+                  <div className="rounded border border-gray-200 bg-gray-50 p-3 md:col-span-2 xl:col-span-4">
+                    <div className="text-xs text-gray-500 uppercase tracking-wide">Client environment</div>
+                    <div className="mt-1 font-semibold text-gray-900">
+                      {supportPack.clientEnvironment ?? "Not set yet"}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">Cloud providers (click to collect)</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {providerSources.map((source) => (
+                      <button
+                        key={source.name}
+                        type="button"
+                        className={`px-3 py-2 rounded border text-sm font-medium ${
+                          source.collected
+                            ? "border-green-300 bg-green-50 text-green-800"
+                            : "border-gray-300 bg-white text-gray-700 hover:border-blue-400"
+                        }`}
+                        disabled={supportActionLoading}
+                        onClick={() => {
+                          void handleSupportAction("collect_source", "provider", source.name);
+                        }}
+                      >
+                        {source.collected ? `✓ ${source.name}` : `Collect ${source.name}`}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">Communication channels (click to capture)</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {channelSources.map((source) => (
+                      <button
+                        key={source.name}
+                        type="button"
+                        className={`px-3 py-2 rounded border text-sm font-medium ${
+                          source.collected
+                            ? "border-green-300 bg-green-50 text-green-800"
+                            : "border-gray-300 bg-white text-gray-700 hover:border-blue-400"
+                        }`}
+                        disabled={supportActionLoading}
+                        onClick={() => {
+                          void handleSupportAction("collect_source", "channel", source.name);
+                        }}
+                      >
+                        {source.collected ? `✓ ${source.name}` : `Capture ${source.name}`}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">Action history (auditable)</h3>
+                  {supportEvents.length === 0 ? (
+                    <div className="text-sm text-gray-600">No actions recorded yet.</div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse text-sm">
+                        <thead>
+                          <tr className="border-b border-gray-200 text-left text-gray-500">
+                            <th className="py-2 pr-4 font-semibold">Time (UTC)</th>
+                            <th className="py-2 pr-4 font-semibold">Actor</th>
+                            <th className="py-2 pr-4 font-semibold">Action</th>
+                            <th className="py-2 pr-4 font-semibold">Target</th>
+                            <th className="py-2 font-semibold">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {supportEvents.map((event) => (
+                            <tr key={event.id} className="border-b border-gray-100">
+                              <td className="py-2 pr-4 text-gray-600 whitespace-nowrap">
+                                {new Date(event.createdAt).toISOString().replace("T", " ").slice(0, 19)}
+                              </td>
+                              <td className="py-2 pr-4 text-gray-800">{event.actor}</td>
+                              <td className="py-2 pr-4 text-gray-800">{event.eventType}</td>
+                              <td className="py-2 pr-4 text-gray-800">{event.targetName}</td>
+                              <td className="py-2 text-gray-800">{event.status}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="mt-4 text-sm text-gray-600">
+                Loading support evidence pack status...
+              </div>
+            )}
+          </section>
         </div>
       </div>
     </div>

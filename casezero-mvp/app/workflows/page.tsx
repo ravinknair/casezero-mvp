@@ -7,20 +7,36 @@ const sidebarItems = [
   { icon: "◎", label: "Evidence", href: "/evidence", count: mockCases.reduce((sum, item) => sum + (item.recommendation?.evidence?.length ?? 0), 0) },
   { icon: "◇", label: "Policies", href: "/policies", count: mockCases.length },
   { icon: "↗", label: "Telemetry", href: "/telemetry" },
-  { icon: "▶", label: "Demo Guide", href: "/demo" },
-  { icon: "✓", label: "Test Status", href: "/status" },
 ];
 
-const workflowStages = [
-  { id: "detect", label: "Detect", description: "Capture signals, establish severity, and assemble initial evidence." },
-  { id: "diagnose", label: "Diagnose", description: "Correlate evidence, identify root cause, and establish confidence." },
-  { id: "decide", label: "Decide", description: "Review policy checks, blast radius, and the bounded recommendation." },
-  { id: "act", label: "Act", description: "Execute the approved action with explicit scope and stop conditions." },
-  { id: "verify", label: "Verify", description: "Confirm the outcome, retain evidence, and close or roll back safely." },
-];
+const validStages = new Set(["detect", "diagnose", "decide", "act", "verify", "resolved", "rejected"]);
 
-export default function WorkflowsPage() {
-  const workflowRows = mockCases.map((item) => ({
+export default function WorkflowsPage({
+  searchParams,
+}: {
+  searchParams?: { stage?: string };
+}) {
+  const stageFilter = (searchParams?.stage ?? "").toLowerCase();
+  const normalizedStageFilter = validStages.has(stageFilter) ? stageFilter : "";
+  const stageTabs = [
+    { key: "", label: "All" },
+    { key: "detect", label: "Detect" },
+    { key: "diagnose", label: "Diagnose" },
+    { key: "decide", label: "Decide" },
+    { key: "act", label: "Act" },
+    { key: "verify", label: "Verify" },
+    { key: "resolved", label: "Resolved" },
+  ];
+
+  const stageCounts = mockCases.reduce<Record<string, number>>((acc, item) => {
+    const key = item.status.toLowerCase();
+    acc[key] = (acc[key] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  const workflowRows = mockCases
+    .filter((item) => (normalizedStageFilter ? item.status.toLowerCase() === normalizedStageFilter : true))
+    .map((item) => ({
     id: item.id,
     caseId: item.caseId,
     title: item.title,
@@ -39,27 +55,46 @@ export default function WorkflowsPage() {
             <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">Operations</p>
             <h1 className="mt-2 text-3xl font-bold text-gray-900">Workflows</h1>
             <p className="mt-2 text-gray-600">Resolution flows, decision states, and bounded actions across the active incident portfolio.</p>
+            {normalizedStageFilter && (
+             <p className="mt-2 inline-block rounded bg-blue-50 px-3 py-1 text-sm text-blue-700">
+               Filtered stage: <span className="font-semibold">{normalizedStageFilter}</span>
+             </p>
+            )}
           </div>
 
-          <div className="mb-8 grid gap-3 md:grid-cols-5">
-            {workflowStages.map((stage, index) => (
-              <section id={stage.id} key={stage.id} className="scroll-mt-6 border border-gray-200 bg-white p-4 shadow-sm target:border-blue-500 target:bg-blue-50">
-                <div className="text-xs font-semibold uppercase tracking-wide text-blue-600">Stage {index + 1}</div>
-                <h2 className="mt-1 text-lg font-semibold text-gray-900">{stage.label}</h2>
-                <p className="mt-2 text-sm text-gray-600">{stage.description}</p>
-              </section>
-            ))}
+          <div className="mb-6 flex flex-wrap gap-2">
+            {stageTabs.map((tab) => {
+             const isActive = tab.key === normalizedStageFilter || (tab.key === "" && normalizedStageFilter === "");
+             const count = tab.key === "" ? mockCases.length : (stageCounts[tab.key] ?? 0);
+
+             return (
+               <a
+                 key={tab.label}
+                 href={tab.key ? `/workflows?stage=${tab.key}` : "/workflows"}
+                 className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition ${
+                   isActive
+                     ? "border-blue-300 bg-blue-50 text-blue-700"
+                     : "border-gray-300 bg-white text-gray-700 hover:border-blue-300 hover:text-blue-700"
+                 }`}
+               >
+                 <span>{tab.label}</span>
+                 <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-700">
+                   {count}
+                 </span>
+               </a>
+             );
+            })}
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {workflowRows.map((row) => (
-              <a
-                key={row.id}
-                href={`/case/${row.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-blue-300 hover:shadow-md"
-              >
+             <a
+               key={row.id}
+               href={`/case/${row.id}`}
+               target="_blank"
+               rel="noopener noreferrer"
+               className="block rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-blue-300 hover:shadow-md"
+             >
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <span className="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-blue-700">
                     {row.caseId}
@@ -78,6 +113,11 @@ export default function WorkflowsPage() {
                 </div>
               </a>
             ))}
+            {workflowRows.length === 0 && (
+              <div className="rounded-xl border border-gray-200 bg-white p-5 text-sm text-gray-600">
+                No workflows found for stage <span className="font-semibold">{normalizedStageFilter}</span>.
+              </div>
+            )}
           </div>
         </div>
       </main>

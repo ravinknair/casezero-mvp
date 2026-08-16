@@ -1,5 +1,27 @@
 import { mockCases } from "@/lib/mockData";
-import { trackEvent } from "@/lib/telemetry";
+
+function normalizeEvidence(
+  rawEvidence: Array<[string, string, string, string, string?]> | undefined
+) {
+  return (rawEvidence ?? []).map(([type, title, description, timestamp, color]) => ({
+    type,
+    title,
+    description,
+    timestamp,
+    color: color ?? "blue",
+  }));
+}
+
+function normalizeMetrics(
+  rawMetrics: Array<[string, string, string, "neutral" | "warn" | "danger"]> | undefined
+) {
+  return (rawMetrics ?? []).map(([name, value, change, status]) => ({
+    name,
+    value,
+    change,
+    status,
+  }));
+}
 
 export async function GET(
   request: Request,
@@ -15,28 +37,15 @@ export async function GET(
 
     const diagnoses = caseFound.diagnosis ? [caseFound.diagnosis] : [];
     const recommendations = caseFound.recommendation ? [caseFound.recommendation] : [];
-    const evidence = (caseFound.recommendation?.evidence ?? []).map(([type, title, description, timestamp, color]) => ({
-      type,
-      title,
-      description,
-      timestamp,
-      color,
-    }));
-    const metrics = (caseFound.recommendation?.metrics ?? []).map(([name, value, change, status]) => ({
-      name,
-      value,
-      change,
-      status,
-    }));
 
     return Response.json({
       case: caseFound,
       diagnoses,
       recommendations,
-      evidence,
+      evidence: normalizeEvidence(caseFound.recommendation?.evidence),
       activities: [],
       approvals: [],
-      metrics,
+      metrics: normalizeMetrics(caseFound.recommendation?.metrics),
     });
   } catch {
     return Response.json({ error: "Failed to fetch case" }, { status: 500 });
@@ -56,33 +65,9 @@ export async function PATCH(
       return Response.json({ error: "Case not found" }, { status: 404 });
     }
 
-    const previousStatus = caseFound.status;
     caseFound.status = body.status || caseFound.status;
-    if (caseFound.status !== previousStatus) {
-      await trackEvent("CaseStatusChanged", {
-        caseId: caseFound.caseId,
-        type: caseFound.type,
-        from: previousStatus,
-        to: caseFound.status,
-      });
-    }
     return Response.json(caseFound);
   } catch {
     return Response.json({ error: "Failed to update case" }, { status: 500 });
   }
-}
-
-export async function DELETE(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params;
-  const index = mockCases.findIndex((item) => item.id === id && item.caseId.startsWith("CZ-SMOKE-"));
-
-  if (index === -1) {
-    return Response.json({ error: "Smoke-test case not found" }, { status: 404 });
-  }
-
-  const [deleted] = mockCases.splice(index, 1);
-  return Response.json({ deleted: deleted.caseId });
 }
