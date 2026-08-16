@@ -158,9 +158,15 @@ export default function DashboardPage() {
                 <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-semibold text-blue-700">
                   {supportEventCount} tracked actions
                 </span>
-                <Link href="/telemetry" className="px-3 py-2 rounded bg-gray-900 text-white text-sm font-semibold hover:bg-gray-800">
+                <button
+                  type="button"
+                  onClick={() => {
+                    router.push("/telemetry");
+                  }}
+                  className="px-3 py-2 rounded bg-gray-900 text-white text-sm font-semibold hover:bg-gray-800"
+                >
                   Open telemetry log
-                </Link>
+                </button>
               </div>
             </div>
           </div>

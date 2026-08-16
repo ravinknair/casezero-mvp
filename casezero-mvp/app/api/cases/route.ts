@@ -13,10 +13,23 @@ export async function POST(request: Request) {
       severity,
       title,
       subtitle,
+      externalProvider,
+      clientEnvironment,
+      zippedLogsPlaceholder,
+      chatEvidencePlaceholder,
       confidence,
       sources,
       activity,
     } = body;
+
+    const supportNotes = [
+      externalProvider ? `provider=${externalProvider}` : null,
+      clientEnvironment ? `client-env=${clientEnvironment}` : null,
+      zippedLogsPlaceholder ? `logs=${zippedLogsPlaceholder}` : null,
+      chatEvidencePlaceholder ? `chat=${chatEvidencePlaceholder}` : null,
+    ]
+      .filter(Boolean)
+      .join(" | ");
 
     const newCase = {
       id: `case-${Date.now()}`,
@@ -24,7 +37,10 @@ export async function POST(request: Request) {
       type: type || "PRODUCTION INCIDENT",
       severity: severity || "SEV-2",
       title: title || "New incident",
-      subtitle: subtitle || "Created from the local preview environment",
+      subtitle:
+        [subtitle || "Created from the local preview environment", supportNotes]
+          .filter(Boolean)
+          .join(" · "),
       status: "detect",
       confidence: typeof confidence === "number" ? confidence : 75,
       sources: typeof sources === "number" ? sources : 0,
