@@ -1,5 +1,28 @@
 import { mockCases } from "@/lib/mockData";
 
+function normalizeEvidence(
+  rawEvidence: Array<[string, string, string, string, string?]> | undefined
+) {
+  return (rawEvidence ?? []).map(([type, title, description, timestamp, color]) => ({
+    type,
+    title,
+    description,
+    timestamp,
+    color: color ?? "blue",
+  }));
+}
+
+function normalizeMetrics(
+  rawMetrics: Array<[string, string, string, "neutral" | "warn" | "danger"]> | undefined
+) {
+  return (rawMetrics ?? []).map(([name, value, change, status]) => ({
+    name,
+    value,
+    change,
+    status,
+  }));
+}
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -19,10 +42,10 @@ export async function GET(
       case: caseFound,
       diagnoses,
       recommendations,
-      evidence: caseFound.recommendation?.evidence ?? [],
+      evidence: normalizeEvidence(caseFound.recommendation?.evidence),
       activities: [],
       approvals: [],
-      metrics: caseFound.recommendation?.metrics ?? [],
+      metrics: normalizeMetrics(caseFound.recommendation?.metrics),
     });
   } catch {
     return Response.json({ error: "Failed to fetch case" }, { status: 500 });
