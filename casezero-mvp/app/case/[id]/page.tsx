@@ -19,6 +19,7 @@ interface CaseDetailData {
     caseId: string;
     title: string;
     subtitle?: string;
+    clientEnvironment?: string;
     severity: string;
     confidence: number;
     sources: number;
@@ -85,6 +86,17 @@ interface SupportTrackingResponse {
   events: SupportTelemetryEvent[];
 }
 
+function resolveCaseEnvironment(caseInfo: CaseDetailData["case"]): string {
+  const explicitEnvironment = caseInfo.clientEnvironment?.trim();
+  if (explicitEnvironment) {
+    return explicitEnvironment;
+  }
+
+  const subtitle = caseInfo.subtitle ?? "";
+  const subtitleEnvironmentMatch = subtitle.match(/client-env=([^|·]+)/i);
+  return subtitleEnvironmentMatch?.[1]?.trim() ?? "";
+}
+
 export default function CaseDetailPage() {
   const params = useParams();
   const caseId = params.id as string;
@@ -97,6 +109,26 @@ export default function CaseDetailPage() {
   const [supportError, setSupportError] = useState("");
   const [clientEnvironment, setClientEnvironment] = useState<ClientEnvironmentOptionValue>("production");
   const [customClientEnvironment, setCustomClientEnvironment] = useState("");
+
+  const applyEnvironmentSelection = useCallback((rawEnvironment: string) => {
+    const normalizedEnvironment = rawEnvironment.trim();
+    if (!normalizedEnvironment) {
+      return;
+    }
+
+    const hasPresetEnvironment = clientEnvironmentOptions.some(
+      (option) => option.value !== "custom" && option.value === normalizedEnvironment
+    );
+
+    if (hasPresetEnvironment) {
+      setClientEnvironment(normalizedEnvironment as ClientEnvironmentOptionValue);
+      setCustomClientEnvironment("");
+      return;
+    }
+
+    setClientEnvironment("custom");
+    setCustomClientEnvironment(normalizedEnvironment);
+  }, []);
 
   const fetchCaseDetail = useCallback(async () => {
     try {
@@ -123,22 +155,15 @@ export default function CaseDetailPage() {
       setSupportPack(trackingState.pack);
       setSupportEvents(trackingState.events);
       const trackedEnvironment = trackingState.pack.clientEnvironment?.trim() ?? "";
-      const hasPresetEnvironment = clientEnvironmentOptions.some(
-        (option) => option.value !== "custom" && option.value === trackedEnvironment
-      );
-      if (trackedEnvironment && !hasPresetEnvironment) {
-        setClientEnvironment("custom");
-        setCustomClientEnvironment(trackedEnvironment);
-      } else if (trackedEnvironment) {
-        setClientEnvironment(trackedEnvironment as ClientEnvironmentOptionValue);
-        setCustomClientEnvironment("");
+      if (trackedEnvironment) {
+        applyEnvironmentSelection(trackedEnvironment);
       }
       setSupportError("");
     } catch (error) {
       console.error("Failed to fetch support tracking state:", error);
       setSupportError("Unable to load external support tracking state.");
     }
-  }, [caseId]);
+  }, [applyEnvironmentSelection, caseId]);
 
   useEffect(() => {
     if (caseId) {
@@ -146,6 +171,17 @@ export default function CaseDetailPage() {
       void fetchSupportArtifacts();
     }
   }, [caseId, fetchCaseDetail, fetchSupportArtifacts]);
+
+  useEffect(() => {
+    if (!caseData?.case || supportPack?.clientEnvironment) {
+      return;
+    }
+
+    const caseEnvironment = resolveCaseEnvironment(caseData.case);
+    if (caseEnvironment) {
+      applyEnvironmentSelection(caseEnvironment);
+    }
+  }, [applyEnvironmentSelection, caseData, supportPack?.clientEnvironment]);
 
   const handleApprove = async () => {
     try {
@@ -413,29 +449,47 @@ export default function CaseDetailPage() {
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
-                <select
-                  value={clientEnvironment}
-                  onChange={(event) => {
-                    setClientEnvironment(event.target.value as ClientEnvironmentOptionValue);
-                  }}
-                  className="px-3 py-2 rounded border border-gray-300 text-sm text-gray-700 min-w-64"
-                >
-                  {clientEnvironmentOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-                {clientEnvironment === "custom" && (
-                  <input
-                    type="text"
-                    value={customClientEnvironment}
+                <div className="flex flex-col gap-1 min-w-64">
+                  <label
+                    htmlFor="support-client-environment"
+                    className="text-xs font-semibold text-gray-600 uppercase tracking-wide"
+                  >
+                    Client environment
+                  </label>
+                  <select
+                    id="support-client-environment"
+                    value={clientEnvironment}
                     onChange={(event) => {
-                      setCustomClientEnvironment(event.target.value);
+                      setClientEnvironment(event.target.value as ClientEnvironmentOptionValue);
                     }}
-                    className="px-3 py-2 rounded border border-gray-300 text-sm text-gray-700 min-w-64"
-                    placeholder="custom client environment"
-                  />
+                    className="px-3 py-2 rounded border border-gray-300 text-sm text-gray-700"
+                  >
+                    {clientEnvironmentOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {clientEnvironment === "custom" && (
+                  <div className="flex flex-col gap-1 min-w-64">
+                    <label
+                      htmlFor="support-custom-client-environment"
+                      className="text-xs font-semibold text-gray-600 uppercase tracking-wide"
+                    >
+                      Custom environment
+                    </label>
+                    <input
+                      id="support-custom-client-environment"
+                      type="text"
+                      value={customClientEnvironment}
+                      onChange={(event) => {
+                        setCustomClientEnvironment(event.target.value);
+                      }}
+                      className="px-3 py-2 rounded border border-gray-300 text-sm text-gray-700"
+                      placeholder="custom client environment"
+                    />
+                  </div>
                 )}
                 <button
                   type="button"
