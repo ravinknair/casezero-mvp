@@ -192,22 +192,33 @@ export default function CaseDetailPage() {
     setSupportActionLoading(true);
     setSupportError("");
     try {
-      const response = await fetch("/api/support-tracking", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          caseId,
-          action,
-          sourceType,
-          sourceName,
-          createdBy: "Mandar Pophali",
-          clientEnvironment,
-        }),
-      });
+      const runSupportAction = async (
+        supportAction: "collect_source" | "collect_all_sources" | "prepare_ticket_bundle"
+      ) => {
+        const response = await fetch("/api/support-tracking", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            caseId,
+            action: supportAction,
+            sourceType,
+            sourceName,
+            createdBy: "Mandar Pophali",
+            clientEnvironment,
+          }),
+        });
 
-      if (!response.ok) {
-        const errorBody = await response.json();
-        throw new Error(errorBody.error ?? "Support tracking action failed");
+        if (!response.ok) {
+          const errorBody = await response.json();
+          throw new Error(errorBody.error ?? "Support tracking action failed");
+        }
+      };
+
+      if (action === "prepare_ticket_bundle") {
+        await runSupportAction("collect_all_sources");
+        await runSupportAction("prepare_ticket_bundle");
+      } else {
+        await runSupportAction(action);
       }
 
       await fetchSupportArtifacts();
