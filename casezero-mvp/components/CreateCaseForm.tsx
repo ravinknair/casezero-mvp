@@ -8,6 +8,17 @@ interface CreateCaseFormProps {
 }
 
 export function CreateCaseForm({ onSuccess }: CreateCaseFormProps) {
+  const environmentOptions = [
+    { value: "production", label: "Production" },
+    { value: "pre-production", label: "Pre-Production" },
+    { value: "staging", label: "Staging" },
+    { value: "uat", label: "UAT" },
+    { value: "test", label: "Test" },
+    { value: "development", label: "Development" },
+    { value: "sandbox", label: "Sandbox" },
+    { value: "custom", label: "Custom (enter manually)" },
+  ] as const;
+
   const severityOptions = [
     { value: "SEV-0", label: "SEV-0 — All production systems down" },
     { value: "SEV-1", label: "SEV-1 — Critical outage with broad customer impact" },
@@ -25,7 +36,8 @@ export function CreateCaseForm({ onSuccess }: CreateCaseFormProps) {
     externalProvider: "Azure",
     title: "",
     subtitle: "",
-    clientEnvironment: "client-production",
+    clientEnvironment: "production",
+    customClientEnvironment: "",
     zippedLogsPlaceholder: "",
     chatEvidencePlaceholder: "",
     confidence: 75,
@@ -44,11 +56,17 @@ export function CreateCaseForm({ onSuccess }: CreateCaseFormProps) {
     setLoading(true);
 
     try {
+      const resolvedClientEnvironment =
+        formData.clientEnvironment === "custom"
+          ? formData.customClientEnvironment.trim()
+          : formData.clientEnvironment;
+
       const response = await fetch("/api/cases", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
+          clientEnvironment: resolvedClientEnvironment,
           sources: 0,
           activity: 0,
         }),
@@ -63,7 +81,8 @@ export function CreateCaseForm({ onSuccess }: CreateCaseFormProps) {
           externalProvider: "Azure",
           title: "",
           subtitle: "",
-          clientEnvironment: "client-production",
+          clientEnvironment: "production",
+          customClientEnvironment: "",
           zippedLogsPlaceholder: "",
           chatEvidencePlaceholder: "",
           confidence: 75,
@@ -195,17 +214,38 @@ export function CreateCaseForm({ onSuccess }: CreateCaseFormProps) {
         <label htmlFor="case-client-environment" className="block text-sm font-semibold text-gray-700 mb-1">
           Client Environment
         </label>
-        <input
-          type="text"
+        <select
           id="case-client-environment"
           name="clientEnvironment"
           value={formData.clientEnvironment}
           onChange={handleChange}
-          placeholder="e.g., acme-prod-us-east-1"
           className="w-full px-3 py-2 border border-gray-300 rounded"
-          required
-        />
+        >
+          {environmentOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
       </div>
+
+      {formData.clientEnvironment === "custom" && (
+        <div>
+          <label htmlFor="case-custom-client-environment" className="block text-sm font-semibold text-gray-700 mb-1">
+            Custom Client Environment
+          </label>
+          <input
+            type="text"
+            id="case-custom-client-environment"
+            name="customClientEnvironment"
+            value={formData.customClientEnvironment}
+            onChange={handleChange}
+            placeholder="e.g., acme-preprod-us-east-2"
+            className="w-full px-3 py-2 border border-gray-300 rounded"
+            required
+          />
+        </div>
+      )}
 
       <div>
         <label htmlFor="case-zipped-logs" className="block text-sm font-semibold text-gray-700 mb-1">
