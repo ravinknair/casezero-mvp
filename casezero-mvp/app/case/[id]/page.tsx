@@ -289,6 +289,8 @@ export default function CaseDetailPage() {
   const canDecide = approvalStatus === "pending" && !["resolved", "rejected"].includes(caseInfo?.status);
   const providerSources = supportPack?.providers ?? [];
   const channelSources = supportPack?.communicationChannels ?? [];
+  const selectedClientEnvironment =
+    clientEnvironment === "custom" ? customClientEnvironment.trim() : clientEnvironment;
 
   const sidebarItems = [
     { icon: "◫", label: "Cases", href: "/dashboard" },
@@ -550,7 +552,7 @@ export default function CaseDetailPage() {
                   <div className="rounded border border-gray-200 bg-gray-50 p-3 md:col-span-2 xl:col-span-4">
                     <div className="text-xs text-gray-500 uppercase tracking-wide">Client environment</div>
                     <div className="mt-1 font-semibold text-gray-900">
-                      {supportPack.clientEnvironment ?? "Not set yet"}
+                      {supportPack.clientEnvironment ?? (selectedClientEnvironment || "Not set yet")}
                     </div>
                   </div>
                 </div>
