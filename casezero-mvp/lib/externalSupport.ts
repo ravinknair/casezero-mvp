@@ -107,14 +107,14 @@ function ensureSupportPack(caseId: string): CaseSupportPack {
   return created;
 }
 
-function isComprehensive(pack: CaseSupportPack): boolean {
+function hasMinimumSupportEvidence(pack: CaseSupportPack): boolean {
   return (
-    pack.providers.every((source) => source.collected) &&
-    pack.communicationChannels.every((source) => source.collected)
+    pack.providers.some((source) => source.collected) &&
+    pack.communicationChannels.some((source) => source.collected)
   );
 }
 
-function updateSourceCollection(
+function toggleSourceCollection(
   sources: SupportSourceStatus[],
   sourceName: string,
   createdBy: string
@@ -124,9 +124,15 @@ function updateSourceCollection(
     return null;
   }
 
-  source.collected = true;
-  source.collectedAt = new Date().toISOString();
-  source.collectedBy = createdBy;
+  if (source.collected) {
+    source.collected = false;
+    source.collectedAt = null;
+    source.collectedBy = null;
+  } else {
+    source.collected = true;
+    source.collectedAt = new Date().toISOString();
+    source.collectedBy = createdBy;
+  }
   return source;
 }
 
@@ -163,8 +169,8 @@ export function collectSupportSource(
   pack.clientEnvironment = clientEnvironment;
   const updatedSource =
     sourceType === "provider"
-      ? updateSourceCollection(pack.providers, sourceName, createdBy)
-      : updateSourceCollection(pack.communicationChannels, sourceName, createdBy);
+      ? toggleSourceCollection(pack.providers, sourceName, createdBy)
+      : toggleSourceCollection(pack.communicationChannels, sourceName, createdBy);
 
   if (!updatedSource) {
     throw new Error("Unsupported source");
@@ -181,7 +187,9 @@ export function collectSupportSource(
     targetType: sourceType,
     targetName: sourceName,
     status: "recorded",
-    message: `Collected ${sourceType === "provider" ? "provider log source" : "communication channel"}: ${sourceName}.`,
+    message: `${updatedSource.collected ? "Selected" : "Deselected"} ${
+      sourceType === "provider" ? "provider log source" : "communication channel"
+    }: ${sourceName}.`,
     metadata: {
       providersCollected: pack.providers.filter((item) => item.collected).length,
       channelsCollected: pack.communicationChannels.filter((item) => item.collected).length,
@@ -250,14 +258,11 @@ export function prepareTicketBundle(
   if (!pack.clientEnvironment) {
     pack.clientEnvironment = clientEnvironment;
   }
-  if (!isComprehensive(pack)) {
-    const missingProviders = pack.providers.filter((item) => !item.collected).map((item) => item.name);
-    const missingChannels = pack.communicationChannels
-      .filter((item) => !item.collected)
-      .map((item) => item.name);
-
+  if (!hasMinimumSupportEvidence(pack)) {
+    const providersCollected = pack.providers.filter((item) => item.collected).length;
+    const channelsCollected = pack.communicationChannels.filter((item) => item.collected).length;
     throw new Error(
-      `Comprehensive evidence pack incomplete. Missing providers: ${missingProviders.join(", ") || "none"}. Missing channels: ${missingChannels.join(", ") || "none"}.`
+      `Select at least one cloud provider and one communication channel before preparing the ticket bundle. Current selection: ${providersCollected} provider(s), ${channelsCollected} channel(s).`
     );
   }
 
@@ -272,10 +277,12 @@ export function prepareTicketBundle(
     targetType: "bundle",
     targetName: pack.ticketBundleId,
     status: "ready",
-    message: "Prepared comprehensive external support evidence bundle.",
+    message: "Prepared external support evidence bundle from selected provider/channel sources.",
     metadata: {
       providerCount: pack.providers.length,
       channelCount: pack.communicationChannels.length,
+      providersCollected: pack.providers.filter((item) => item.collected).length,
+      channelsCollected: pack.communicationChannels.filter((item) => item.collected).length,
       ticketBundleId: pack.ticketBundleId,
       clientEnvironment: pack.clientEnvironment ?? clientEnvironment,
     },
