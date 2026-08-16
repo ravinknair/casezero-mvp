@@ -132,10 +132,14 @@ export default function DashboardPage() {
               ["Act", statusCounts.act, "bg-orange-50"],
               ["Verify", statusCounts.verify, "bg-green-50"],
             ].map(([label, count, bgClass]) => (
-              <div key={label} className={`${bgClass} p-3 rounded border border-gray-300`}>
+              <Link
+                key={label}
+                href={`/workflows#${String(label).toLowerCase()}`}
+                className={`${bgClass} p-3 rounded border border-gray-300 block hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              >
                 <div className="text-xs font-semibold text-gray-600 mb-1">{label}</div>
                 <div className="text-2xl font-bold text-gray-900">{count}</div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
