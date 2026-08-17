@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 type PageKey = "dashboard" | "connections" | "automations" | "incidents" | "knowledge" | "agents" | "communications" | "audit";
 type ScenarioMode = "approval" | "auto";
@@ -199,8 +199,6 @@ const TENANTS: Tenant[] = [
   { id: "contoso-retail", name: "Contoso Retail" },
   { id: "northwind-health", name: "Northwind Health" },
 ];
-
-const LOGIN_EMAIL = "demo@casezero.local";
 
 function fmtAge(epochSeconds: number): string {
   const seconds = Math.max(0, Date.now() / 1000 - epochSeconds);
@@ -774,9 +772,7 @@ function buildInitialTenantState(tenantId: string): TenantState {
 }
 
 export default function OperationsPage() {
-  const [authenticated, setAuthenticated] = useState(false);
-  const [loginEmail, setLoginEmail] = useState(LOGIN_EMAIL);
-  const [loginPassword, setLoginPassword] = useState("");
+  const [authenticated, setAuthenticated] = useState(true);
   const [activePage, setActivePage] = useState<PageKey>("dashboard");
   const [selectedTenantId, setSelectedTenantId] = useState(TENANTS[0].id);
   const [tenantStates, setTenantStates] = useState<Record<string, TenantState>>(() => ({
@@ -901,16 +897,6 @@ export default function OperationsPage() {
       audience: "All employees",
     });
   }, [broadcastDraft.body, broadcastDraft.incident, broadcastDraft.subject, tenantState.executions]);
-
-  const onLogin = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (loginEmail.trim() === LOGIN_EMAIL && loginPassword.trim()) {
-      setAuthenticated(true);
-      notify("Signed in");
-      return;
-    }
-    notify("Use the demo credentials to continue");
-  };
 
   const openExecution = (executionId: string) => {
     setDrawerExecutionId(executionId);
@@ -1290,48 +1276,6 @@ export default function OperationsPage() {
     );
   };
 
-  if (!authenticated) {
-    return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 grid place-items-center p-6">
-        <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-8 shadow-2xl">
-          <div className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-400 font-black text-slate-950">CZ</div>
-            <div>
-              <div className="text-lg font-bold">CaseZero</div>
-              <div className="text-xs text-slate-400">Autonomous Support Operations</div>
-            </div>
-          </div>
-          <h1 className="mt-6 text-3xl font-semibold tracking-tight">Resolve before you escalate.</h1>
-          <p className="mt-2 text-sm text-slate-400">Sign in to the CaseZero control plane.</p>
-          <form className="mt-6 space-y-4" onSubmit={onLogin}>
-            <label className="block text-xs font-medium text-slate-300">
-              Email
-              <input
-                className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm outline-none focus:border-emerald-400"
-                value={loginEmail}
-                onChange={(event) => setLoginEmail(event.target.value)}
-                autoComplete="username"
-              />
-            </label>
-            <label className="block text-xs font-medium text-slate-300">
-              Password
-              <input
-                className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm outline-none focus:border-emerald-400"
-                value={loginPassword}
-                onChange={(event) => setLoginPassword(event.target.value)}
-                type="password"
-                autoComplete="current-password"
-              />
-            </label>
-            <button className="w-full rounded-xl bg-emerald-400 px-4 py-3 font-semibold text-slate-950">Sign in</button>
-          </form>
-          <div className="mt-4 text-xs text-slate-500">Demo credentials are configured by deployment environment variables.</div>
-        </div>
-        {toastMessage ? <div className="fixed bottom-6 right-6 rounded-xl bg-slate-800 px-4 py-3 text-sm">{toastMessage}</div> : null}
-      </div>
-    );
-  }
-
   const recentExecutions = [...tenantState.executions].sort((left, right) => right.started_at - left.started_at);
   const latestSignals = [...tenantState.signals].sort((left, right) => right.receivedAt - left.receivedAt);
   const estimatedAvoided = verifiedRecoveries * tenantState.impact.assumptions.manual_triage_minutes_per_verified_recovery;
@@ -1380,7 +1324,7 @@ export default function OperationsPage() {
               className="mt-3 w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-300"
               onClick={() => setAuthenticated(false)}
             >
-              Sign out
+              Pause live updates
             </button>
           </div>
         </aside>
