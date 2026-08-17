@@ -91,8 +91,20 @@ actions tied to the current ChatGPT user. Leave public content anonymous.
 
 - `npm run dev`: start local development
 - `npm run build`: verify the vinext build output
+- `npm run deploy:workers`: build and deploy to Cloudflare Workers (requires `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`)
 - `npm test`: build the starter and verify its rendered loading skeleton
 - `npm run db:generate`: generate Drizzle migrations after schema changes
+
+## Cloudflare Deploy
+
+This repo now includes `.github/workflows/deploy-workers.yml`, which deploys `main` to Cloudflare Workers after a successful build.
+
+Required GitHub secrets:
+
+- `CLOUDFLARE_API_TOKEN`
+- `CLOUDFLARE_ACCOUNT_ID`
+
+The workflow runs `wrangler deploy` against `casezero-mvp/wrangler.json`, which points at the built `dist/server/index.js` worker and `dist/client` assets.
 
 ## Learn More
 
