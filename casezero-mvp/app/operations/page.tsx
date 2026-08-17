@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import Image from "next/image";
 
 type PageKey = "dashboard" | "connections" | "automations" | "incidents" | "knowledge" | "agents" | "communications" | "audit";
 type ScenarioMode = "approval" | "auto";
@@ -1287,7 +1288,14 @@ export default function OperationsPage() {
       <div className="grid min-h-screen lg:grid-cols-[260px_1fr]">
         <aside className="border-r border-slate-800 bg-slate-950/95 p-5 lg:sticky lg:top-0 lg:h-screen">
           <div className="flex items-center gap-3 pb-5">
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-400 font-black text-slate-950">CZ</div>
+            <Image
+              src="/casezero-logo.svg"
+              alt="CaseZero"
+              width={160}
+              height={30}
+              className="h-8 w-auto"
+              priority
+            />
             <div>
               <div className="font-bold">CaseZero</div>
               <div className="text-xs text-slate-400">Support Operations</div>
