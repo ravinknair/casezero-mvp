@@ -72,6 +72,7 @@ export default function DashboardPage() {
 
   const sidebarItems = [
     { icon: "◫", label: "Cases", href: "/dashboard", count: cases.length, active: true },
+    { icon: "✦", label: "Support Ops", href: "/operations", count: 7 },
     { icon: "⌁", label: "Workflows", href: "/workflows", count: 6 },
     { icon: "◎", label: "Evidence", href: "/evidence", count: 42 },
     { icon: "◇", label: "Policies", href: "/policies", count: 8 },

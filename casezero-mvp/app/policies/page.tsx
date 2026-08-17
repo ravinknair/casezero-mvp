@@ -3,6 +3,7 @@ import { mockCases } from "@/lib/mockData";
 
 const sidebarItems = [
   { icon: "◫", label: "Cases", href: "/dashboard" },
+  { icon: "✦", label: "Support Ops", href: "/operations", count: 7 },
   { icon: "⌁", label: "Workflows", href: "/workflows" },
   { icon: "◎", label: "Evidence", href: "/evidence", count: mockCases.reduce((sum, item) => sum + (item.recommendation?.evidence?.length ?? 0), 0) },
   { icon: "◇", label: "Policies", href: "/policies", count: mockCases.length, active: true },

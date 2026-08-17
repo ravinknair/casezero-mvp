@@ -294,6 +294,7 @@ export default function CaseDetailPage() {
 
   const sidebarItems = [
     { icon: "◫", label: "Cases", href: "/dashboard" },
+    { icon: "✦", label: "Support Ops", href: "/operations", count: 7 },
     { icon: "⌁", label: "Workflows", href: "/workflows" },
     { icon: "◎", label: "Evidence", href: "/evidence", count: evidence?.length || 0 },
     { icon: "◇", label: "Policies", href: "/policies" },
