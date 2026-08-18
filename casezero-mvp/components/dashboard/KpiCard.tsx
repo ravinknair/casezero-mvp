@@ -8,18 +8,18 @@ interface KpiCardProps {
 }
 
 const toneAccent: Record<NonNullable<KpiCardProps["tone"]>, string> = {
-  neutral: "text-gray-900",
-  info: "text-blue-700",
-  warning: "text-amber-700",
-  danger: "text-red-700",
+  neutral: "cz-kpi-neutral",
+  info: "cz-kpi-info",
+  warning: "cz-kpi-warning",
+  danger: "cz-kpi-danger",
 };
 
 export function KpiCard({ label, value, helper, tone = "neutral" }: KpiCardProps) {
   return (
     <Card>
-      <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">{label}</p>
+      <p className="cz-muted text-xs font-semibold uppercase tracking-wide">{label}</p>
       <p className={`mt-2 text-3xl font-bold ${toneAccent[tone]}`}>{value}</p>
-      <p className="mt-2 text-sm text-gray-600">{helper}</p>
+      <p className="cz-muted mt-2 text-sm">{helper}</p>
     </Card>
   );
 }

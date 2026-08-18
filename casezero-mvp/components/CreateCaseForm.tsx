@@ -10,7 +10,6 @@ interface CreateCaseFormProps {
 
 export function CreateCaseForm({ onSuccess }: CreateCaseFormProps) {
   const severityOptions = [
-    { value: "SEV-0", label: "SEV-0 — All production systems down" },
     { value: "SEV-1", label: "SEV-1 — Critical outage with broad customer impact" },
     { value: "SEV-2", label: "SEV-2 — Major degradation, key functionality impaired" },
     { value: "SEV-3", label: "SEV-3 — Moderate impact, workaround available" },

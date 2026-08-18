@@ -137,6 +137,13 @@
 	padding: 10px 12px;
 }
 
+.app-sidebar-nav a.cz-sidebar-item-active,
+.app-sidebar-nav button.cz-sidebar-item-active {
+	background:var(--blue);
+	border-color:var(--blue);
+	color:#fff;
+}
+
 .app-sidebar-nav a:hover,
 .app-sidebar-nav button:hover,
 .app-sidebar-nav a.bg-blue-600,
@@ -180,12 +187,52 @@
 	}
 }
 
-:root { --ink:#101828; --muted:#667085; --line:#e4e7ec; --soft:#f7f8fb; --navy:#0b1220; --blue:#1769e0; --purple:#7f3df0; --green:#039855; --orange:#e04f16; }
+:root {
+	--ink:#101828;
+	--muted:#667085;
+	--line:#e4e7ec;
+	--soft:#f7f8fb;
+	--navy:#0b1220;
+	--navy-raised:#111c2e;
+	--navy-line:#263449;
+	--blue:#1769e0;
+	--blue-soft:#eff4ff;
+	--purple:#7f3df0;
+	--green:#039855;
+	--green-soft:#ecfdf3;
+	--amber:#b54708;
+	--amber-soft:#fffaeb;
+	--red:#b42318;
+	--red-soft:#fef3f2;
+	--orange:#e04f16;
+}
 * { box-sizing:border-box; }
 html { background:#f5f6f8; }
 body { margin:0; color:var(--ink); font-family:"Avenir Next", "Helvetica Neue", sans-serif; background:#f5f6f8; }
 button, textarea { font:inherit; }
 button, a { -webkit-tap-highlight-color:transparent; }
+.cz-card { border-color:var(--line); background:#fff; }
+.cz-heading { color:var(--ink); }
+.cz-muted { color:var(--muted); }
+.cz-border { border-color:var(--line); }
+.cz-primary { background:var(--blue); color:#fff; }
+.cz-primary:hover { background:#1557bc; }
+.cz-sidebar { background:var(--navy); }
+.cz-sidebar-border { border-color:var(--navy-line); }
+.cz-sidebar-nav { background:var(--navy); }
+.cz-sidebar-item { color:#b9c2d1; background:var(--navy-raised); border-color:var(--navy-line); }
+.cz-sidebar-item:hover { background:#182235; color:#fff; }
+.cz-sidebar-item-active { background:var(--blue); color:#fff; border-color:var(--blue); }
+.cz-sidebar-count { background:#233044; color:#d0d5dd; }
+.cz-badge-neutral { background:#f2f4f7; color:#475467; }
+.cz-badge-info { background:var(--blue-soft); color:#175cd3; }
+.cz-badge-success { background:var(--green-soft); color:#027a48; }
+.cz-badge-warning { background:var(--amber-soft); color:var(--amber); }
+.cz-badge-danger { background:var(--red-soft); color:var(--red); }
+.cz-kpi-neutral { color:var(--ink); }
+.cz-kpi-info { color:#175cd3; }
+.cz-kpi-warning { color:var(--amber); }
+.cz-kpi-danger { color:var(--red); }
 .app-shell { min-height:100vh; display:flex; }
 .sidebar { width:236px; background:var(--navy); color:#b9c2d1; padding:26px 18px 20px; position:fixed; inset:0 auto 0 0; display:flex; flex-direction:column; z-index:3; }
 .brand { color:#fff; font-weight:800; letter-spacing:.02em; display:flex; align-items:center; gap:10px; padding:0 8px 28px; font-size:14px; }

@@ -11,20 +11,20 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ environment, userName, onCreateCase, children }: DashboardLayoutProps) {
   return (
     <div className="app-workspace flex-1">
-      <header className="border-b border-gray-200 bg-white px-8 py-4">
+      <header className="cz-border border-b bg-white px-8 py-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <Image src="/casezero-logo.svg" alt="CaseZero" width={128} height={24} className="h-6 w-auto" />
-            <span className="rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+            <span className="rounded-full border border-[var(--blue)] bg-[var(--blue-soft)] px-3 py-1 text-xs font-semibold text-[#175cd3]">
               {environment}
             </span>
-            <h1 className="text-2xl font-bold text-gray-900">Incident Command Dashboard</h1>
+            <h1 className="cz-heading text-2xl font-bold">Incident Command Dashboard</h1>
           </div>
           <div className="flex items-center gap-3">
             <div className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700">{userName}</div>
             <button
               type="button"
-              className="rounded bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
+              className="cz-primary rounded px-4 py-2 font-semibold"
               onClick={onCreateCase}
             >
               New Case
