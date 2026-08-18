@@ -8,6 +8,10 @@ import { EvidenceSection } from "@/components/EvidenceSection";
 import { MetricsCard } from "@/components/MetricsCard";
 import { PoliciesSection } from "@/components/PoliciesSection";
 import { Sidebar } from "@/components/Sidebar";
+import { CaseHeader } from "@/components/case/CaseHeader";
+import { CaseMetadata } from "@/components/case/CaseMetadata";
+import { CaseTimeline } from "@/components/case/CaseTimeline";
+import { CaseActions } from "@/components/case/CaseActions";
 import { normalizeChain } from "@/lib/caseChain";
 import {
   clientEnvironmentOptions,
@@ -299,6 +303,8 @@ export default function CaseDetailPage() {
     { icon: "◎", label: "Evidence", href: "/evidence", count: evidence?.length || 0 },
     { icon: "◇", label: "Policies", href: "/policies" },
     { icon: "↗", label: "Telemetry", href: "/telemetry" },
+    { icon: "▣", label: "Reports", href: "/reports", count: 3 },
+    { icon: "⚙", label: "Admin", href: "/admin" },
     { icon: "▶", label: "Demo Guide", href: "/demo" },
     { icon: "✓", label: "Test Status", href: "/status" },
   ];
@@ -310,36 +316,18 @@ export default function CaseDetailPage() {
       <div className="app-workspace flex-1">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 px-8 py-6">
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <div className="text-sm font-semibold text-gray-600 mb-1">{caseInfo.caseId}</div>
-              <h1 className="text-3xl font-bold text-gray-900">{caseInfo.title}</h1>
-              {caseInfo.subtitle && (
-                <p className="text-gray-600 mt-1">{caseInfo.subtitle}</p>
-              )}
-            </div>
-            <div className="text-right">
-              <div className="inline-block px-4 py-2 bg-red-50 text-red-700 font-bold rounded mb-2">
-                {caseInfo.severity}
-              </div>
-              <div className="text-sm text-gray-600">Opened just now</div>
-            </div>
-          </div>
-
-          <div className="flex gap-4 text-sm">
-            <div>
-              <span className="font-semibold text-blue-600">{caseInfo.confidence.toFixed(0)}%</span>{" "}
-              <span className="text-gray-600">High confidence</span>
-            </div>
-            <div>
-              <span className="font-semibold">{caseInfo.sources}</span>{" "}
-              <span className="text-gray-600">bounded evidence sources</span>
-            </div>
-            <div>
-              <span className="font-semibold">{caseInfo.activity}</span>{" "}
-              <span className="text-gray-600">activities</span>
-            </div>
-          </div>
+          <CaseHeader
+            caseId={caseInfo.caseId}
+            title={caseInfo.title}
+            subtitle={caseInfo.subtitle}
+            severity={caseInfo.severity}
+          />
+          <CaseMetadata
+            confidence={caseInfo.confidence}
+            sources={caseInfo.sources}
+            activity={caseInfo.activity}
+            status={caseInfo.status}
+          />
         </div>
 
         {/* Use case brief */}
@@ -357,31 +345,22 @@ export default function CaseDetailPage() {
           </div>
         )}
 
-        {/* Workflow progress */}
         <div className="bg-gray-50 border-b border-gray-200 px-8 py-4">
-          <div className="flex items-center gap-2 text-sm">
-            {["Detect", "Diagnose", "Decide", "Act", "Verify"].map((step, index) => (
-              <div key={step} className="flex items-center gap-2">
-                <div
-                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                    index <= 2
-                      ? "bg-green-500 text-white"
-                      : index === 3
-                        ? "bg-yellow-500 text-white"
-                        : "bg-gray-300 text-gray-600"
-                  }`}
-                >
-                  {index < 2 ? "✓" : index + 1}
-                </div>
-                <span className="app-step-label font-medium">{step}</span>
-                {index < 4 && <span className="app-step-arrow text-gray-400 mx-1">→</span>}
-              </div>
-            ))}
-          </div>
+          <CaseActions canApprove={canDecide} onApprove={() => { void handleApprove(); }} onReject={() => { void handleReject(); }} />
         </div>
 
         {/* Main content */}
         <div className="p-8 space-y-8">
+          <CaseTimeline
+            items={supportEvents.map((event) => ({
+              id: event.id,
+              label: `${event.targetType}: ${event.targetName}`,
+              message: event.message,
+              timestamp: event.createdAt,
+              status: event.status,
+            }))}
+          />
+
           {/* Diagnosis */}
           {diagnosis && (
             <DiagnosisSection

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "CaseZero AI — Incident Resolution",
+  title: "CaseZero — Incident Resolution",
   description: "Six evidence-driven resolution workflows spanning incidents, security, data, infrastructure, and customer operations.",
   icons: {
     icon: "/favicon.svg",

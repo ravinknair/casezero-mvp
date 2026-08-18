@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import Image from "next/image";
 
 type PageKey = "dashboard" | "connections" | "automations" | "incidents" | "knowledge" | "agents" | "communications" | "audit";
 type ScenarioMode = "approval" | "auto";
@@ -340,12 +341,82 @@ function createSeededTenantState(tenantName: string): TenantState {
           status: "healthy",
           authType: "cross_tenant_federated",
           signalCount: 6,
-          webhookSecret: "token_7b0f3c2e",
+          webhookSecret: "demo-not-a-real-secret-azure",
           webhookPath: `/api/webhooks/${sourceId}`,
           config: {
             workspace_id: "f565fa43-2eb1-40af-a604-d8fd8d9642fb",
             remediation_mode: "disabled",
             connection_type: "azure_mvp",
+            tenant_relationship: "external",
+          },
+        },
+        {
+          id: "src_aws_cloudwatch",
+          name: `${tenantName} AWS CloudWatch`,
+          status: "healthy",
+          authType: "cross_account_role",
+          signalCount: 4,
+          webhookSecret: "demo-not-a-real-secret-aws",
+          webhookPath: "/api/webhooks/src_aws_cloudwatch",
+          config: {
+            connection_type: "aws_cloudwatch",
+            remediation_mode: "approval",
+            tenant_relationship: "external",
+          },
+        },
+        {
+          id: "src_salesforce",
+          name: `${tenantName} Salesforce Service Cloud`,
+          status: "configured",
+          authType: "oauth_scoped",
+          signalCount: 2,
+          webhookSecret: "demo-not-a-real-secret-salesforce",
+          webhookPath: "/api/webhooks/src_salesforce",
+          config: {
+            connection_type: "salesforce_service_cloud",
+            remediation_mode: "disabled",
+            tenant_relationship: "external",
+          },
+        },
+        {
+          id: "src_oracle",
+          name: `${tenantName} Oracle Cloud`,
+          status: "configured",
+          authType: "federated_identity",
+          signalCount: 1,
+          webhookSecret: "demo-not-a-real-secret-oracle",
+          webhookPath: "/api/webhooks/src_oracle",
+          config: {
+            connection_type: "oracle_cloud_observability",
+            remediation_mode: "disabled",
+            tenant_relationship: "external",
+          },
+        },
+        {
+          id: "src_ibm",
+          name: `${tenantName} IBM Cloud`,
+          status: "configured",
+          authType: "federated_identity",
+          signalCount: 1,
+          webhookSecret: "demo-not-a-real-secret-ibm",
+          webhookPath: "/api/webhooks/src_ibm",
+          config: {
+            connection_type: "ibm_cloud_monitoring",
+            remediation_mode: "disabled",
+            tenant_relationship: "external",
+          },
+        },
+        {
+          id: "src_github",
+          name: `${tenantName} GitHub`,
+          status: "healthy",
+          authType: "installation_token",
+          signalCount: 3,
+          webhookSecret: "demo-not-a-real-secret-github",
+          webhookPath: "/api/webhooks/src_github",
+          config: {
+            connection_type: "github_audit",
+            remediation_mode: "approval",
             tenant_relationship: "external",
           },
         },
@@ -1287,7 +1358,14 @@ export default function OperationsPage() {
       <div className="grid min-h-screen lg:grid-cols-[260px_1fr]">
         <aside className="border-r border-slate-800 bg-slate-950/95 p-5 lg:sticky lg:top-0 lg:h-screen">
           <div className="flex items-center gap-3 pb-5">
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-400 font-black text-slate-950">CZ</div>
+            <Image
+              src="/casezero-logo.svg"
+              alt="CaseZero"
+              width={160}
+              height={30}
+              className="h-8 w-auto"
+              priority
+            />
             <div>
               <div className="font-bold">CaseZero</div>
               <div className="text-xs text-slate-400">Support Operations</div>
@@ -1384,6 +1462,19 @@ export default function OperationsPage() {
                       evidence, retrieve customer runbooks, choose a bounded action, enforce approval policy, and verify the
                       result before escalation.
                     </p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <span className="rounded-full border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-200">
+                        Connected providers
+                      </span>
+                      {tenantState.sources.map((source) => (
+                        <span
+                          key={source.id}
+                          className="rounded-full border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-300"
+                        >
+                          {source.name}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                   <div className="flex flex-wrap items-center justify-end gap-2 self-center">
                     {["Azure Monitor", "Evidence", "RAG", "Agents", "Action", "Verify"].map((pill, index) => (
@@ -1584,6 +1675,38 @@ export default function OperationsPage() {
                     </div>
                   </Card>
                 </div>
+
+                <Card>
+                  <SectionHead title="Connected cloud providers" description="All configured provider connections are listed here, not just the primary Azure source." />
+                  <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                    {tenantState.sources.map((source) => (
+                      <div key={source.id} className="rounded-2xl border border-slate-800 bg-slate-950 p-4">
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <div className="text-sm font-semibold text-slate-100">{source.name}</div>
+                            <div className="mt-1 text-xs text-slate-400">{source.config.connection_type ?? source.authType}</div>
+                          </div>
+                          <Badge label={source.status} tone={badgeTone(source.status)} />
+                        </div>
+                        <div className="mt-4 grid grid-cols-2 gap-3 text-xs text-slate-300">
+                          <div>
+                            <div className="text-slate-500">Auth</div>
+                            <div className="mt-1">{source.authType}</div>
+                          </div>
+                          <div>
+                            <div className="text-slate-500">Signals</div>
+                            <div className="mt-1">{source.signalCount}</div>
+                          </div>
+                          <div className="col-span-2">
+                            <div className="text-slate-500">Webhook</div>
+                            <div className="mt-1 font-mono break-all">{source.webhookPath}</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+
                 {sourceSecret ? (
                   <Card>
                     <SectionHead title="Receiver token rotated" description="Update the Azure Action Group webhook." />
