@@ -1,7 +1,6 @@
 {
   "name": "casezero-mvp",
   "compatibility_date": "2026-05-15",
-  "compatibility_flags": ["nodejs_compat"],
   "workers_dev": true,
   "main": "./dist/server/index.js",
   "assets": {
