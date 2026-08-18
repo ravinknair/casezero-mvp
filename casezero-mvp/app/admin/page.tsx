@@ -16,9 +16,9 @@ export default function AdminPage() {
   ];
 
   const users: AdminUser[] = [
-    { id: "1", name: "Demo Admin One", email: "admin.one@example.com", role: "Admin", status: "active" },
-    { id: "2", name: "Demo Admin Two", email: "admin.two@example.com", role: "Admin", status: "active" },
-    { id: "3", name: "Demo Admin Three", email: "admin.three@example.com", role: "Admin", status: "active" },
+    { id: "1", name: "Ravi Nair", email: "ravi.nair@casezero.example", role: "Admin", status: "active" },
+    { id: "2", name: "Iranga Subasinghe", email: "iranga.subasinghe@casezero.example", role: "Admin", status: "active" },
+    { id: "3", name: "Mandar Pophali", email: "mandar.pophali@casezero.example", role: "Admin", status: "active" },
     { id: "4", name: "Field Operator - Alberta", email: "operator.ab@example.com", role: "Viewer", status: "invited" },
   ];
 
