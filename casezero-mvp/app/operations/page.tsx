@@ -350,6 +350,76 @@ function createSeededTenantState(tenantName: string): TenantState {
             tenant_relationship: "external",
           },
         },
+        {
+          id: "src_aws_cloudwatch",
+          name: `${tenantName} AWS CloudWatch`,
+          status: "healthy",
+          authType: "cross_account_role",
+          signalCount: 4,
+          webhookSecret: "token_aws_91f4c2",
+          webhookPath: "/api/webhooks/src_aws_cloudwatch",
+          config: {
+            connection_type: "aws_cloudwatch",
+            remediation_mode: "approval",
+            tenant_relationship: "external",
+          },
+        },
+        {
+          id: "src_salesforce",
+          name: `${tenantName} Salesforce Service Cloud`,
+          status: "configured",
+          authType: "oauth_scoped",
+          signalCount: 2,
+          webhookSecret: "token_sf_8c12b7",
+          webhookPath: "/api/webhooks/src_salesforce",
+          config: {
+            connection_type: "salesforce_service_cloud",
+            remediation_mode: "disabled",
+            tenant_relationship: "external",
+          },
+        },
+        {
+          id: "src_oracle",
+          name: `${tenantName} Oracle Cloud`,
+          status: "configured",
+          authType: "federated_identity",
+          signalCount: 1,
+          webhookSecret: "token_oci_5b77a1",
+          webhookPath: "/api/webhooks/src_oracle",
+          config: {
+            connection_type: "oracle_cloud_observability",
+            remediation_mode: "disabled",
+            tenant_relationship: "external",
+          },
+        },
+        {
+          id: "src_ibm",
+          name: `${tenantName} IBM Cloud`,
+          status: "configured",
+          authType: "federated_identity",
+          signalCount: 1,
+          webhookSecret: "token_ibm_21dd09",
+          webhookPath: "/api/webhooks/src_ibm",
+          config: {
+            connection_type: "ibm_cloud_monitoring",
+            remediation_mode: "disabled",
+            tenant_relationship: "external",
+          },
+        },
+        {
+          id: "src_github",
+          name: `${tenantName} GitHub`,
+          status: "healthy",
+          authType: "installation_token",
+          signalCount: 3,
+          webhookSecret: "token_gh_a4c8f0",
+          webhookPath: "/api/webhooks/src_github",
+          config: {
+            connection_type: "github_audit",
+            remediation_mode: "approval",
+            tenant_relationship: "external",
+          },
+        },
       ]
     : [];
 
@@ -1392,6 +1462,19 @@ export default function OperationsPage() {
                       evidence, retrieve customer runbooks, choose a bounded action, enforce approval policy, and verify the
                       result before escalation.
                     </p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <span className="rounded-full border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-200">
+                        Connected providers
+                      </span>
+                      {tenantState.sources.map((source) => (
+                        <span
+                          key={source.id}
+                          className="rounded-full border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-300"
+                        >
+                          {source.name}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                   <div className="flex flex-wrap items-center justify-end gap-2 self-center">
                     {["Azure Monitor", "Evidence", "RAG", "Agents", "Action", "Verify"].map((pill, index) => (
@@ -1592,6 +1675,38 @@ export default function OperationsPage() {
                     </div>
                   </Card>
                 </div>
+
+                <Card>
+                  <SectionHead title="Connected cloud providers" description="All configured provider connections are listed here, not just the primary Azure source." />
+                  <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                    {tenantState.sources.map((source) => (
+                      <div key={source.id} className="rounded-2xl border border-slate-800 bg-slate-950 p-4">
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <div className="text-sm font-semibold text-slate-100">{source.name}</div>
+                            <div className="mt-1 text-xs text-slate-400">{source.config.connection_type ?? source.authType}</div>
+                          </div>
+                          <Badge label={source.status} tone={badgeTone(source.status)} />
+                        </div>
+                        <div className="mt-4 grid grid-cols-2 gap-3 text-xs text-slate-300">
+                          <div>
+                            <div className="text-slate-500">Auth</div>
+                            <div className="mt-1">{source.authType}</div>
+                          </div>
+                          <div>
+                            <div className="text-slate-500">Signals</div>
+                            <div className="mt-1">{source.signalCount}</div>
+                          </div>
+                          <div className="col-span-2">
+                            <div className="text-slate-500">Webhook</div>
+                            <div className="mt-1 font-mono break-all">{source.webhookPath}</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+
                 {sourceSecret ? (
                   <Card>
                     <SectionHead title="Receiver token rotated" description="Update the Azure Action Group webhook." />
