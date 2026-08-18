@@ -17,8 +17,8 @@ export default function AdminPage() {
 
   const users: AdminUser[] = [
     { id: "1", name: "Ravi Nair", email: "raknair@outlook.com", role: "Admin", status: "active" },
-    { id: "2", name: "Iranga Subasinghe", email: "iranga@example.com", role: "Approver", status: "active" },
-    { id: "3", name: "Mandar Pophali", email: "mandar@example.com", role: "Approver", status: "active" },
+    { id: "2", name: "Iranga Subasinghe", email: "prasadsmy@gmail.com", role: "Approver", status: "active" },
+    { id: "3", name: "Mandar Pophali", email: "mandar@manuvaconsulting.com", role: "Approver", status: "active" },
     { id: "4", name: "Field Operator - Alberta", email: "operator.ab@example.com", role: "Viewer", status: "invited" },
   ];
 
