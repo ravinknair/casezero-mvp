@@ -1,9 +1,18 @@
 {
-  "name": "casezero-mvp",
-  "compatibility_date": "2026-05-15",
-  "workers_dev": true,
-  "main": "./dist/server/index.js",
-  "assets": {
-    "directory": "./dist/client"
-  }
+	"name": "casezero-mvp",
+	"compatibility_date": "2026-05-15",
+	"workers_dev": true,
+	"main": "./dist/server/index.js",
+	"assets": {
+		"directory": "./dist/client"
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "casezero-mvp",
+			"database_id": "83964647-3685-4fd5-8ed9-ee8f78e50ba6",
+			"remote": true,
+			"migrations_dir": "drizzle"
+		}
+	]
 }

@@ -87,17 +87,23 @@ export async function POST() {
         .run();
     }
 
-    return Response.json({
-      success: true,
-      source: "d1",
-      message: `D1 seeded with ${mockCases.length} cases`,
-    });
+    return Response.json(
+      {
+        success: true,
+        source: "d1",
+        message: `D1 seeded with ${mockCases.length} cases`,
+      },
+      { headers: { "Cache-Control": "no-store" } },
+    );
   } catch {
-    return Response.json({
-      success: true,
-      source: "mock",
-      message: `Mock data already in memory — ${mockCases.length} cases available`,
-    });
+    return Response.json(
+      {
+        success: true,
+        source: "mock",
+        message: `Mock data already in memory — ${mockCases.length} cases available`,
+      },
+      { headers: { "Cache-Control": "no-store" } },
+    );
   }
 }
 
@@ -105,8 +111,14 @@ export async function GET() {
   try {
     const db = getDb();
     const result = await db.select({ id: cases.id }).from(cases);
-    return Response.json({ cases: result.length, source: "d1", message: "D1 database status" });
+    return Response.json(
+      { cases: result.length, source: "d1", message: "D1 database status" },
+      { headers: { "Cache-Control": "no-store" } },
+    );
   } catch {
-    return Response.json({ cases: mockCases.length, source: "mock", message: "Mock database is populated" });
+    return Response.json(
+      { cases: mockCases.length, source: "mock", message: "Mock database is populated" },
+      { headers: { "Cache-Control": "no-store" } },
+    );
   }
 }
