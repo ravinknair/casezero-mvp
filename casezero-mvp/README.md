@@ -117,7 +117,9 @@ Create the token at <https://dash.cloudflare.com/profile/api-tokens> with these 
 
 ### How It Works
 
-The workflow runs `wrangler deploy` against `casezero-mvp/wrangler.json`, which points at the built `dist/server/index.js` worker and `dist/client` assets.
+The build writes a generated Wrangler config to `dist/server/wrangler.json` plus a redirect at
+`.wrangler/deploy/config.json`. The workflow therefore runs a bare `wrangler deploy` so that redirect is
+honoured — passing `--config wrangler.json` would bypass it and drop the `nodejs_compat` flag.
 
 ## Learn More
 

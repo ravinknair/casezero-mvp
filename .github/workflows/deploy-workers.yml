@@ -61,4 +61,5 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: casezero-mvp
-          command: deploy --config wrangler.json
+          # No --config: wrangler must pick up the build-generated redirect config in .wrangler/deploy
+          command: deploy
