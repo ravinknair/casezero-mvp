@@ -97,14 +97,29 @@ actions tied to the current ChatGPT user. Leave public content anonymous.
 
 ## Cloudflare Deploy
 
-This repo now includes `.github/workflows/deploy-workers.yml`, which deploys `main` to Cloudflare Workers after a successful build.
+This repo includes `.github/workflows/deploy-workers.yml`, which deploys `main` to Cloudflare Workers after a successful build using [`cloudflare/wrangler-action`](https://github.com/cloudflare/wrangler-action).
 
-Required GitHub secrets:
+### Required GitHub Secrets
 
-- `CLOUDFLARE_API_TOKEN`
-- `CLOUDFLARE_ACCOUNT_ID`
+| Secret | Description |
+|--------|-------------|
+| `CLOUDFLARE_API_TOKEN` | Cloudflare API token (see required permissions below) |
+| `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account ID (found in the Cloudflare dashboard) |
 
-The workflow runs `wrangler deploy` against `casezero-mvp/wrangler.json`, which points at the built `dist/server/index.js` worker and `dist/client` assets.
+### Required API Token Permissions
+
+Create the token at <https://dash.cloudflare.com/profile/api-tokens> with these permissions:
+
+- **Account > Workers Scripts > Edit** — deploy the Worker script
+- **Account > Workers Assets > Write** — upload static assets (required by wrangler 4.x)
+- **User > User Details > Read** — wrangler identity diagnostics
+- **User > Memberships > Read** — wrangler account discovery
+
+### How It Works
+
+The build writes a generated Wrangler config to `dist/server/wrangler.json` plus a redirect at
+`.wrangler/deploy/config.json`. The workflow therefore runs a bare `wrangler deploy` so that redirect is
+honoured — passing `--config wrangler.json` would bypass it and drop the `nodejs_compat` flag.
 
 ## Learn More
 
