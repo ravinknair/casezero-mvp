@@ -13,7 +13,7 @@ export interface CaseRowData {
 
 interface CaseRowProps {
   item: CaseRowData;
-  onOpen: (caseId: string) => void;
+  onOpen: (id: CaseRowData["id"]) => void;
 }
 
 function severityTone(severity: string): "danger" | "warning" | "info" | "neutral" {

@@ -3,7 +3,7 @@ import type { CaseRowData } from "@/components/case/CaseRow";
 
 interface CaseTableProps {
   items: CaseRowData[];
-  onOpenCase: (caseId: string) => void;
+  onOpenCase: (id: CaseRowData["id"]) => void;
 }
 
 export function CaseTable({ items, onOpenCase }: CaseTableProps) {

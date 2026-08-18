@@ -341,7 +341,7 @@ function createSeededTenantState(tenantName: string): TenantState {
           status: "healthy",
           authType: "cross_tenant_federated",
           signalCount: 6,
-          webhookSecret: "token_7b0f3c2e",
+          webhookSecret: "demo-not-a-real-secret-azure",
           webhookPath: `/api/webhooks/${sourceId}`,
           config: {
             workspace_id: "f565fa43-2eb1-40af-a604-d8fd8d9642fb",
@@ -356,7 +356,7 @@ function createSeededTenantState(tenantName: string): TenantState {
           status: "healthy",
           authType: "cross_account_role",
           signalCount: 4,
-          webhookSecret: "token_aws_91f4c2",
+          webhookSecret: "demo-not-a-real-secret-aws",
           webhookPath: "/api/webhooks/src_aws_cloudwatch",
           config: {
             connection_type: "aws_cloudwatch",
@@ -370,7 +370,7 @@ function createSeededTenantState(tenantName: string): TenantState {
           status: "configured",
           authType: "oauth_scoped",
           signalCount: 2,
-          webhookSecret: "token_sf_8c12b7",
+          webhookSecret: "demo-not-a-real-secret-salesforce",
           webhookPath: "/api/webhooks/src_salesforce",
           config: {
             connection_type: "salesforce_service_cloud",
@@ -384,7 +384,7 @@ function createSeededTenantState(tenantName: string): TenantState {
           status: "configured",
           authType: "federated_identity",
           signalCount: 1,
-          webhookSecret: "token_oci_5b77a1",
+          webhookSecret: "demo-not-a-real-secret-oracle",
           webhookPath: "/api/webhooks/src_oracle",
           config: {
             connection_type: "oracle_cloud_observability",
@@ -398,7 +398,7 @@ function createSeededTenantState(tenantName: string): TenantState {
           status: "configured",
           authType: "federated_identity",
           signalCount: 1,
-          webhookSecret: "token_ibm_21dd09",
+          webhookSecret: "demo-not-a-real-secret-ibm",
           webhookPath: "/api/webhooks/src_ibm",
           config: {
             connection_type: "ibm_cloud_monitoring",
@@ -412,7 +412,7 @@ function createSeededTenantState(tenantName: string): TenantState {
           status: "healthy",
           authType: "installation_token",
           signalCount: 3,
-          webhookSecret: "token_gh_a4c8f0",
+          webhookSecret: "demo-not-a-real-secret-github",
           webhookPath: "/api/webhooks/src_github",
           config: {
             connection_type: "github_audit",

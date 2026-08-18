@@ -8,7 +8,7 @@ import { CaseRow, type CaseRowData } from "@/components/case/CaseRow";
 
 interface CaseListProps {
   items: CaseRowData[];
-  onOpenCase: (caseId: string) => void;
+  onOpenCase: (id: CaseRowData["id"]) => void;
 }
 
 export function CaseList({ items, onOpenCase }: CaseListProps) {
