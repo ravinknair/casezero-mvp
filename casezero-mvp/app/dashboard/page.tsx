@@ -1,12 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { CaseCard } from "@/components/CaseCard";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Sidebar } from "@/components/Sidebar";
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
+import { KpiCard } from "@/components/dashboard/KpiCard";
+import { SummaryWidget } from "@/components/dashboard/SummaryWidget";
+import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
+import { CaseTable } from "@/components/dashboard/CaseTable";
+import { Card } from "@/components/ui/Card";
 
-interface Case {
+interface CaseItem {
   id: string;
   caseId: string;
   type: string;
@@ -18,8 +21,7 @@ interface Case {
 }
 
 export default function DashboardPage() {
-  const router = useRouter();
-  const [cases, setCases] = useState<Case[]>([]);
+  const [cases, setCases] = useState<CaseItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [supportEventCount, setSupportEventCount] = useState(0);
 
@@ -27,7 +29,7 @@ export default function DashboardPage() {
     try {
       const response = await fetch("/api/cases");
       if (response.ok) {
-        const data = await response.json();
+        const data = (await response.json()) as CaseItem[];
         setCases(data);
       }
     } catch (error) {
@@ -36,10 +38,6 @@ export default function DashboardPage() {
       setLoading(false);
     }
   }, []);
-
-  useEffect(() => {
-    void fetchCases();
-  }, [fetchCases]);
 
   const fetchSupportEvents = useCallback(async () => {
     try {
@@ -55,19 +53,8 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
+    void fetchCases();
     void fetchSupportEvents();
-  }, [fetchSupportEvents]);
-
-  useEffect(() => {
-    const handleFocus = () => {
-      void fetchCases();
-      void fetchSupportEvents();
-    };
-
-    window.addEventListener("focus", handleFocus);
-    return () => {
-      window.removeEventListener("focus", handleFocus);
-    };
   }, [fetchCases, fetchSupportEvents]);
 
   const sidebarItems = [
@@ -77,158 +64,90 @@ export default function DashboardPage() {
     { icon: "◎", label: "Evidence", href: "/evidence", count: 42 },
     { icon: "◇", label: "Policies", href: "/policies", count: 8 },
     { icon: "↗", label: "Telemetry", href: "/telemetry" },
+    { icon: "▣", label: "Reports", href: "/reports", count: 3 },
+    { icon: "⚙", label: "Admin", href: "/admin" },
   ];
 
-  const statusCounts = {
-    detect: cases.filter((c) => c.status === "detect").length,
-    diagnose: cases.filter((c) => c.status === "diagnose").length,
-    decide: cases.filter((c) => c.status === "decide").length,
-    act: cases.filter((c) => c.status === "act").length,
-    verify: cases.filter((c) => c.status === "verify").length,
-  };
+  const criticalCases = cases.filter((item) => /critical|sev-1|high|sev-2/i.test(item.severity)).length;
+  const pastDueCases = cases.filter((item) => ["decide", "act", "verify"].includes(item.status)).length;
+  const avgResolutionHours = useMemo(() => {
+    if (cases.length === 0) return "0h";
+    const modeledHours = Math.max(1, Math.round(cases.reduce((sum, item) => sum + item.confidence, 0) / cases.length / 12));
+    return `${modeledHours}h`;
+  }, [cases]);
+
+  const casesBySeverity = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const item of cases) {
+      counts.set(item.severity, (counts.get(item.severity) ?? 0) + 1);
+    }
+    return [...counts.entries()].map(([label, value]) => ({ label, value }));
+  }, [cases]);
+
+  const casesByType = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const item of cases) {
+      counts.set(item.type, (counts.get(item.type) ?? 0) + 1);
+    }
+    return [...counts.entries()].map(([label, value]) => ({ label, value }));
+  }, [cases]);
+
+  const activityItems = cases.slice(0, 6).map((item) => ({
+    id: item.id,
+    message: `${item.caseId}: ${item.title}`,
+    timestamp: `${item.status.toUpperCase()} · ${item.sources} evidence sources`,
+    tone: /critical|sev-1|high/i.test(item.severity) ? ("danger" as const) : ("info" as const),
+  }));
 
   const openNewCaseWindow = () => {
     window.open("/case/new", "_blank", "noopener,noreferrer");
   };
 
+  const openCase = (id: string) => {
+    window.open(`/case/${id}`, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <div className="app-layout flex">
       <Sidebar items={sidebarItems} userName="Ravi Nair" caseCount={cases.length} />
+      <DashboardLayout environment="Production" userName="Ravi Nair" onCreateCase={openNewCaseWindow}>
+        <main className="space-y-6 bg-gray-50 p-8">
+          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+            <KpiCard label="Open cases" value={cases.length} helper="Cases currently in progress" />
+            <KpiCard label="Critical cases" value={criticalCases} helper="Need immediate leadership attention" tone="danger" />
+            <KpiCard label="Past due" value={pastDueCases} helper="Cases stalled in decide/act/verify" tone="warning" />
+            <KpiCard label="Avg resolution time" value={avgResolutionHours} helper="Modeled from current operational dataset" tone="info" />
+            <KpiCard label="Support events" value={supportEventCount} helper="Cloud-provider evidence tracking events" />
+          </section>
 
-      <div className="app-workspace flex-1">
-        {/* Top bar */}
-        <div className="bg-white border-b border-gray-200 px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div className="app-main-brand flex items-center gap-3">
-              <Image
-                src="/casezero-logo.svg"
-                alt="CaseZero"
-                width={128}
-                height={24}
-                className="h-6 w-auto"
-              />
-              <div className="h-6 w-px bg-gray-200" />
-              <h1 className="text-2xl font-bold text-gray-900">Incident Resolution</h1>
+          <section className="grid gap-6 xl:grid-cols-[1.7fr_1fr]">
+            <CaseTable items={cases} onOpenCase={openCase} />
+            <div className="space-y-6">
+              <SummaryWidget title="Cases by severity" subtitle="Current distribution by risk level" items={casesBySeverity} />
+              <SummaryWidget title="Cases by site/type" subtitle="Operational concentration by case type" items={casesByType} />
             </div>
-            <button
-              type="button"
-              className="px-4 py-2 bg-blue-600 text-white rounded font-semibold hover:bg-blue-700"
-              onClick={() => {
-                openNewCaseWindow();
-              }}
-            >
-              New Case
-            </button>
-          </div>
-        </div>
+          </section>
 
-        {/* Status overview */}
-        <div className="bg-gray-50 border-b border-gray-200 px-8 py-4">
-          <div className="grid grid-cols-5 gap-4">
-            {[
-              ["Detect", statusCounts.detect, "bg-blue-50", "detect"],
-              ["Diagnose", statusCounts.diagnose, "bg-purple-50", "diagnose"],
-              ["Decide", statusCounts.decide, "bg-yellow-50", "decide"],
-              ["Act", statusCounts.act, "bg-orange-50", "act"],
-              ["Verify", statusCounts.verify, "bg-green-50", "verify"],
-            ].map(([label, count, bgClass, stage]) => (
+          <section className="grid gap-6 xl:grid-cols-[1.3fr_1fr]">
+            <ActivityFeed items={activityItems} />
+            <Card title="External support evidence tracking" subtitle="Provider and communication channel coverage">
+              <p className="text-sm text-gray-700">
+                Track evidence collection actions for Azure, AWS, Salesforce, Oracle, IBM, GitHub, and communications.
+              </p>
               <a
-                key={String(label)}
-                href={`/workflows?stage=${String(stage)}`}
+                href="/telemetry"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`${bgClass} p-3 rounded border border-gray-300 block hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                className="mt-4 inline-block rounded bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800"
               >
-                <div className="text-xs font-semibold text-gray-600 mb-1">{label}</div>
-                <div className="text-2xl font-bold text-gray-900">{count}</div>
+                Open telemetry log
               </a>
-            ))}
-          </div>
-        </div>
+            </Card>
+          </section>
 
-        {/* Main content */}
-        <div className="p-8">
-          <div className="mb-6 rounded-lg border border-gray-200 bg-white p-5">
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <div>
-                <h2 className="text-lg font-bold text-gray-900">External Support Evidence Pack Tracking</h2>
-                <p className="text-sm text-gray-600 mt-1">
-                  Track evidence collection actions for Azure, AWS, Salesforce, Oracle, IBM, GitHub, and communication channels from the main dashboard.
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-semibold text-blue-700">
-                  {supportEventCount} tracked actions
-                </span>
-                <a
-                  href="/telemetry"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 py-2 rounded bg-gray-900 text-white text-sm font-semibold hover:bg-gray-800 inline-block"
-                >
-                  Open telemetry log
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="text-gray-600">Loading cases...</div>
-            </div>
-          ) : cases.length === 0 ? (
-            <div className="text-center py-12">
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">No cases yet</h2>
-              <p className="text-gray-600 mb-4">Create your first incident case to get started.</p>
-              <button
-                type="button"
-                className="px-4 py-2 bg-blue-600 text-white rounded font-semibold hover:bg-blue-700"
-                onClick={() => {
-                  openNewCaseWindow();
-                }}
-              >
-                Create Case
-              </button>
-            </div>
-          ) : (
-            <div>
-              <h2 className="text-lg font-bold text-gray-900 mb-4">
-                Incident Cases ({cases.length})
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {cases.map((caseItem) => (
-                  <CaseCard
-                    key={caseItem.id}
-                    {...caseItem}
-                    onClick={() => {
-                      window.open(`/case/${caseItem.id}`, "_blank", "noopener,noreferrer");
-                    }}
-                  />
-                ))}
-              </div>
-              <div className="mt-6 rounded-lg border border-gray-200 bg-white p-4">
-                <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-600 mb-3">
-                  Case-level support actions
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {cases.map((caseItem) => (
-                    <button
-                      key={`support-${caseItem.id}`}
-                      type="button"
-                      className="px-3 py-2 rounded border border-gray-300 bg-white text-sm text-gray-700 hover:border-blue-400 hover:text-blue-700"
-                      onClick={() => {
-                        router.push(`/case/${caseItem.id}`);
-                      }}
-                    >
-                      Open {caseItem.caseId} support pack
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+          {loading ? <p className="text-sm text-gray-600">Loading case data...</p> : null}
+        </main>
+      </DashboardLayout>
     </div>
   );
 }
