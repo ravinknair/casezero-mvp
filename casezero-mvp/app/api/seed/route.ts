@@ -1,9 +1,11 @@
-import { mockCases } from "@/lib/mockData";
-import { getDb } from "@/db";
-import { activities, cases, evidence, incidents, sites, users } from "@/db/schema";
+import { mockCases, mockSupportInteractions } from "@/lib/mockData";
 
 export async function POST() {
   try {
+    const [{ getDb }, { activities, cases, evidence, incidents, sites, supportInteractions, users }] = await Promise.all([
+      import("@/db"),
+      import("@/db/schema"),
+    ]);
     const db = getDb();
     const now = Date.now();
     const userId = "user-default";
@@ -87,6 +89,25 @@ export async function POST() {
         .run();
     }
 
+    for (const item of mockSupportInteractions) {
+      await db
+        .insert(supportInteractions)
+        .values({
+          id: item.id,
+          caseId: item.caseId,
+          externalTicketId: item.externalTicketId,
+          channel: item.contactChannel,
+          receivedAt: new Date(item.firstContactAt),
+          firstResolvedAt: item.firstResolvedAt ? new Date(item.firstResolvedAt) : null,
+          resolvedOnFirstContact: item.resolvedOnFirstContact,
+          escalationCount: item.escalationCount,
+          reopenCount: item.reopenCount,
+          repeatContactAt: item.repeatContactAt ? new Date(item.repeatContactAt) : null,
+        })
+        .onConflictDoNothing()
+        .run();
+    }
+
     return Response.json(
       {
         success: true,
@@ -109,6 +130,7 @@ export async function POST() {
 
 export async function GET() {
   try {
+    const [{ getDb }, { cases }] = await Promise.all([import("@/db"), import("@/db/schema")]);
     const db = getDb();
     const result = await db.select({ id: cases.id }).from(cases);
     return Response.json(

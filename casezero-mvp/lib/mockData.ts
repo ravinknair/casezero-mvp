@@ -365,3 +365,16 @@ export const mockApprovals: Array<{
     decidedAt: "2026-08-12T20:28:00Z",
   },
 ];
+
+export const mockSupportInteractions = [
+  { id: "support-001", caseId: "case-support-1", externalTicketId: "HD-8041", contactChannel: "Phone", firstContactAt: "2026-08-01T09:04:00Z", firstResolvedAt: "2026-08-01T09:31:00Z", resolvedOnFirstContact: true, escalationCount: 0, reopenCount: 0, repeatContactAt: null },
+  { id: "support-002", caseId: null, externalTicketId: "HD-8048", contactChannel: "Phone", firstContactAt: "2026-08-02T11:12:00Z", firstResolvedAt: "2026-08-02T11:41:00Z", resolvedOnFirstContact: true, escalationCount: 0, reopenCount: 0, repeatContactAt: null },
+  { id: "support-003", caseId: "case-incident-1", externalTicketId: "HD-8055", contactChannel: "Phone", firstContactAt: "2026-08-03T14:20:00Z", firstResolvedAt: "2026-08-03T18:05:00Z", resolvedOnFirstContact: false, escalationCount: 1, reopenCount: 0, repeatContactAt: null },
+  { id: "support-004", caseId: null, externalTicketId: "HD-8062", contactChannel: "Live Chat", firstContactAt: "2026-08-04T08:44:00Z", firstResolvedAt: "2026-08-04T09:02:00Z", resolvedOnFirstContact: true, escalationCount: 0, reopenCount: 0, repeatContactAt: null },
+  { id: "support-005", caseId: null, externalTicketId: "HD-8069", contactChannel: "Live Chat", firstContactAt: "2026-08-05T10:18:00Z", firstResolvedAt: "2026-08-05T10:39:00Z", resolvedOnFirstContact: true, escalationCount: 0, reopenCount: 0, repeatContactAt: null },
+  { id: "support-006", caseId: "case-access-1", externalTicketId: "HD-8076", contactChannel: "Live Chat", firstContactAt: "2026-08-06T16:03:00Z", firstResolvedAt: "2026-08-06T16:27:00Z", resolvedOnFirstContact: true, escalationCount: 0, reopenCount: 1, repeatContactAt: "2026-08-09T13:08:00Z" },
+  { id: "support-007", caseId: "case-pipeline-1", externalTicketId: "HD-8083", contactChannel: "Email", firstContactAt: "2026-08-07T07:54:00Z", firstResolvedAt: "2026-08-07T09:16:00Z", resolvedOnFirstContact: true, escalationCount: 0, reopenCount: 0, repeatContactAt: null },
+  { id: "support-008", caseId: "case-db-1", externalTicketId: "HD-8090", contactChannel: "Email", firstContactAt: "2026-08-08T12:31:00Z", firstResolvedAt: null, resolvedOnFirstContact: false, escalationCount: 1, reopenCount: 0, repeatContactAt: null },
+  { id: "support-009", caseId: "case-cert-1", externalTicketId: "HD-8097", contactChannel: "Self-Service / Portal", firstContactAt: "2026-08-09T15:42:00Z", firstResolvedAt: null, resolvedOnFirstContact: false, escalationCount: 0, reopenCount: 0, repeatContactAt: null },
+  { id: "support-010", caseId: null, externalTicketId: "HD-8111", contactChannel: "Live Chat", firstContactAt: "2026-08-16T10:15:00Z", firstResolvedAt: "2026-08-16T10:29:00Z", resolvedOnFirstContact: true, escalationCount: 0, reopenCount: 0, repeatContactAt: null },
+];

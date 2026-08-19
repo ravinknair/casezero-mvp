@@ -1,15 +1,16 @@
 import { desc } from "drizzle-orm";
 import { getDb } from "@/db";
-import { activities, cases, evidence } from "@/db/schema";
+import { activities, cases, evidence, supportInteractions } from "@/db/schema";
 import { buildDashboardMetrics } from "@/lib/dashboardMetrics";
 import type { SupportTelemetryEvent } from "@/lib/externalSupport";
 
 export async function getDatabaseDashboardMetrics(supportEvents: SupportTelemetryEvent[]) {
   const db = getDb();
-  const [caseRows, evidenceRows, activityRows] = await Promise.all([
+  const [caseRows, evidenceRows, activityRows, supportInteractionRows] = await Promise.all([
     db.select().from(cases),
     db.select({ caseId: evidence.caseId }).from(evidence),
     db.select().from(activities).orderBy(desc(activities.createdAt)).limit(6),
+    db.select().from(supportInteractions),
   ]);
 
   if (caseRows.length === 0) {
@@ -45,5 +46,15 @@ export async function getDatabaseDashboardMetrics(supportEvents: SupportTelemetr
     };
   });
 
-  return buildDashboardMetrics(dashboardCases, supportEvents, recentActivity);
+  const fcrRecords = supportInteractionRows.map((item) => ({
+    firstContactAt: item.receivedAt,
+    firstResolvedAt: item.firstResolvedAt,
+    contactChannel: item.channel,
+    resolvedOnFirstContact: item.resolvedOnFirstContact,
+    escalationCount: item.escalationCount,
+    reopenCount: item.reopenCount,
+    repeatContactAt: item.repeatContactAt,
+  }));
+
+  return buildDashboardMetrics(dashboardCases, supportEvents, recentActivity, fcrRecords);
 }

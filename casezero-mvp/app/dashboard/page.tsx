@@ -26,6 +26,17 @@ interface DashboardMetrics {
   pastDueCases: number;
   averageResolutionHours: number;
   supportEvents: number;
+  firstContactResolution: {
+    rate: number | null;
+    resolvedCases: number;
+    eligibleCases: number;
+    trackedCases: number;
+    pendingValidation: number;
+    repeatWindowDays: number;
+    targetRate: number;
+    byChannel: Array<{ channel: string; rate: number; resolvedCases: number; eligibleCases: number }>;
+    failureReasons: Array<{ label: string; value: number }>;
+  };
   casesBySeverity: Array<{ label: string; value: number }>;
   casesByType: Array<{ label: string; value: number }>;
   recentActivity: Array<{
@@ -42,6 +53,17 @@ const emptyMetrics: DashboardMetrics = {
   pastDueCases: 0,
   averageResolutionHours: 0,
   supportEvents: 0,
+  firstContactResolution: {
+    rate: null,
+    resolvedCases: 0,
+    eligibleCases: 0,
+    trackedCases: 0,
+    pendingValidation: 0,
+    repeatWindowDays: 7,
+    targetRate: 70,
+    byChannel: [],
+    failureReasons: [],
+  },
   casesBySeverity: [],
   casesByType: [],
   recentActivity: [],
@@ -113,7 +135,20 @@ export default function DashboardPage() {
             <KpiCard label="Critical cases" value={metrics.criticalCases} helper="Need immediate leadership attention" tone="danger" />
             <KpiCard label="Past due" value={metrics.pastDueCases} helper="Cases stalled in decide/act/verify" tone="warning" />
             <KpiCard label="Avg resolution time" value={`${metrics.averageResolutionHours}h`} helper="Modeled from current operational dataset" tone="info" />
-            <KpiCard label="Support events" value={metrics.supportEvents} helper="Cloud-provider evidence tracking events" />
+            <KpiCard
+              label="First contact resolution"
+              value={metrics.firstContactResolution.rate === null ? "N/A" : `${metrics.firstContactResolution.rate}%`}
+              helper={
+                metrics.firstContactResolution.rate === null
+                  ? "Awaiting an eligible 7-day cohort"
+                  : `${metrics.firstContactResolution.resolvedCases} of ${metrics.firstContactResolution.eligibleCases} eligible · ${metrics.firstContactResolution.targetRate}% target`
+              }
+              tone={
+                metrics.firstContactResolution.rate === null || metrics.firstContactResolution.rate >= metrics.firstContactResolution.targetRate
+                  ? "info"
+                  : "warning"
+              }
+            />
           </section>
 
           <section className="grid gap-6 xl:grid-cols-[1.7fr_1fr]">

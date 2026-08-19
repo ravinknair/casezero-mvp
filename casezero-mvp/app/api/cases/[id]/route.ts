@@ -71,3 +71,22 @@ export async function PATCH(
     return Response.json({ error: "Failed to update case" }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const caseIndex = mockCases.findIndex((item) => item.id === id || item.caseId === id);
+
+    if (caseIndex === -1) {
+      return Response.json({ error: "Case not found" }, { status: 404 });
+    }
+
+    const [deletedCase] = mockCases.splice(caseIndex, 1);
+    return Response.json({ deleted: true, id: deletedCase.id });
+  } catch {
+    return Response.json({ error: "Failed to delete case" }, { status: 500 });
+  }
+}

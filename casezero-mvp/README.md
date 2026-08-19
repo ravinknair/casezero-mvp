@@ -87,6 +87,19 @@ or enforce explicit server-side membership or allowlist checks.
 Use SIWC for account pages, user-specific dashboards, saved records, and write
 actions tied to the current ChatGPT user. Leave public content anonymous.
 
+## CaseZero Production
+
+The deployed application is available at <https://casezero-mvp.raknair.workers.dev>.
+
+Leadership and integration endpoints:
+
+- `/dashboard`: operational leadership dashboard with First Contact Resolution
+- `/reports`: detailed FCR cohort, channel, leakage, and measurement reporting
+- `GET /api/dashboard/metrics`: operational and FCR metrics
+- `POST /api/integrations/servicenow/fcr`: authenticated, idempotent ServiceNow incident ingestion
+
+The ServiceNow integration uses the `ITSM_WEBHOOK_SECRET` Cloudflare Worker secret and remote D1 persistence. See [SERVICENOW_FCR_INTEGRATION.md](SERVICENOW_FCR_INTEGRATION.md) for the REST Message, custom field, and Business Rule configuration.
+
 ## Useful Commands
 
 - `npm run dev`: start local development

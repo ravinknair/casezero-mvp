@@ -91,6 +91,23 @@ export const activities = sqliteTable("activities", {
 	createdAt: createdAt(),
 });
 
+export const supportInteractions = sqliteTable("support_interactions", {
+	id: text("id").primaryKey(),
+	caseId: text("case_id").references(() => cases.id),
+	externalTicketId: text("external_ticket_id").notNull().unique(),
+	channel: text("channel").notNull(),
+	receivedAt: integer("received_at", { mode: "timestamp_ms" }).notNull(),
+	firstResolvedAt: integer("first_resolved_at", { mode: "timestamp_ms" }),
+	resolvedOnFirstContact: integer("resolved_on_first_contact", { mode: "boolean" })
+		.notNull()
+		.default(false),
+	escalationCount: integer("escalation_count").notNull().default(0),
+	reopenCount: integer("reopen_count").notNull().default(0),
+	repeatContactAt: integer("repeat_contact_at", { mode: "timestamp_ms" }),
+	createdAt: createdAt(),
+	updatedAt: updatedAt(),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
 	createdCases: many(cases, { relationName: "createdCases" }),
 	ownedCases: many(cases, { relationName: "ownedCases" }),
@@ -124,6 +141,7 @@ export const casesRelations = relations(cases, ({ one, many }) => ({
 	incidents: many(incidents),
 	evidence: many(evidence),
 	activities: many(activities),
+	supportInteractions: many(supportInteractions),
 }));
 
 export const incidentsRelations = relations(incidents, ({ one }) => ({
@@ -148,5 +166,12 @@ export const activitiesRelations = relations(activities, ({ one }) => ({
 	creator: one(users, {
 		fields: [activities.createdBy],
 		references: [users.id],
+	}),
+}));
+
+export const supportInteractionsRelations = relations(supportInteractions, ({ one }) => ({
+	case: one(cases, {
+		fields: [supportInteractions.caseId],
+		references: [cases.id],
 	}),
 }));

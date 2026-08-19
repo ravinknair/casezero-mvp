@@ -44,6 +44,7 @@ test("dashboard metrics expose the stable response shape", () => {
     "pastDueCases",
     "averageResolutionHours",
     "supportEvents",
+    "firstContactResolution",
     "casesBySeverity",
     "casesByType",
     "recentActivity",
@@ -77,6 +78,54 @@ test("empty dashboard data returns zero metrics", () => {
   assert.equal(metrics.criticalCases, 0);
   assert.equal(metrics.pastDueCases, 0);
   assert.equal(metrics.averageResolutionHours, 0);
+  assert.equal(metrics.firstContactResolution.rate, null);
+  assert.equal(metrics.firstContactResolution.eligibleCases, 0);
   assert.deepEqual(metrics.casesBySeverity, []);
   assert.deepEqual(metrics.recentActivity, []);
+});
+
+test("first contact resolution uses matured cases and disqualifies escalations and repeats", () => {
+  const fcrCases = [
+    {
+      ...cases[0],
+      firstContactAt: "2026-07-01T09:00:00Z",
+      firstResolvedAt: "2026-07-01T09:24:00Z",
+      contactChannel: "Live Chat",
+      resolvedOnFirstContact: true,
+      escalationCount: 0,
+      reopenCount: 0,
+    },
+    {
+      ...cases[1],
+      firstContactAt: "2026-07-02T10:00:00Z",
+      firstResolvedAt: "2026-07-02T11:12:00Z",
+      contactChannel: "Email",
+      resolvedOnFirstContact: true,
+      escalationCount: 1,
+      reopenCount: 0,
+    },
+    {
+      ...cases[2],
+      firstContactAt: "2026-07-03T12:00:00Z",
+      firstResolvedAt: "2026-07-03T12:18:00Z",
+      contactChannel: "Live Chat",
+      resolvedOnFirstContact: true,
+      escalationCount: 0,
+      reopenCount: 1,
+    },
+  ];
+
+  const metrics = buildDashboardMetrics(cases, [], [], fcrCases);
+
+  assert.equal(metrics.firstContactResolution.rate, 33);
+  assert.equal(metrics.firstContactResolution.resolvedCases, 1);
+  assert.equal(metrics.firstContactResolution.eligibleCases, 3);
+  assert.deepEqual(metrics.firstContactResolution.byChannel, [
+    { channel: "Live Chat", rate: 50, resolvedCases: 1, eligibleCases: 2 },
+    { channel: "Email", rate: 0, resolvedCases: 0, eligibleCases: 1 },
+  ]);
+  assert.deepEqual(metrics.firstContactResolution.failureReasons, [
+    { label: "Escalated", value: 1 },
+    { label: "Reopened or repeat contact", value: 1 },
+  ]);
 });

@@ -15,6 +15,13 @@
       "when": 1787088459173,
       "tag": "0001_eager_human_robot",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1787112000000,
+      "tag": "0002_support_interactions",
+      "breakpoints": true
     }
   ]
 }
