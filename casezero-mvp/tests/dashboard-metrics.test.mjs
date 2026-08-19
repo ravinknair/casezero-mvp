@@ -113,6 +113,15 @@ test("first contact resolution uses matured cases and disqualifies escalations a
       escalationCount: 0,
       reopenCount: 1,
     },
+    {
+      ...cases[0],
+      firstContactAt: new Date(Date.now() - 86_400_000),
+      firstResolvedAt: new Date(Date.now() - 85_000_000),
+      contactChannel: "Phone",
+      resolvedOnFirstContact: true,
+      escalationCount: 0,
+      reopenCount: 0,
+    },
   ];
 
   const metrics = buildDashboardMetrics(cases, [], [], fcrCases);
@@ -121,8 +130,9 @@ test("first contact resolution uses matured cases and disqualifies escalations a
   assert.equal(metrics.firstContactResolution.resolvedCases, 1);
   assert.equal(metrics.firstContactResolution.eligibleCases, 3);
   assert.deepEqual(metrics.firstContactResolution.byChannel, [
-    { channel: "Live Chat", rate: 50, resolvedCases: 1, eligibleCases: 2 },
-    { channel: "Email", rate: 0, resolvedCases: 0, eligibleCases: 1 },
+    { channel: "Live Chat", rate: 50, trackedCases: 2, pendingValidation: 0, resolvedCases: 1, eligibleCases: 2 },
+    { channel: "Email", rate: 0, trackedCases: 1, pendingValidation: 0, resolvedCases: 0, eligibleCases: 1 },
+    { channel: "Phone", rate: null, trackedCases: 1, pendingValidation: 1, resolvedCases: 0, eligibleCases: 0 },
   ]);
   assert.deepEqual(metrics.firstContactResolution.failureReasons, [
     { label: "Escalated", value: 1 },

@@ -8,7 +8,14 @@ export interface FcrMetrics {
   pendingValidation: number;
   repeatWindowDays: number;
   targetRate: number;
-  byChannel: Array<{ channel: string; rate: number; resolvedCases: number; eligibleCases: number }>;
+  byChannel: Array<{
+    channel: string;
+    rate: number | null;
+    trackedCases: number;
+    pendingValidation: number;
+    resolvedCases: number;
+    eligibleCases: number;
+  }>;
   failureReasons: Array<{ label: string; value: number }>;
 }
 
@@ -48,13 +55,15 @@ export function FcrReport({ metrics }: { metrics: FcrMetrics }) {
       </section>
 
       <div className="grid gap-6 xl:grid-cols-[1.6fr_1fr]">
-        <Card title="Performance by channel" subtitle="Current matured cohort compared with typical support benchmarks">
+        <Card title="Support channel mix" subtitle="How users contacted support, with validated FCR shown separately">
           {metrics.byChannel.length ? (
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[560px] text-left text-sm">
+              <table className="w-full min-w-[720px] text-left text-sm">
                 <thead className="border-b border-gray-200 text-xs uppercase text-gray-500">
                   <tr>
                     <th className="pb-3 font-semibold">Channel</th>
+                    <th className="pb-3 font-semibold">Tracked</th>
+                    <th className="pb-3 font-semibold">Pending</th>
                     <th className="pb-3 font-semibold">FCR</th>
                     <th className="pb-3 font-semibold">Resolved</th>
                     <th className="pb-3 font-semibold">Eligible</th>
@@ -65,13 +74,19 @@ export function FcrReport({ metrics }: { metrics: FcrMetrics }) {
                   {metrics.byChannel.map((item) => (
                     <tr key={item.channel}>
                       <td className="py-4 font-semibold text-gray-900">{item.channel}</td>
+                      <td className="py-4 text-gray-700">{item.trackedCases}</td>
+                      <td className="py-4 text-gray-700">{item.pendingValidation}</td>
                       <td className="py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="h-2 w-24 overflow-hidden rounded bg-gray-100" aria-hidden="true">
-                            <div className="h-full bg-blue-600" style={{ width: `${item.rate}%` }} />
+                        {item.rate === null ? (
+                          <span className="cz-badge-info rounded px-2 py-1 text-xs font-semibold">Pending</span>
+                        ) : (
+                          <div className="flex items-center gap-3">
+                            <div className="h-2 w-24 overflow-hidden rounded bg-gray-100" aria-hidden="true">
+                              <div className="h-full bg-blue-600" style={{ width: `${item.rate}%` }} />
+                            </div>
+                            <span className="font-semibold text-gray-900">{item.rate}%</span>
                           </div>
-                          <span className="font-semibold text-gray-900">{item.rate}%</span>
-                        </div>
+                        )}
                       </td>
                       <td className="py-4 text-gray-700">{item.resolvedCases}</td>
                       <td className="py-4 text-gray-700">{item.eligibleCases}</td>
@@ -82,7 +97,7 @@ export function FcrReport({ metrics }: { metrics: FcrMetrics }) {
               </table>
             </div>
           ) : (
-            <p className="text-sm text-gray-600">Channel performance will appear after the first cohort completes validation.</p>
+            <p className="text-sm text-gray-600">Channel activity will appear after the first support interaction is received.</p>
           )}
         </Card>
 

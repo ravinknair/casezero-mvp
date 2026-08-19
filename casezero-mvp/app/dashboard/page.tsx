@@ -34,7 +34,14 @@ interface DashboardMetrics {
     pendingValidation: number;
     repeatWindowDays: number;
     targetRate: number;
-    byChannel: Array<{ channel: string; rate: number; resolvedCases: number; eligibleCases: number }>;
+    byChannel: Array<{
+      channel: string;
+      rate: number | null;
+      trackedCases: number;
+      pendingValidation: number;
+      resolvedCases: number;
+      eligibleCases: number;
+    }>;
     failureReasons: Array<{ label: string; value: number }>;
   };
   casesBySeverity: Array<{ label: string; value: number }>;

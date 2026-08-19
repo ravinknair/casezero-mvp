@@ -41,7 +41,7 @@
  * @property {number} pendingValidation
  * @property {number} repeatWindowDays
  * @property {number} targetRate
- * @property {Array<{channel: string, rate: number, resolvedCases: number, eligibleCases: number}>} byChannel
+ * @property {Array<{channel: string, rate: number | null, trackedCases: number, pendingValidation: number, resolvedCases: number, eligibleCases: number}>} byChannel
  * @property {Array<{label: string, value: number}>} failureReasons
  */
 
@@ -108,18 +108,23 @@ function buildFirstContactResolution(cases) {
     (item) => item.resolvedOnFirstContact && now - toMilliseconds(item.firstContactAt) < FCR_REPEAT_WINDOW_DAYS * DAY_IN_MILLISECONDS
   ).length;
   const resolvedCases = eligibleCases.filter(qualifiesForFirstContactResolution);
-  const byChannel = [...new Set(eligibleCases.map((item) => item.contactChannel || "Unspecified"))]
+  const byChannel = [...new Set(trackedCases.map((item) => item.contactChannel || "Unspecified"))]
     .map((channel) => {
+      const trackedChannelCases = trackedCases.filter((item) => (item.contactChannel || "Unspecified") === channel);
       const channelCases = eligibleCases.filter((item) => (item.contactChannel || "Unspecified") === channel);
       const channelResolvedCases = channelCases.filter(qualifiesForFirstContactResolution).length;
       return {
         channel,
-        rate: percentage(channelResolvedCases, channelCases.length),
+        rate: channelCases.length ? percentage(channelResolvedCases, channelCases.length) : null,
+        trackedCases: trackedChannelCases.length,
+        pendingValidation: trackedChannelCases.filter(
+          (item) => item.resolvedOnFirstContact && now - toMilliseconds(item.firstContactAt) < FCR_REPEAT_WINDOW_DAYS * DAY_IN_MILLISECONDS
+        ).length,
         resolvedCases: channelResolvedCases,
         eligibleCases: channelCases.length,
       };
     })
-    .sort((left, right) => right.eligibleCases - left.eligibleCases || left.channel.localeCompare(right.channel));
+    .sort((left, right) => right.trackedCases - left.trackedCases || left.channel.localeCompare(right.channel));
 
   const failureReasons = [
     { label: "Not resolved on initial contact", value: eligibleCases.filter((item) => !item.resolvedOnFirstContact).length },
