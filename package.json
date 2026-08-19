@@ -17,7 +17,8 @@
     "lint": "npm --prefix casezero-mvp run lint",
     "check": "npm --prefix casezero-mvp run check",
     "ci": "npm --prefix casezero-mvp run ci",
-    "db:generate": "npm --prefix casezero-mvp run db:generate"
+    "db:generate": "npm --prefix casezero-mvp run db:generate",
+    "smoke:servicenow": "bash ./scripts/smoke-servicenow-local.sh"
   },
   "type": "module"
 }

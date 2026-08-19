@@ -6,6 +6,11 @@ Complete setup and sharing instructions for collaborators.
 
 ## 📋 Quick Links
 
+**No-Questions Runbook for Mandar and Iranga:**
+```
+COLLABORATOR_RUNBOOK.md
+```
+
 **GitHub Repository:**
 ```
 https://github.com/ravinknair/casezero-mvp
@@ -87,6 +92,13 @@ make dev
 
 The app will start on: **http://localhost:3000**
 
+Open these productized FCR pages:
+
+- Dashboard: http://localhost:3000/dashboard
+- ServiceNow onboarding: http://localhost:3000/admin/integrations/servicenow
+- Leadership brief: http://localhost:3000/reports/leadership-brief
+- Security posture: http://localhost:3000/security
+
 ### Run Tests
 
 ```bash
@@ -118,6 +130,10 @@ npm run lint
 # Run full check (lint + test + build)
 npm run check
 make check
+
+# Run local ServiceNow webhook smoke test
+npm run smoke:servicenow
+make smoke-servicenow
 
 # Stop dev server
 ./stop.sh
@@ -224,8 +240,8 @@ npm run test
 - casezero-mvp/tests/ - Deterministic test suite
 - README.md - Full project documentation
 
-💬 QUESTIONS?
-See COLLABORATORS.md in the repo for detailed instructions
+📚 RUNBOOK
+Start with COLLABORATOR_RUNBOOK.md. It has the exact local run, smoke-test, D1 migration, Wrangler, and troubleshooting commands.
 
 ---
 ```

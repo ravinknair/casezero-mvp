@@ -45,6 +45,9 @@ export default function ReportsPage() {
     { icon: "◇", label: "Policies", href: "/policies", count: 8 },
     { icon: "↗", label: "Telemetry", href: "/telemetry" },
     { icon: "▣", label: "Reports", href: "/reports", active: true },
+    { icon: "▤", label: "Brief", href: "/reports/leadership-brief" },
+    { icon: "⌁", label: "ServiceNow", href: "/admin/integrations/servicenow" },
+    { icon: "◈", label: "Security", href: "/security" },
     { icon: "⚙", label: "Admin", href: "/admin" },
   ];
 
@@ -55,7 +58,10 @@ export default function ReportsPage() {
         <div className="mx-auto max-w-7xl">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900">Leadership reports</h1>
-            <p className="mt-2 text-sm text-gray-600">Operational outcomes, service quality, and decision-ready support performance.</p>
+            <p className="mt-2 text-sm text-gray-600">FCR intelligence, service quality, and decision-ready support performance.</p>
+            <a href="/reports/leadership-brief" className="mt-4 inline-block rounded bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800">
+              Open leadership brief
+            </a>
           </div>
           {loading ? <p className="text-sm text-gray-600">Loading support performance...</p> : <FcrReport metrics={metrics} />}
         </div>

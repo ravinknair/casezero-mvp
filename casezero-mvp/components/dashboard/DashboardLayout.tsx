@@ -18,7 +18,7 @@ export function DashboardLayout({ environment, userName, onCreateCase, children 
             <span className="rounded-full border border-[var(--blue)] bg-[var(--blue-soft)] px-3 py-1 text-xs font-semibold text-[#175cd3]">
               {environment}
             </span>
-            <h1 className="cz-heading text-2xl font-bold">Incident Command Dashboard</h1>
+            <h1 className="cz-heading text-2xl font-bold">FCR Intelligence Dashboard</h1>
           </div>
           <div className="flex items-center gap-3">
             <div className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700">{userName}</div>

@@ -41,6 +41,7 @@ npm run build       # Build for production
 ```
 
 ### 📚 DOCUMENTATION
+- **No-Questions Runbook:** COLLABORATOR_RUNBOOK.md
 - **Setup Guide:** COLLABORATORS.md
 - **Project Info:** README.md
 - **Sharing Help:** SHARE_CHECKLIST.md
@@ -53,6 +54,7 @@ npm run test        # Run tests
 npm run build       # Build production bundle
 npm run lint        # Check code quality
 npm run check       # Lint + test + build
+npm run smoke:servicenow  # Local ServiceNow webhook smoke test
 make dev            # Alternative: make dev
 make test           # Alternative: make test
 make build          # Alternative: make build
@@ -139,7 +141,7 @@ MyCodexProject/
 
 ## TEST RESULTS
 
-✅ **All 9 Tests Passing**
+✅ **All 16 Tests Passing**
 - certificate approval → verified resolution
 - incident approval → verified resolution
 - database approval → verified resolution
@@ -149,6 +151,10 @@ MyCodexProject/
 - rejection logic → records decision, no execution
 - stop-condition rollback → doesn't resolve
 - idempotence → duplicate approval is safe
+- ServiceNow FCR payload normalization
+- ServiceNow invalid payload rejection
+- dashboard metrics stable response shape
+- FCR maturity window, escalation, and repeat-contact logic
 
 ---
 

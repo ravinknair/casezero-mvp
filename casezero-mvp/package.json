@@ -45,10 +45,17 @@
     "typescript-eslint": "8.59.3",
     "vinext": "1.0.0-beta.2",
     "vite": "8.0.13",
-    "wrangler": "4.92.0"
+    "wrangler": "^4.124.0"
   },
   "type": "module",
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild", "sharp", "workerd", "@cloudflare/workerd-darwin-arm64", "@img/sharp-libvips-darwin-arm64", "@rolldown/binding-darwin-arm64"]
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp",
+      "workerd",
+      "@cloudflare/workerd-darwin-arm64",
+      "@img/sharp-libvips-darwin-arm64",
+      "@rolldown/binding-darwin-arm64"
+    ]
   }
 }

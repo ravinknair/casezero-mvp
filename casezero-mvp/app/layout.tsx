@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "CaseZero — Incident Resolution",
-  description: "Six evidence-driven resolution workflows spanning incidents, security, data, infrastructure, and customer operations.",
+  title: "CaseZero — FCR Intelligence",
+  description: "FCR intelligence for AI-assisted support operations, ServiceNow measurement, and governed remediation.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",

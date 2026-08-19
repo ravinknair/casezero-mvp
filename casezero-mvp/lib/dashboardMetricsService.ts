@@ -56,5 +56,5 @@ export async function getDatabaseDashboardMetrics(supportEvents: SupportTelemetr
     repeatContactAt: item.repeatContactAt,
   }));
 
-  return buildDashboardMetrics(dashboardCases, supportEvents, recentActivity, fcrRecords);
+  return { ...buildDashboardMetrics(dashboardCases, supportEvents, recentActivity, fcrRecords), sampleMode: false };
 }

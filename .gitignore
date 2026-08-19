@@ -30,6 +30,8 @@ pnpm-debug.log*
 # env
 .env
 .env.*
+.dev.vars
+casezero-mvp/.dev.vars
 
 # editor settings
 .vscode/

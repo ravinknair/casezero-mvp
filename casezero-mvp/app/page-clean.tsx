@@ -14,7 +14,7 @@ export default function HomePage() {
   return (
     <div className="flex items-center justify-center h-screen">
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">CaseZero Incident Resolution</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">CaseZero FCR Intelligence</h1>
         <p className="text-gray-600">Redirecting to dashboard...</p>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { eq, or } from "drizzle-orm";
+import { recordServiceNowIntegrationEvent } from "@/lib/serviceNowIntegrationHealth";
 import { normalizeServiceNowFcrPayload } from "@/lib/serviceNowFcr";
 
 export async function POST(request: Request) {
@@ -14,6 +15,7 @@ export async function POST(request: Request) {
       request.headers.get("x-casezero-webhook-secret") ??
       (authorization?.startsWith("Bearer ") ? authorization.slice(7) : null);
     if (!providedSecret || !(await secretsMatch(providedSecret, webhookSecret))) {
+      await recordServiceNowIntegrationEvent({ status: "failed_auth", message: "Unauthorized ServiceNow webhook request" });
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -31,6 +33,11 @@ export async function POST(request: Request) {
           .limit(1)
       : [];
     const now = new Date();
+    const existingInteraction = await db
+      .select({ id: supportInteractions.id })
+      .from(supportInteractions)
+      .where(eq(supportInteractions.externalTicketId, record.externalTicketId))
+      .limit(1);
 
     await db
       .insert(supportInteractions)
@@ -63,6 +70,11 @@ export async function POST(request: Request) {
       })
       .run();
 
+    await recordServiceNowIntegrationEvent({
+      status: existingInteraction.length ? "duplicate" : "accepted",
+      externalTicketId: record.externalTicketId,
+    });
+
     return Response.json({
       accepted: true,
       source: "servicenow",
@@ -76,6 +88,11 @@ export async function POST(request: Request) {
       message.includes("valid timestamp") ||
       message.includes("non-negative integer") ||
       message.includes("JSON object");
+    await recordServiceNowIntegrationEvent({
+      status: isValidationError && message.includes("required") ? "missing_fields" : "rejected",
+      missingFields: isValidationError && message.includes("required") ? [message.replace(" is required", "")] : [],
+      message,
+    });
     return Response.json({ error: message }, { status: isValidationError ? 400 : 500 });
   }
 }

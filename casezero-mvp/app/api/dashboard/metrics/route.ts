@@ -10,7 +10,7 @@ export async function GET() {
       const { getDatabaseDashboardMetrics } = await import("@/lib/dashboardMetricsService");
       return Response.json(await getDatabaseDashboardMetrics(supportEvents));
     } catch {
-      return Response.json(buildDashboardMetrics(mockCases, supportEvents, [], mockSupportInteractions));
+      return Response.json({ ...buildDashboardMetrics(mockCases, supportEvents, [], mockSupportInteractions), sampleMode: true });
     }
   } catch {
     return Response.json({ error: "Failed to fetch dashboard metrics" }, { status: 500 });

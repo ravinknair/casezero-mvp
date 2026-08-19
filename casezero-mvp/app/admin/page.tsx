@@ -12,6 +12,8 @@ export default function AdminPage() {
     { icon: "◎", label: "Evidence", href: "/evidence", count: 42 },
     { icon: "◇", label: "Policies", href: "/policies", count: 8 },
     { icon: "↗", label: "Telemetry", href: "/telemetry" },
+    { icon: "⌁", label: "ServiceNow", href: "/admin/integrations/servicenow" },
+    { icon: "◈", label: "Security", href: "/security" },
     { icon: "⚙", label: "Admin", href: "/admin", active: true },
   ];
 
@@ -34,8 +36,21 @@ export default function AdminPage() {
       <main className="app-workspace flex-1 space-y-6 p-8">
         <header>
           <h1 className="text-3xl font-bold text-gray-900">Admin</h1>
-          <p className="mt-2 text-sm text-gray-600">User access and role controls for enterprise operations.</p>
+          <p className="mt-2 text-sm text-gray-600">User access, integration onboarding, and role controls for FCR intelligence operations.</p>
         </header>
+        <section>
+          <h2 className="mb-3 text-lg font-bold text-gray-900">Product setup</h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            <a href="/admin/integrations/servicenow" className="rounded-lg border border-gray-200 bg-white p-5 hover:border-blue-300">
+              <h3 className="font-bold text-gray-900">ServiceNow FCR integration</h3>
+              <p className="mt-2 text-sm text-gray-600">Webhook URL, secret status, sample payload, field validation, and integration health.</p>
+            </a>
+            <a href="/security" className="rounded-lg border border-gray-200 bg-white p-5 hover:border-blue-300">
+              <h3 className="font-bold text-gray-900">Security posture</h3>
+              <p className="mt-2 text-sm text-gray-600">Stored data, excluded data, retention, secrets, auth, and deployment model.</p>
+            </a>
+          </div>
+        </section>
         <section>
           <h2 className="mb-3 text-lg font-bold text-gray-900">User table</h2>
           <UserTable users={users} />

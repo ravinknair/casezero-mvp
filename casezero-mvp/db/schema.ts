@@ -108,6 +108,15 @@ export const supportInteractions = sqliteTable("support_interactions", {
 	updatedAt: updatedAt(),
 });
 
+export const serviceNowIntegrationEvents = sqliteTable("servicenow_integration_events", {
+	id: text("id").primaryKey(),
+	status: text("status").notNull(),
+	externalTicketId: text("external_ticket_id"),
+	missingFields: text("missing_fields"),
+	message: text("message"),
+	receivedAt: createdAt(),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
 	createdCases: many(cases, { relationName: "createdCases" }),
 	ownedCases: many(cases, { relationName: "ownedCases" }),

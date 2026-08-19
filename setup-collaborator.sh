@@ -47,14 +47,36 @@ echo "📦 Installing dependencies..."
 make install || { echo "❌ Installation failed"; exit 1; }
 echo "✓ Dependencies installed"
 
+APP_ENV_FILE="$PROJECT_DIR/casezero-mvp/.dev.vars"
+if [ ! -f "$APP_ENV_FILE" ]; then
+    echo ""
+    echo "🔐 Creating local-only smoke-test secret at casezero-mvp/.dev.vars"
+    cat > "$APP_ENV_FILE" <<'EOF'
+ITSM_WEBHOOK_SECRET=local-smoke-secret
+EOF
+    echo "✓ Local .dev.vars created. This file is ignored by git."
+else
+    echo "✓ Existing casezero-mvp/.dev.vars found"
+fi
+
+echo ""
+echo "🧰 Checking Wrangler CLI..."
+if [ -x "$PROJECT_DIR/casezero-mvp/node_modules/.bin/wrangler" ]; then
+    "$PROJECT_DIR/casezero-mvp/node_modules/.bin/wrangler" --version || true
+else
+    echo "⚠️  Wrangler was not found in app dependencies. Run: make install"
+fi
+
 echo ""
 echo "🎉 Setup complete!"
 echo ""
 echo "Next steps:"
 echo "1. Start dev server: npm run dev"
 echo "2. Open browser: http://localhost:3000"
-echo "3. Run tests: npm run test"
-echo "4. Build: npm run build"
+echo "3. Visit ServiceNow setup: http://localhost:3000/admin/integrations/servicenow"
+echo "4. Run tests: npm run test"
+echo "5. Run full check: npm run check"
+echo "6. Optional local webhook smoke test: npm run smoke:servicenow"
 echo ""
-echo "📚 For more info, see COLLABORATORS.md"
+echo "📚 For more info, see COLLABORATOR_RUNBOOK.md and COLLABORATORS.md"
 echo ""

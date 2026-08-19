@@ -26,6 +26,7 @@ interface DashboardMetrics {
   pastDueCases: number;
   averageResolutionHours: number;
   supportEvents: number;
+  sampleMode?: boolean;
   firstContactResolution: {
     rate: number | null;
     resolvedCases: number;
@@ -60,6 +61,7 @@ const emptyMetrics: DashboardMetrics = {
   pastDueCases: 0,
   averageResolutionHours: 0,
   supportEvents: 0,
+  sampleMode: true,
   firstContactResolution: {
     rate: null,
     resolvedCases: 0,
@@ -121,6 +123,9 @@ export default function DashboardPage() {
     { icon: "◇", label: "Policies", href: "/policies", count: 8 },
     { icon: "↗", label: "Telemetry", href: "/telemetry" },
     { icon: "▣", label: "Reports", href: "/reports", count: 3 },
+    { icon: "▤", label: "Brief", href: "/reports/leadership-brief" },
+    { icon: "⌁", label: "ServiceNow", href: "/admin/integrations/servicenow" },
+    { icon: "◈", label: "Security", href: "/security" },
     { icon: "⚙", label: "Admin", href: "/admin" },
   ];
 
@@ -137,6 +142,13 @@ export default function DashboardPage() {
       <Sidebar items={sidebarItems} userName="Ravi Nair" caseCount={cases.length} />
       <DashboardLayout environment="Production" userName="Ravi Nair" onCreateCase={openNewCaseWindow}>
         <main className="space-y-6 bg-gray-50 p-8">
+          {metrics.sampleMode ? (
+            <section className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
+              <div className="font-semibold">Demo mode is active</div>
+              <p className="mt-1">Prospects can explore realistic ServiceNow-like FCR data before connecting an instance.</p>
+            </section>
+          ) : null}
+
           <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
             <KpiCard label="Open cases" value={metrics.openCases} helper="Cases currently in progress" />
             <KpiCard label="Critical cases" value={metrics.criticalCases} helper="Need immediate leadership attention" tone="danger" />
