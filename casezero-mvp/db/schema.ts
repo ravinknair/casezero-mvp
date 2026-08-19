@@ -114,7 +114,9 @@ export const serviceNowIntegrationEvents = sqliteTable("servicenow_integration_e
 	externalTicketId: text("external_ticket_id"),
 	missingFields: text("missing_fields"),
 	message: text("message"),
-	receivedAt: createdAt(),
+	receivedAt: integer("received_at", { mode: "timestamp_ms" })
+		.notNull()
+		.default(sql`(unixepoch() * 1000)`),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
