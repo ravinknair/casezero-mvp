@@ -19,7 +19,27 @@ export async function ingestItsmFcrRequest(request: Request, fallbackProvider = 
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const record = normalizeItsmFcrPayload(await request.json(), fallbackProvider);
+    return ingestItsmFcrPayload(await request.json(), fallbackProvider);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to ingest ITSM interaction";
+    const isValidationError =
+      message.includes("required") ||
+      message.includes("valid timestamp") ||
+      message.includes("non-negative integer") ||
+      message.includes("JSON object") ||
+      message.includes("Unsupported ITSM provider");
+    await recordServiceNowIntegrationEvent({
+      status: isValidationError && message.includes("required") ? "missing_fields" : "rejected",
+      missingFields: isValidationError && message.includes("required") ? [message.replace(" is required", "")] : [],
+      message,
+    });
+    return Response.json({ error: message }, { status: isValidationError ? 400 : 500 });
+  }
+}
+
+export async function ingestItsmFcrPayload(payload: unknown, fallbackProvider = "servicenow") {
+  try {
+    const record = normalizeItsmFcrPayload(payload, fallbackProvider);
     const [{ getDb }, { cases, supportInteractions }] = await Promise.all([
       import("@/db"),
       import("@/db/schema"),

@@ -133,7 +133,6 @@ const sidebarItems = [
 ];
 
 export default function ItsmIntegrationsPage() {
-  const [webhookSecret, setWebhookSecret] = useState("");
   const [testResults, setTestResults] = useState<Record<string, ProviderTestResult>>({});
   const [recentEvents, setRecentEvents] = useState<ItsmIntegrationEvent[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
@@ -162,13 +161,12 @@ export default function ItsmIntegrationsPage() {
     }));
 
     try {
-      const response = await fetch(genericWebhookPath, {
+      const response = await fetch("/api/integrations/itsm/test", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-CaseZero-Webhook-Secret": webhookSecret,
         },
-        body: provider.sample,
+        body: JSON.stringify({ provider: provider.provider }),
       });
       const body = (await response.json()) as { accepted?: boolean; externalTicketId?: string; error?: string };
       if (!response.ok || !body.accepted) {
@@ -213,17 +211,9 @@ export default function ItsmIntegrationsPage() {
               <div className="rounded border border-gray-200 bg-gray-50 p-3 font-mono text-xs text-gray-800 break-all">
                 {genericWebhookUrl}
               </div>
-              <label className="mt-4 block text-sm font-semibold text-gray-900" htmlFor="itsm-webhook-secret">
-                Webhook secret for test sends
-              </label>
-              <input
-                id="itsm-webhook-secret"
-                type="password"
-                value={webhookSecret}
-                onChange={(event) => setWebhookSecret(event.target.value)}
-                placeholder="Paste ITSM_WEBHOOK_SECRET to send test payloads"
-                className="mt-2 w-full rounded border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-400"
-              />
+              <p className="mt-4 rounded border border-green-100 bg-green-50 p-3 text-sm text-green-800">
+                Test buttons use a server-side test endpoint, so the webhook secret stays inside the Worker and is never pasted into the browser.
+              </p>
               <div className="mt-4 grid gap-3 text-sm text-gray-700 md:grid-cols-3">
                 <SetupFact label="Method" value="POST" />
                 <SetupFact label="Auth header" value="X-CaseZero-Webhook-Secret" />
@@ -246,7 +236,6 @@ export default function ItsmIntegrationsPage() {
                 key={provider.provider}
                 provider={provider}
                 result={testResults[provider.provider]}
-                canTest={Boolean(webhookSecret.trim())}
                 onTest={() => void sendTestPayload(provider)}
               />
             ))}
@@ -279,12 +268,10 @@ type ItsmIntegrationEvent = {
 function ProviderCard({
   provider,
   result,
-  canTest,
   onTest,
 }: {
   provider: (typeof providers)[number];
   result?: ProviderTestResult;
-  canTest: boolean;
   onTest: () => void;
 }) {
   const resultClass = {
@@ -320,7 +307,7 @@ function ProviderCard({
         <button
           type="button"
           onClick={onTest}
-          disabled={!canTest || result?.status === "pending"}
+          disabled={result?.status === "pending"}
           className="rounded bg-blue-700 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-gray-300"
         >
           {result?.status === "pending" ? "Sending..." : "Send test payload"}
