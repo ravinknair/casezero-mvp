@@ -6,7 +6,7 @@ Your test dashboard can now run tests directly from the web page!
 
 1. **Start the test server:**
    ```bash
-   cd /Users/ravinair/Desktop/MANDAR/MyCodexProject/casezero-mvp
+   cd /Users/ravinair/Documents/GitHub/casezero-mvp/casezero-mvp
    node test-reports/server.mjs
    ```
 

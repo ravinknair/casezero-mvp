@@ -92,7 +92,7 @@ vercel
 ## 📁 Files Created for Collaboration
 
 ```
-MyCodexProject/
+casezero-mvp/
 ├── COLLABORATORS.md          ← Send this link in email
 ├── setup-collaborator.sh     ← Easy setup script for your team
 ├── SHARING.md                ← Additional sharing options

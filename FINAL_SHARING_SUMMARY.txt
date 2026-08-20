@@ -32,7 +32,7 @@ YOUR 2 TEAM MEMBERS:
 
 5. They Clone and Start Working
    └─ git clone https://github.com/ravinknair/casezero-mvp.git
-   └─ cd MyCodexProject
+  └─ cd casezero-mvp
    └─ ./setup-collaborator.sh
    └─ npm run dev
 

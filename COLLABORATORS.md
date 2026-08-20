@@ -310,7 +310,7 @@ make ci        # Run full CI checks
 ## 📁 Project Structure
 
 ```
-MyCodexProject/
+casezero-mvp/
 ├── casezero-mvp/           # Main application
 │   ├── app/                # Next.js app directory
 │   ├── tests/              # Test files

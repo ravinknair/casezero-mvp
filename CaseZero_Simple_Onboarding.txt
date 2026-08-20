@@ -1,7 +1,7 @@
 CaseZero MVP Onboarding
 
 Run steps:
-1. cd /Users/ravinair/Desktop/MANDAR/MyCodexProject
+1. cd /Users/ravinair/Documents/GitHub/casezero-mvp
 2. bash ./start.sh
 3. Open http://localhost:3000
 

@@ -46,7 +46,7 @@ Then click **"Create repository"**
 Once the repository is created, run in your terminal:
 
 ```bash
-cd /Users/ravinair/Desktop/MANDAR/MyCodexProject
+cd /Users/ravinair/Documents/GitHub/casezero-mvp
 git remote remove origin
 git remote add origin git@github.com:ravinknair/casezero-mvp.git
 git branch -M main

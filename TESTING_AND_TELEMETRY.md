@@ -13,14 +13,14 @@ The API smoke tests create a temporary `CZ-SMOKE-*` case, validate it, and remov
 
 ### Root project (`/`)
 ```bash
-cd /Users/ravinair/Desktop/MANDAR/MyCodexProject
+cd /Users/ravinair/Documents/GitHub/casezero-mvp
 npm test
 ```
 Runs `node --test tests/casezero-e2e.test.mjs` — 9 tests covering the detect → diagnose → decide → act → verify flow for each case type, approvals, rejections, stop-conditions, and idempotency.
 
 ### `casezero-mvp/` copy
 ```bash
-cd /Users/ravinair/Desktop/MANDAR/MyCodexProject/casezero-mvp
+cd /Users/ravinair/Documents/GitHub/casezero-mvp/casezero-mvp
 npm test
 ```
 Same 9-test suite, run against the mvp copy.
@@ -33,7 +33,7 @@ npm run test:full
 ## Running the app locally
 
 ```bash
-cd /Users/ravinair/Desktop/MANDAR/MyCodexProject
+cd /Users/ravinair/Documents/GitHub/casezero-mvp
 pnpm dev
 ```
 Opens at `http://localhost:3000`. Uses `.env.local` for the Azure Application Insights connection string (already configured).

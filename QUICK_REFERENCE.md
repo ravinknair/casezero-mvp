@@ -123,7 +123,7 @@ git push origin main
 ## PROJECT STRUCTURE
 
 ```
-MyCodexProject/
+casezero-mvp/
 ├── casezero-mvp/          ← Main application
 │   ├── app/               ← React components
 │   ├── tests/             ← Test files (9 tests)
