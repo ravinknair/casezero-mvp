@@ -5,6 +5,8 @@ export const itsmProviders = [
   "salesforce_service_cloud",
   "freshservice",
   "bmc_helix",
+  "ivanti_neurons",
+  "manageengine_service_desk_plus",
 ];
 
 const channelLabels = new Map([
@@ -37,6 +39,13 @@ const providerLabels = new Map([
   ["bmc_helix", "bmc_helix"],
   ["bmc_helix_itsm", "bmc_helix"],
   ["helix", "bmc_helix"],
+  ["ivanti", "ivanti_neurons"],
+  ["ivanti_neurons", "ivanti_neurons"],
+  ["ivanti_neurons_for_itsm", "ivanti_neurons"],
+  ["manageengine", "manageengine_service_desk_plus"],
+  ["manageengine_service_desk_plus", "manageengine_service_desk_plus"],
+  ["servicedesk_plus", "manageengine_service_desk_plus"],
+  ["service_desk_plus", "manageengine_service_desk_plus"],
 ]);
 
 export function normalizeItsmFcrPayload(payload, fallbackProvider = "servicenow") {
@@ -51,6 +60,8 @@ export function normalizeItsmFcrPayload(payload, fallbackProvider = "servicenow"
   if (provider === "salesforce_service_cloud") return normalizeSalesforceServiceCloudFcrPayload(payload);
   if (provider === "freshservice") return normalizeFreshserviceFcrPayload(payload);
   if (provider === "bmc_helix") return normalizeBmcHelixFcrPayload(payload);
+  if (provider === "ivanti_neurons") return normalizeIvantiNeuronsFcrPayload(payload);
+  if (provider === "manageengine_service_desk_plus") return normalizeManageEngineServiceDeskPlusFcrPayload(payload);
   throw new Error(`Unsupported ITSM provider: ${provider}`);
 }
 
@@ -150,6 +161,39 @@ function normalizeBmcHelixFcrPayload(payload) {
     escalationCount: nonNegativeInteger(incident.Escalation_Count__c ?? incident.escalationCount, "Escalation_Count__c"),
     reopenCount: nonNegativeInteger(incident.Reopen_Count__c ?? incident.reopenCount, "Reopen_Count__c"),
     repeatContactAt: optionalDate(incident.Repeat_Contact_At__c ?? incident.repeatContactAt, "Repeat_Contact_At__c"),
+  });
+}
+
+function normalizeIvantiNeuronsFcrPayload(payload) {
+  const incident = payload.incident && typeof payload.incident === "object" ? payload.incident : payload;
+  return canonicalRecord("ivanti_neurons", {
+    externalTicketId: requiredString(
+      incident.IncidentNumber ?? incident.Incident_Number ?? incident.RecId ?? incident.id ?? incident.externalTicketId,
+      "IncidentNumber"
+    ),
+    caseId: optionalString(incident.CaseZeroCaseId ?? incident.casezero_case_id ?? incident.caseId),
+    contactChannel: normalizeChannel(incident.Source ?? incident.reportedSource ?? incident.channel ?? "portal"),
+    firstContactAt: requiredDate(incident.CreatedDateTime ?? incident.CreatedDate ?? incident.created_at ?? incident.firstContactAt, "CreatedDateTime"),
+    firstResolvedAt: optionalDate(incident.ResolvedDateTime ?? incident.ClosedDateTime ?? incident.resolved_at ?? incident.firstResolvedAt, "ResolvedDateTime"),
+    resolvedOnFirstContact: toBoolean(incident.ResolvedOnFirstContact ?? incident.resolvedOnFirstContact),
+    escalationCount: nonNegativeInteger(incident.EscalationCount ?? incident.escalationCount, "EscalationCount"),
+    reopenCount: nonNegativeInteger(incident.ReopenCount ?? incident.reopenCount, "ReopenCount"),
+    repeatContactAt: optionalDate(incident.RepeatContactAt ?? incident.repeatContactAt, "RepeatContactAt"),
+  });
+}
+
+function normalizeManageEngineServiceDeskPlusFcrPayload(payload) {
+  const request = payload.request && typeof payload.request === "object" ? payload.request : payload;
+  return canonicalRecord("manageengine_service_desk_plus", {
+    externalTicketId: requiredString(request.display_id ?? request.id ?? request.externalTicketId, "display_id"),
+    caseId: optionalString(request.casezero_case_id ?? request.udf_fields?.casezero_case_id ?? request.caseId),
+    contactChannel: normalizeChannel(request.mode?.name ?? request.channel ?? request.requester_channel ?? "portal"),
+    firstContactAt: requiredDate(request.created_time?.value ?? request.created_time ?? request.created_at ?? request.firstContactAt, "created_time"),
+    firstResolvedAt: optionalDate(request.resolved_time?.value ?? request.resolved_time ?? request.completed_time?.value ?? request.firstResolvedAt, "resolved_time"),
+    resolvedOnFirstContact: toBoolean(request.resolved_on_first_contact ?? request.udf_fields?.resolved_on_first_contact ?? request.resolvedOnFirstContact),
+    escalationCount: nonNegativeInteger(request.escalation_count ?? request.udf_fields?.escalation_count ?? request.escalationCount, "escalation_count"),
+    reopenCount: nonNegativeInteger(request.reopen_count ?? request.udf_fields?.reopen_count ?? request.reopenCount, "reopen_count"),
+    repeatContactAt: optionalDate(request.repeat_contact_at ?? request.udf_fields?.repeat_contact_at ?? request.repeatContactAt, "repeat_contact_at"),
   });
 }
 

@@ -61,7 +61,7 @@ const providers = [
 }`,
   },
   {
-    name: "Freshservice",
+    name: "Freshservice / Freshdesk",
     provider: "freshservice",
     status: "Supported",
     channel: "Ticket webhook",
@@ -88,6 +88,36 @@ const providers = [
   }
 }`,
   },
+  {
+    name: "Ivanti Neurons",
+    provider: "ivanti_neurons",
+    status: "Supported",
+    channel: "Incident webhook or integration service",
+    sample: `{
+  "provider": "ivanti_neurons",
+  "incident": {
+    "IncidentNumber": "IV-2048",
+    "Source": "Portal",
+    "CreatedDateTime": "2026-08-06T16:03:00Z"
+  }
+}`,
+  },
+  {
+    name: "ManageEngine ServiceDesk Plus",
+    provider: "manageengine_service_desk_plus",
+    status: "Supported",
+    channel: "Request webhook or custom trigger",
+    sample: `{
+  "provider": "manageengine",
+  "request": {
+    "display_id": "REQ-8090",
+    "mode": { "name": "Email" },
+    "created_time": {
+      "value": "2026-08-08T12:31:00Z"
+    }
+  }
+}`,
+  },
 ];
 
 const sidebarItems = [
@@ -110,7 +140,7 @@ export default function ItsmIntegrationsPage() {
             <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">Integration catalog</p>
             <h1 className="mt-1 text-3xl font-bold text-gray-900">ITSM and support platforms</h1>
             <p className="mt-2 max-w-3xl text-sm text-gray-600">
-              Connect ServiceNow, Zendesk, Jira Service Management, Salesforce Service Cloud, Freshservice, and BMC Helix into one FCR reporting pipeline.
+              Connect ServiceNow, Salesforce Service Cloud, Zendesk, Jira Service Management, Freshservice / Freshdesk, BMC Helix, Ivanti Neurons, and ManageEngine ServiceDesk Plus into one FCR reporting pipeline.
             </p>
           </header>
 

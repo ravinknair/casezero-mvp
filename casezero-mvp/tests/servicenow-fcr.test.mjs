@@ -106,4 +106,38 @@ test("normalizes competitor ITSM payloads into canonical FCR records", () => {
   assert.equal(bmcRecord.externalTicketId, "INC0000002048");
   assert.equal(bmcRecord.contactChannel, "Phone");
   assert.equal(bmcRecord.resolvedOnFirstContact, true);
+
+  const ivantiRecord = normalizeItsmFcrPayload({
+    provider: "ivanti_neurons",
+    incident: {
+      IncidentNumber: "IV-2048",
+      Source: "Portal",
+      CreatedDateTime: "2026-08-06T16:03:00Z",
+      ResolvedDateTime: "2026-08-06T16:27:00Z",
+      ResolvedOnFirstContact: true,
+    },
+  });
+
+  assert.equal(ivantiRecord.provider, "ivanti_neurons");
+  assert.equal(ivantiRecord.externalTicketId, "IV-2048");
+  assert.equal(ivantiRecord.contactChannel, "Self-Service / Portal");
+  assert.equal(ivantiRecord.resolvedOnFirstContact, true);
+
+  const manageEngineRecord = normalizeItsmFcrPayload({
+    provider: "manageengine",
+    request: {
+      display_id: "REQ-8090",
+      mode: { name: "Email" },
+      created_time: { value: "2026-08-08T12:31:00Z" },
+      resolved_time: { value: "2026-08-08T13:05:00Z" },
+      udf_fields: {
+        resolved_on_first_contact: "yes",
+      },
+    },
+  });
+
+  assert.equal(manageEngineRecord.provider, "manageengine_service_desk_plus");
+  assert.equal(manageEngineRecord.externalTicketId, "REQ-8090");
+  assert.equal(manageEngineRecord.contactChannel, "Email");
+  assert.equal(manageEngineRecord.resolvedOnFirstContact, true);
 });
