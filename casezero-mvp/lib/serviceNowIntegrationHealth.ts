@@ -21,6 +21,16 @@ export interface ServiceNowIntegrationHealth {
   sampleMode: boolean;
 }
 
+export interface ItsmIntegrationEventSummary {
+  id: string;
+  provider: string;
+  externalTicketId: string | null;
+  status: string;
+  missingFields: string[];
+  message: string | null;
+  receivedAt: string;
+}
+
 export async function recordServiceNowIntegrationEvent(event: ServiceNowIntegrationEventInput) {
   try {
     const [{ getDb }, { serviceNowIntegrationEvents }] = await Promise.all([import("@/db"), import("@/db/schema")]);
@@ -54,6 +64,21 @@ export async function getServiceNowIntegrationHealth(requestUrl: string): Promis
     return summarizeEvents(webhookUrl, secretConfigured, rows, false);
   } catch {
     return summarizeEvents(webhookUrl, secretConfigured, demoEvents(), true);
+  }
+}
+
+export async function getRecentItsmIntegrationEvents(): Promise<{ events: ItsmIntegrationEventSummary[]; sampleMode: boolean }> {
+  try {
+    const [{ getDb }, { serviceNowIntegrationEvents }] = await Promise.all([import("@/db"), import("@/db/schema")]);
+    const rows = await getDb()
+      .select()
+      .from(serviceNowIntegrationEvents)
+      .orderBy(desc(serviceNowIntegrationEvents.receivedAt))
+      .limit(25);
+
+    return { events: rows.map(toItsmEventSummary), sampleMode: false };
+  } catch {
+    return { events: demoEvents().map(toItsmEventSummary), sampleMode: true };
   }
 }
 
@@ -92,9 +117,39 @@ function summarizeEvents(
 function demoEvents() {
   const now = Date.now();
   return [
-    { status: "accepted", missingFields: null, receivedAt: new Date(now - 18 * 60_000) },
-    { status: "duplicate", missingFields: null, receivedAt: new Date(now - 42 * 60_000) },
-    { status: "missing_fields", missingFields: "opened_at", receivedAt: new Date(now - 2 * 60 * 60_000) },
-    { status: "failed_auth", missingFields: null, receivedAt: new Date(now - 4 * 60 * 60_000) },
+    { id: "demo-accepted", status: "accepted", externalTicketId: "zendesk:481516", missingFields: null, message: null, receivedAt: new Date(now - 18 * 60_000) },
+    { id: "demo-duplicate", status: "duplicate", externalTicketId: "servicenow:INC0012048", missingFields: null, message: null, receivedAt: new Date(now - 42 * 60_000) },
+    { id: "demo-missing", status: "missing_fields", externalTicketId: null, missingFields: "opened_at", message: "opened_at is required", receivedAt: new Date(now - 2 * 60 * 60_000) },
+    { id: "demo-auth", status: "failed_auth", externalTicketId: null, missingFields: null, message: "Unauthorized ITSM webhook request", receivedAt: new Date(now - 4 * 60 * 60_000) },
   ];
+}
+
+function toItsmEventSummary(row: {
+  id: string;
+  status: string;
+  externalTicketId: string | null;
+  missingFields: string | null;
+  message: string | null;
+  receivedAt: Date;
+}): ItsmIntegrationEventSummary {
+  const { provider, externalTicketId } = parseProviderTicket(row.externalTicketId);
+  return {
+    id: row.id,
+    provider,
+    externalTicketId,
+    status: row.status,
+    missingFields: row.missingFields ? row.missingFields.split(",").filter(Boolean) : [],
+    message: row.message,
+    receivedAt: row.receivedAt.toISOString(),
+  };
+}
+
+function parseProviderTicket(value: string | null) {
+  if (!value) return { provider: "unknown", externalTicketId: null };
+  const separatorIndex = value.indexOf(":");
+  if (separatorIndex === -1) return { provider: "servicenow", externalTicketId: value };
+  return {
+    provider: value.slice(0, separatorIndex),
+    externalTicketId: value.slice(separatorIndex + 1) || null,
+  };
 }

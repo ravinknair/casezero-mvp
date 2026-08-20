@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { Card } from "@/components/ui/Card";
 
@@ -135,6 +135,25 @@ const sidebarItems = [
 export default function ItsmIntegrationsPage() {
   const [webhookSecret, setWebhookSecret] = useState("");
   const [testResults, setTestResults] = useState<Record<string, ProviderTestResult>>({});
+  const [recentEvents, setRecentEvents] = useState<ItsmIntegrationEvent[]>([]);
+  const [eventsLoading, setEventsLoading] = useState(true);
+
+  useEffect(() => {
+    void loadRecentEvents();
+  }, []);
+
+  async function loadRecentEvents() {
+    try {
+      const response = await fetch("/api/integrations/itsm/events");
+      if (!response.ok) throw new Error("Failed to load recent ITSM events");
+      const body = (await response.json()) as { events: ItsmIntegrationEvent[] };
+      setRecentEvents(body.events);
+    } catch (error) {
+      console.error("Failed to load recent ITSM events:", error);
+    } finally {
+      setEventsLoading(false);
+    }
+  }
 
   async function sendTestPayload(provider: (typeof providers)[number]) {
     setTestResults((current) => ({
@@ -171,6 +190,8 @@ export default function ItsmIntegrationsPage() {
           message: error instanceof Error ? error.message : "Test failed",
         },
       }));
+    } finally {
+      void loadRecentEvents();
     }
   }
 
@@ -230,6 +251,10 @@ export default function ItsmIntegrationsPage() {
               />
             ))}
           </section>
+
+          <Card title="Recent test events" subtitle="Latest accepted, duplicate, rejected, missing-field, and auth events from the ITSM webhook.">
+            <RecentEventsTable events={recentEvents} loading={eventsLoading} />
+          </Card>
         </div>
       </main>
     </div>
@@ -239,6 +264,16 @@ export default function ItsmIntegrationsPage() {
 type ProviderTestResult = {
   status: "pending" | "success" | "error";
   message: string;
+};
+
+type ItsmIntegrationEvent = {
+  id: string;
+  provider: string;
+  externalTicketId: string | null;
+  status: string;
+  missingFields: string[];
+  message: string | null;
+  receivedAt: string;
 };
 
 function ProviderCard({
@@ -312,4 +347,49 @@ function StatusRow({ label, value }: { label: string; value: string }) {
       <strong className="text-gray-900">{value}</strong>
     </div>
   );
+}
+
+function RecentEventsTable({ events, loading }: { events: ItsmIntegrationEvent[]; loading: boolean }) {
+  if (loading) return <p className="text-sm text-gray-600">Loading recent events...</p>;
+  if (!events.length) return <p className="text-sm text-gray-600">No webhook events recorded yet.</p>;
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="min-w-full text-left text-sm">
+        <thead className="border-b border-gray-200 text-xs uppercase tracking-wide text-gray-500">
+          <tr>
+            <th className="py-2 pr-4">Time</th>
+            <th className="py-2 pr-4">Provider</th>
+            <th className="py-2 pr-4">Ticket</th>
+            <th className="py-2 pr-4">Status</th>
+            <th className="py-2 pr-4">Detail</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-100 text-gray-700">
+          {events.map((event) => (
+            <tr key={event.id}>
+              <td className="whitespace-nowrap py-3 pr-4 text-gray-600">{formatDate(event.receivedAt)}</td>
+              <td className="whitespace-nowrap py-3 pr-4 font-semibold text-gray-900">{formatProvider(event.provider)}</td>
+              <td className="whitespace-nowrap py-3 pr-4 font-mono text-xs text-gray-800">{event.externalTicketId ?? "-"}</td>
+              <td className="whitespace-nowrap py-3 pr-4"><StatusBadge status={event.status} /></td>
+              <td className="py-3 pr-4 text-gray-600">{event.message ?? (event.missingFields.length ? `Missing ${event.missingFields.join(", ")}` : "Recorded")}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function StatusBadge({ status }: { status: string }) {
+  const tone = status === "accepted" || status === "duplicate" ? "bg-green-50 text-green-700" : status === "failed_auth" || status === "rejected" ? "bg-red-50 text-red-700" : "bg-amber-50 text-amber-700";
+  return <span className={`rounded px-2 py-1 text-xs font-semibold ${tone}`}>{status.replace("_", " ")}</span>;
+}
+
+function formatProvider(provider: string) {
+  return providers.find((item) => item.provider === provider)?.name ?? provider.replaceAll("_", " ");
+}
+
+function formatDate(value: string) {
+  return new Date(value).toLocaleString();
 }
