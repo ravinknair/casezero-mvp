@@ -127,7 +127,7 @@ const sidebarItems = [
   { icon: "✦", label: "Support Ops", href: "/operations", count: 7 },
   { icon: "▣", label: "Reports", href: "/reports" },
   { icon: "▤", label: "Brief", href: "/reports/leadership-brief" },
-  { icon: "⌁", label: "ITSM", href: "/admin/integrations", active: true },
+  { icon: "⌁", label: "Integrations", href: "/admin/integrations", active: true },
   { icon: "◈", label: "Security", href: "/security" },
   { icon: "⚙", label: "Admin", href: "/admin" },
 ];
@@ -200,7 +200,7 @@ export default function ItsmIntegrationsPage() {
         <div className="mx-auto max-w-7xl space-y-6">
           <header>
             <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">Integration catalog</p>
-            <h1 className="mt-1 text-3xl font-bold text-gray-900">ITSM and support platforms</h1>
+            <h1 className="mt-1 text-3xl font-bold text-gray-900">Support platform integrations</h1>
             <p className="mt-2 max-w-3xl text-sm text-gray-600">
               Connect ServiceNow, Salesforce Service Cloud, Zendesk, Jira Service Management, Freshservice / Freshdesk, BMC Helix, Ivanti Neurons, and ManageEngine ServiceDesk Plus into one FCR reporting pipeline.
             </p>

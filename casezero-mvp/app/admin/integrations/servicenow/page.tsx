@@ -45,7 +45,7 @@ const sidebarItems = [
   { icon: "✦", label: "Support Ops", href: "/operations", count: 7 },
   { icon: "▣", label: "Reports", href: "/reports" },
   { icon: "▤", label: "Brief", href: "/reports/leadership-brief" },
-  { icon: "⌁", label: "ITSM", href: "/admin/integrations" },
+  { icon: "⌁", label: "Integrations", href: "/admin/integrations" },
   { icon: "⌁", label: "ServiceNow", href: "/admin/integrations/servicenow", active: true },
   { icon: "◈", label: "Security", href: "/security" },
   { icon: "⚙", label: "Admin", href: "/admin" },
@@ -83,7 +83,7 @@ export default function ServiceNowIntegrationPage() {
               Connect incident updates, validate required fields, and monitor ingestion health before turning off demo mode.
             </p>
             <a href="/admin/integrations" className="mt-3 inline-flex rounded border border-blue-200 px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-400 hover:bg-blue-50">
-              View all ITSM providers
+              View all integrations
             </a>
           </header>
 

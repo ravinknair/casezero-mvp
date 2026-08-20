@@ -46,7 +46,7 @@ export default function ReportsPage() {
     { icon: "↗", label: "Telemetry", href: "/telemetry" },
     { icon: "▣", label: "Reports", href: "/reports", active: true },
     { icon: "▤", label: "Brief", href: "/reports/leadership-brief" },
-    { icon: "⌁", label: "ServiceNow", href: "/admin/integrations/servicenow" },
+    { icon: "⌁", label: "Integrations", href: "/admin/integrations" },
     { icon: "◈", label: "Security", href: "/security" },
     { icon: "⚙", label: "Admin", href: "/admin" },
   ];

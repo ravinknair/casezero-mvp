@@ -27,7 +27,7 @@ const sidebarItems = [
   { icon: "✦", label: "Support Ops", href: "/operations", count: 7 },
   { icon: "▣", label: "Reports", href: "/reports" },
   { icon: "▤", label: "Brief", href: "/reports/leadership-brief", active: true },
-  { icon: "⌁", label: "ServiceNow", href: "/admin/integrations/servicenow" },
+  { icon: "⌁", label: "Integrations", href: "/admin/integrations" },
   { icon: "◈", label: "Security", href: "/security" },
   { icon: "⚙", label: "Admin", href: "/admin" },
 ];
