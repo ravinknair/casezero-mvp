@@ -12,7 +12,7 @@ export default function AdminPage() {
     { icon: "◎", label: "Evidence", href: "/evidence", count: 42 },
     { icon: "◇", label: "Policies", href: "/policies", count: 8 },
     { icon: "↗", label: "Telemetry", href: "/telemetry" },
-    { icon: "⌁", label: "ServiceNow", href: "/admin/integrations/servicenow" },
+    { icon: "⌁", label: "ITSM", href: "/admin/integrations" },
     { icon: "◈", label: "Security", href: "/security" },
     { icon: "⚙", label: "Admin", href: "/admin", active: true },
   ];
@@ -41,9 +41,9 @@ export default function AdminPage() {
         <section>
           <h2 className="mb-3 text-lg font-bold text-gray-900">Product setup</h2>
           <div className="grid gap-4 md:grid-cols-2">
-            <a href="/admin/integrations/servicenow" className="rounded-lg border border-gray-200 bg-white p-5 hover:border-blue-300">
-              <h3 className="font-bold text-gray-900">ServiceNow FCR integration</h3>
-              <p className="mt-2 text-sm text-gray-600">Webhook URL, secret status, sample payload, field validation, and integration health.</p>
+            <a href="/admin/integrations" className="rounded-lg border border-gray-200 bg-white p-5 hover:border-blue-300">
+              <h3 className="font-bold text-gray-900">ITSM integrations</h3>
+              <p className="mt-2 text-sm text-gray-600">ServiceNow, Zendesk, Jira Service Management, Salesforce Service Cloud, and Freshservice setup.</p>
             </a>
             <a href="/security" className="rounded-lg border border-gray-200 bg-white p-5 hover:border-blue-300">
               <h3 className="font-bold text-gray-900">Security posture</h3>
