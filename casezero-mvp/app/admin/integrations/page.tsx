@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { Card } from "@/components/ui/Card";
 
-const genericWebhookUrl = "https://casezero-mvp.raknair.workers.dev/api/integrations/itsm/fcr";
+const genericWebhookPath = "/api/integrations/itsm/fcr";
+const genericWebhookUrl = `https://casezero-mvp.raknair.workers.dev${genericWebhookPath}`;
 
 const providers = [
   {
@@ -131,6 +133,47 @@ const sidebarItems = [
 ];
 
 export default function ItsmIntegrationsPage() {
+  const [webhookSecret, setWebhookSecret] = useState("");
+  const [testResults, setTestResults] = useState<Record<string, ProviderTestResult>>({});
+
+  async function sendTestPayload(provider: (typeof providers)[number]) {
+    setTestResults((current) => ({
+      ...current,
+      [provider.provider]: { status: "pending", message: "Sending test payload..." },
+    }));
+
+    try {
+      const response = await fetch(genericWebhookPath, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CaseZero-Webhook-Secret": webhookSecret,
+        },
+        body: provider.sample,
+      });
+      const body = (await response.json()) as { accepted?: boolean; externalTicketId?: string; error?: string };
+      if (!response.ok || !body.accepted) {
+        throw new Error(body.error ?? `Request failed with ${response.status}`);
+      }
+
+      setTestResults((current) => ({
+        ...current,
+        [provider.provider]: {
+          status: "success",
+          message: `Accepted ${body.externalTicketId ?? provider.provider}`,
+        },
+      }));
+    } catch (error) {
+      setTestResults((current) => ({
+        ...current,
+        [provider.provider]: {
+          status: "error",
+          message: error instanceof Error ? error.message : "Test failed",
+        },
+      }));
+    }
+  }
+
   return (
     <div className="app-layout flex">
       <Sidebar items={sidebarItems} userName="Ravi Nair" />
@@ -149,6 +192,17 @@ export default function ItsmIntegrationsPage() {
               <div className="rounded border border-gray-200 bg-gray-50 p-3 font-mono text-xs text-gray-800 break-all">
                 {genericWebhookUrl}
               </div>
+              <label className="mt-4 block text-sm font-semibold text-gray-900" htmlFor="itsm-webhook-secret">
+                Webhook secret for test sends
+              </label>
+              <input
+                id="itsm-webhook-secret"
+                type="password"
+                value={webhookSecret}
+                onChange={(event) => setWebhookSecret(event.target.value)}
+                placeholder="Paste ITSM_WEBHOOK_SECRET to send test payloads"
+                className="mt-2 w-full rounded border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-400"
+              />
               <div className="mt-4 grid gap-3 text-sm text-gray-700 md:grid-cols-3">
                 <SetupFact label="Method" value="POST" />
                 <SetupFact label="Auth header" value="X-CaseZero-Webhook-Secret" />
@@ -167,7 +221,13 @@ export default function ItsmIntegrationsPage() {
 
           <section className="grid gap-4 xl:grid-cols-2">
             {providers.map((provider) => (
-              <ProviderCard key={provider.provider} provider={provider} />
+              <ProviderCard
+                key={provider.provider}
+                provider={provider}
+                result={testResults[provider.provider]}
+                canTest={Boolean(webhookSecret.trim())}
+                onTest={() => void sendTestPayload(provider)}
+              />
             ))}
           </section>
         </div>
@@ -176,7 +236,28 @@ export default function ItsmIntegrationsPage() {
   );
 }
 
-function ProviderCard({ provider }: { provider: (typeof providers)[number] }) {
+type ProviderTestResult = {
+  status: "pending" | "success" | "error";
+  message: string;
+};
+
+function ProviderCard({
+  provider,
+  result,
+  canTest,
+  onTest,
+}: {
+  provider: (typeof providers)[number];
+  result?: ProviderTestResult;
+  canTest: boolean;
+  onTest: () => void;
+}) {
+  const resultClass = {
+    pending: "border-blue-100 bg-blue-50 text-blue-800",
+    success: "border-green-100 bg-green-50 text-green-800",
+    error: "border-red-100 bg-red-50 text-red-800",
+  }[result?.status ?? "pending"];
+
   return (
     <Card>
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -199,6 +280,17 @@ function ProviderCard({ provider }: { provider: (typeof providers)[number] }) {
           <p className="mt-1 font-mono font-semibold text-gray-900">{provider.provider}</p>
         </div>
         <pre className="overflow-x-auto rounded border border-gray-200 bg-gray-950 p-3 text-xs leading-5 text-gray-100">{provider.sample}</pre>
+      </div>
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          onClick={onTest}
+          disabled={!canTest || result?.status === "pending"}
+          className="rounded bg-blue-700 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-gray-300"
+        >
+          {result?.status === "pending" ? "Sending..." : "Send test payload"}
+        </button>
+        {result ? <span className={`rounded border px-3 py-2 text-sm font-semibold ${resultClass}`}>{result.message}</span> : null}
       </div>
     </Card>
   );
