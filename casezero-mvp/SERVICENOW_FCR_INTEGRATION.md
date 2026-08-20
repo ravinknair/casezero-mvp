@@ -8,6 +8,14 @@ X-CaseZero-Webhook-Secret: <ITSM_WEBHOOK_SECRET>
 Content-Type: application/json
 ```
 
+ServiceNow is also supported through the vendor-neutral ITSM endpoint by sending `"provider": "servicenow"`:
+
+```text
+POST /api/integrations/itsm/fcr
+```
+
+See `ITSM_INTEGRATIONS.md` for Zendesk, Jira Service Management, Salesforce Service Cloud, and Freshservice payloads.
+
 Production endpoint:
 
 ```text
@@ -126,6 +134,8 @@ Create an active advanced Business Rule named `Send Incident FCR to CaseZero` on
 ```
 
 CaseZero upserts records by ServiceNow incident number. Insert, resolution, reassignment, and reopen events therefore update one interaction instead of inflating the FCR denominator.
+
+In the shared ITSM ingestion layer, the idempotency key is `provider` plus ticket number. This allows other platforms to use the same ticket number format without colliding with ServiceNow records.
 
 ## Verification
 

@@ -95,6 +95,7 @@ export async function POST() {
         .values({
           id: item.id,
           caseId: item.caseId,
+          provider: "casezero_demo",
           externalTicketId: item.externalTicketId,
           channel: item.contactChannel,
           receivedAt: new Date(item.firstContactAt),

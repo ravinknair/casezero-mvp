@@ -1,5 +1,5 @@
 import { relations, sql } from "drizzle-orm";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 const createdAt = () =>
 	integer("created_at", { mode: "timestamp_ms" })
@@ -91,22 +91,27 @@ export const activities = sqliteTable("activities", {
 	createdAt: createdAt(),
 });
 
-export const supportInteractions = sqliteTable("support_interactions", {
-	id: text("id").primaryKey(),
-	caseId: text("case_id").references(() => cases.id),
-	externalTicketId: text("external_ticket_id").notNull().unique(),
-	channel: text("channel").notNull(),
-	receivedAt: integer("received_at", { mode: "timestamp_ms" }).notNull(),
-	firstResolvedAt: integer("first_resolved_at", { mode: "timestamp_ms" }),
-	resolvedOnFirstContact: integer("resolved_on_first_contact", { mode: "boolean" })
-		.notNull()
-		.default(false),
-	escalationCount: integer("escalation_count").notNull().default(0),
-	reopenCount: integer("reopen_count").notNull().default(0),
-	repeatContactAt: integer("repeat_contact_at", { mode: "timestamp_ms" }),
-	createdAt: createdAt(),
-	updatedAt: updatedAt(),
-});
+export const supportInteractions = sqliteTable(
+	"support_interactions",
+	{
+		id: text("id").primaryKey(),
+		caseId: text("case_id").references(() => cases.id),
+		provider: text("provider").notNull().default("servicenow"),
+		externalTicketId: text("external_ticket_id").notNull(),
+		channel: text("channel").notNull(),
+		receivedAt: integer("received_at", { mode: "timestamp_ms" }).notNull(),
+		firstResolvedAt: integer("first_resolved_at", { mode: "timestamp_ms" }),
+		resolvedOnFirstContact: integer("resolved_on_first_contact", { mode: "boolean" })
+			.notNull()
+			.default(false),
+		escalationCount: integer("escalation_count").notNull().default(0),
+		reopenCount: integer("reopen_count").notNull().default(0),
+		repeatContactAt: integer("repeat_contact_at", { mode: "timestamp_ms" }),
+		createdAt: createdAt(),
+		updatedAt: updatedAt(),
+	},
+	(table) => [uniqueIndex("support_interactions_provider_external_ticket_id_unique").on(table.provider, table.externalTicketId)],
+);
 
 export const serviceNowIntegrationEvents = sqliteTable("servicenow_integration_events", {
 	id: text("id").primaryKey(),
