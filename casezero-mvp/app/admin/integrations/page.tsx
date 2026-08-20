@@ -74,6 +74,20 @@ const providers = [
   }
 }`,
   },
+  {
+    name: "BMC Helix ITSM",
+    provider: "bmc_helix",
+    status: "Supported",
+    channel: "Incident webhook or integration service",
+    sample: `{
+  "provider": "bmc_helix",
+  "incident": {
+    "Incident_Number": "INC0000002048",
+    "Reported_Source": "Phone",
+    "Submit_Date": "2026-08-05T10:18:00Z"
+  }
+}`,
+  },
 ];
 
 const sidebarItems = [
@@ -96,7 +110,7 @@ export default function ItsmIntegrationsPage() {
             <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">Integration catalog</p>
             <h1 className="mt-1 text-3xl font-bold text-gray-900">ITSM and support platforms</h1>
             <p className="mt-2 max-w-3xl text-sm text-gray-600">
-              Connect ServiceNow, Zendesk, Jira Service Management, Salesforce Service Cloud, and Freshservice into one FCR reporting pipeline.
+              Connect ServiceNow, Zendesk, Jira Service Management, Salesforce Service Cloud, Freshservice, and BMC Helix into one FCR reporting pipeline.
             </p>
           </header>
 

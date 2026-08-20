@@ -90,4 +90,20 @@ test("normalizes competitor ITSM payloads into canonical FCR records", () => {
   assert.equal(salesforceRecord.externalTicketId, "00001042");
   assert.equal(salesforceRecord.contactChannel, "Phone");
   assert.equal(salesforceRecord.resolvedOnFirstContact, true);
+
+  const bmcRecord = normalizeItsmFcrPayload({
+    provider: "bmc",
+    incident: {
+      Incident_Number: "INC0000002048",
+      Reported_Source: "Phone",
+      Submit_Date: "2026-08-05T10:18:00Z",
+      Resolution_Date: "2026-08-05T10:39:00Z",
+      Resolved_On_First_Contact__c: "true",
+    },
+  });
+
+  assert.equal(bmcRecord.provider, "bmc_helix");
+  assert.equal(bmcRecord.externalTicketId, "INC0000002048");
+  assert.equal(bmcRecord.contactChannel, "Phone");
+  assert.equal(bmcRecord.resolvedOnFirstContact, true);
 });

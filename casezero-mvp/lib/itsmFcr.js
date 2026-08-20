@@ -4,6 +4,7 @@ export const itsmProviders = [
   "jira_service_management",
   "salesforce_service_cloud",
   "freshservice",
+  "bmc_helix",
 ];
 
 const channelLabels = new Map([
@@ -32,6 +33,10 @@ const providerLabels = new Map([
   ["service_cloud", "salesforce_service_cloud"],
   ["freshservice", "freshservice"],
   ["freshdesk", "freshservice"],
+  ["bmc", "bmc_helix"],
+  ["bmc_helix", "bmc_helix"],
+  ["bmc_helix_itsm", "bmc_helix"],
+  ["helix", "bmc_helix"],
 ]);
 
 export function normalizeItsmFcrPayload(payload, fallbackProvider = "servicenow") {
@@ -45,6 +50,7 @@ export function normalizeItsmFcrPayload(payload, fallbackProvider = "servicenow"
   if (provider === "jira_service_management") return normalizeJiraServiceManagementFcrPayload(payload);
   if (provider === "salesforce_service_cloud") return normalizeSalesforceServiceCloudFcrPayload(payload);
   if (provider === "freshservice") return normalizeFreshserviceFcrPayload(payload);
+  if (provider === "bmc_helix") return normalizeBmcHelixFcrPayload(payload);
   throw new Error(`Unsupported ITSM provider: ${provider}`);
 }
 
@@ -126,6 +132,24 @@ function normalizeFreshserviceFcrPayload(payload) {
     escalationCount: nonNegativeInteger(custom.escalation_count ?? payload.escalationCount, "escalation_count"),
     reopenCount: nonNegativeInteger(custom.reopen_count ?? payload.reopenCount, "reopen_count"),
     repeatContactAt: optionalDate(custom.repeat_contact_at ?? payload.repeatContactAt, "repeat_contact_at"),
+  });
+}
+
+function normalizeBmcHelixFcrPayload(payload) {
+  const incident = payload.incident && typeof payload.incident === "object" ? payload.incident : payload;
+  return canonicalRecord("bmc_helix", {
+    externalTicketId: requiredString(
+      incident.Incident_Number ?? incident.incidentNumber ?? incident.id ?? incident.externalTicketId,
+      "Incident_Number"
+    ),
+    caseId: optionalString(incident.CaseZero_Case_ID__c ?? incident.casezero_case_id ?? incident.caseId),
+    contactChannel: normalizeChannel(incident.Reported_Source ?? incident.reportedSource ?? incident.channel ?? "web"),
+    firstContactAt: requiredDate(incident.Submit_Date ?? incident.submitDate ?? incident.created_at ?? incident.firstContactAt, "Submit_Date"),
+    firstResolvedAt: optionalDate(incident.Resolution_Date ?? incident.resolutionDate ?? incident.resolved_at ?? incident.firstResolvedAt, "Resolution_Date"),
+    resolvedOnFirstContact: toBoolean(incident.Resolved_On_First_Contact__c ?? incident.resolvedOnFirstContact),
+    escalationCount: nonNegativeInteger(incident.Escalation_Count__c ?? incident.escalationCount, "Escalation_Count__c"),
+    reopenCount: nonNegativeInteger(incident.Reopen_Count__c ?? incident.reopenCount, "Reopen_Count__c"),
+    repeatContactAt: optionalDate(incident.Repeat_Contact_At__c ?? incident.repeatContactAt, "Repeat_Contact_At__c"),
   });
 }
 

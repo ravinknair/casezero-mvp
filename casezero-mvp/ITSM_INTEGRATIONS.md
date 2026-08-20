@@ -31,8 +31,9 @@ Use one of these `provider` values in generic ITSM requests:
 - `jira_service_management`
 - `salesforce_service_cloud`
 - `freshservice`
+- `bmc_helix`
 
-Common aliases are accepted for convenience: `service_now`, `jira`, `jsm`, `salesforce`, `service_cloud`, and `freshdesk`.
+Common aliases are accepted for convenience: `service_now`, `jira`, `jsm`, `salesforce`, `service_cloud`, `freshdesk`, `bmc`, and `helix`.
 
 ## Canonical Fields
 
@@ -129,6 +130,24 @@ Required source fields are the external ticket ID, contact channel when the prov
       "escalation_count": 0,
       "reopen_count": 0
     }
+  }
+}
+```
+
+## BMC Helix ITSM Example
+
+```json
+{
+  "provider": "bmc_helix",
+  "incident": {
+    "Incident_Number": "INC0000002048",
+    "Reported_Source": "Phone",
+    "Submit_Date": "2026-08-05T10:18:00Z",
+    "Resolution_Date": "2026-08-05T10:39:00Z",
+    "Resolved_On_First_Contact__c": true,
+    "Escalation_Count__c": 0,
+    "Reopen_Count__c": 0,
+    "CaseZero_Case_ID__c": "CZ-1825"
   }
 }
 ```
