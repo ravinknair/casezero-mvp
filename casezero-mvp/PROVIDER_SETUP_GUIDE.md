@@ -7,7 +7,7 @@ Zendesk, Jira Service Management, Salesforce Service Cloud, Freshservice/Freshde
 ## Generic webhook setup
 
 1. Configure the provider to send a webhook to `/api/integrations/itsm/fcr`.
-2. Send `X-CaseZero-Webhook-Secret` with the value of the Worker secret `ITSM_WEBHOOK_SECRET`.
+2. Create a provider token from Admin or `POST /api/integrations/itsm/config`, then send it as `X-CaseZero-Connector-Token`.
 3. Include the provider identifier and the provider's ticket or incident ID. The normalizer accepts the sample payloads shown in the integration catalog.
 4. Confirm accepted and duplicate events in `/admin/integrations` and provider summaries at `/admin/integrations/health`.
 

@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { UserTable, type AdminUser } from "@/components/admin/UserTable";
 import { RoleManager } from "@/components/admin/RoleManager";
+import { InviteMemberForm } from "@/components/admin/InviteMemberForm";
 
 export default function AdminPage() {
   const sidebarItems = [
@@ -17,17 +19,27 @@ export default function AdminPage() {
     { icon: "⚙", label: "Admin", href: "/admin", active: true },
   ];
 
-  const users: AdminUser[] = [
-    { id: "1", name: "Ravi Nair", email: "raknair@outlook.com", role: "Admin", status: "active" },
-    { id: "2", name: "Iranga Subasinghe", email: "prasadsmy@gmail.com", role: "Admin", status: "active" },
-    { id: "3", name: "Mandar Pophali", email: "mandar@manuvaconsulting.com", role: "Admin", status: "active" },
-    { id: "4", name: "Field Operator - Alberta", email: "operator.ab@example.com", role: "Viewer", status: "invited" },
-  ];
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [invitations, setInvitations] = useState<Array<{ id: string; email: string; role: string }>>([]);
+  const [seedMessage, setSeedMessage] = useState("");
+  useEffect(() => {
+    void fetch("/api/workspaces/invitations").then((response) => response.json()).then((data: { members: AdminUser[]; invitations: Array<{ id: string; email: string; role: string }> }) => {
+      setUsers(data.members.map((user) => ({ ...user, role: user.role.replace(/^./, (letter) => letter.toUpperCase()) })));
+      setInvitations(data.invitations);
+    });
+  }, []);
+
+  async function loadDemoCases() {
+    setSeedMessage("Loading...");
+    const response = await fetch("/api/seed", { method: "POST" });
+    const data = await response.json() as { message?: string; error?: string };
+    setSeedMessage(data.message ?? data.error ?? "Seed completed");
+  }
 
   const roles = [
-    { name: "Admin", users: 3, permissions: "Full platform access, policy and role management" },
-    { name: "Approver", users: 0, permissions: "Approve/reject recommended actions, read evidence and metrics" },
-    { name: "Viewer", users: 1, permissions: "Read-only access to dashboard, case list, and reports" },
+    { name: "Admin", users: users.filter((user) => user.role === "Admin").length, permissions: "Full platform access, policy and role management" },
+    { name: "Operator", users: users.filter((user) => user.role === "Operator").length, permissions: "Manage cases, evidence, workflows, and approvals" },
+    { name: "Viewer", users: users.filter((user) => user.role === "Viewer").length, permissions: "Read-only access to dashboard, case list, and reports" },
   ];
 
   return (
@@ -50,10 +62,18 @@ export default function AdminPage() {
               <p className="mt-2 text-sm text-gray-600">Stored data, excluded data, retention, secrets, auth, and deployment model.</p>
             </a>
           </div>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <button type="button" onClick={loadDemoCases} className="rounded bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-700">Load demo cases</button>
+            {seedMessage && <span className="text-sm text-gray-600" role="status">{seedMessage}</span>}
+          </div>
+        </section>
+        <section>
+          <InviteMemberForm />
         </section>
         <section>
           <h2 className="mb-3 text-lg font-bold text-gray-900">User table</h2>
           <UserTable users={users} />
+          {invitations.length > 0 && <div className="mt-4 rounded-lg border border-dashed border-gray-300 bg-gray-50 p-4"><h3 className="font-semibold text-gray-800">Pending invitations</h3>{invitations.map((invitation) => <p key={invitation.id} className="mt-2 text-sm text-gray-600">{invitation.email} · {invitation.role}</p>)}</div>}
         </section>
         <section>
           <RoleManager roles={roles} />

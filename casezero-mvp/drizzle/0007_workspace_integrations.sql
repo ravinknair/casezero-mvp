@@ -1,0 +1,5 @@
+CREATE TABLE `workspace_integrations` (`id` text PRIMARY KEY NOT NULL, `workspace_id` text NOT NULL, `provider` text NOT NULL, `token_hash` text NOT NULL, `active` integer DEFAULT true NOT NULL, `created_by` text NOT NULL, `created_at` integer DEFAULT (unixepoch() * 1000) NOT NULL, `updated_at` integer DEFAULT (unixepoch() * 1000) NOT NULL, FOREIGN KEY (`workspace_id`) REFERENCES `workspaces`(`id`), FOREIGN KEY (`created_by`) REFERENCES `users`(`id`));
+CREATE UNIQUE INDEX `workspace_integrations_token_hash_unique` ON `workspace_integrations` (`token_hash`);
+CREATE UNIQUE INDEX `workspace_integrations_workspace_provider_unique` ON `workspace_integrations` (`workspace_id`,`provider`);
+DROP INDEX IF EXISTS `support_interactions_provider_external_ticket_id_unique`;
+CREATE UNIQUE INDEX `support_interactions_workspace_provider_external_ticket_id_unique` ON `support_interactions` (`workspace_id`,`provider`,`external_ticket_id`);

@@ -50,9 +50,9 @@ echo "✓ Dependencies installed"
 APP_ENV_FILE="$PROJECT_DIR/casezero-mvp/.dev.vars"
 if [ ! -f "$APP_ENV_FILE" ]; then
     echo ""
-    echo "🔐 Creating local-only smoke-test secret at casezero-mvp/.dev.vars"
+    echo "🔐 Creating local development settings at casezero-mvp/.dev.vars"
     cat > "$APP_ENV_FILE" <<'EOF'
-ITSM_WEBHOOK_SECRET=local-smoke-secret
+CASEZERO_SESSION_SECRET=local-development-session-secret
 EOF
     echo "✓ Local .dev.vars created. This file is ignored by git."
 else
@@ -76,7 +76,7 @@ echo "2. Open browser: http://localhost:3000"
 echo "3. Visit ServiceNow setup: http://localhost:3000/admin/integrations/servicenow"
 echo "4. Run tests: npm run test"
 echo "5. Run full check: npm run check"
-echo "6. Optional local webhook smoke test: npm run smoke:servicenow"
+echo "6. ServiceNow test: configure a workspace connector token from the Admin page"
 echo ""
 echo "📚 For more info, see COLLABORATOR_RUNBOOK.md and COLLABORATORS.md"
 echo ""

@@ -38,7 +38,7 @@ Leadership and integration endpoints:
 - `GET /api/dashboard/metrics`: operational and FCR metrics
 - `POST /api/integrations/servicenow/fcr`: authenticated, idempotent ServiceNow incident ingestion
 
-The ServiceNow integration uses the `ITSM_WEBHOOK_SECRET` Cloudflare Worker secret and remote D1 persistence. See [SERVICENOW_FCR_INTEGRATION.md](SERVICENOW_FCR_INTEGRATION.md) for the REST Message, custom field, and Business Rule configuration.
+The ServiceNow integration uses workspace-specific connector tokens and remote D1 persistence. See [SERVICENOW_FCR_INTEGRATION.md](SERVICENOW_FCR_INTEGRATION.md) for the REST Message, custom field, and Business Rule configuration.
 
 ## Useful Commands
 

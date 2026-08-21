@@ -1,0 +1,3 @@
+CREATE TABLE `workspace_invitations` (`id` text PRIMARY KEY NOT NULL, `workspace_id` text NOT NULL, `email` text NOT NULL, `role` text DEFAULT 'viewer' NOT NULL, `token_hash` text NOT NULL, `expires_at` integer NOT NULL, `invited_by` text NOT NULL, `accepted_at` integer, `revoked_at` integer, `created_at` integer DEFAULT (unixepoch() * 1000) NOT NULL, FOREIGN KEY (`workspace_id`) REFERENCES `workspaces`(`id`), FOREIGN KEY (`invited_by`) REFERENCES `users`(`id`));
+CREATE UNIQUE INDEX `workspace_invitations_token_hash_unique` ON `workspace_invitations` (`token_hash`);
+CREATE UNIQUE INDEX `workspace_invitations_workspace_email_unique` ON `workspace_invitations` (`workspace_id`,`email`);

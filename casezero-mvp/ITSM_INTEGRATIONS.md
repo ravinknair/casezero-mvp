@@ -4,7 +4,7 @@ CaseZero supports ServiceNow directly and accepts normalized FCR snapshots from 
 
 ```text
 POST /api/integrations/itsm/fcr
-X-CaseZero-Webhook-Secret: <ITSM_WEBHOOK_SECRET>
+X-CaseZero-Connector-Token: <workspace connector token>
 Content-Type: application/json
 ```
 
@@ -20,7 +20,7 @@ The existing ServiceNow endpoint remains supported:
 POST /api/integrations/servicenow/fcr
 ```
 
-Both endpoints use the same secret, validation, idempotent upsert behavior, and FCR dashboard pipeline. CaseZero stores support interactions by the pair of `provider` and `externalTicketId`, so ticket numbers from different systems cannot collide.
+Both endpoints use a workspace-specific connector token, validation, idempotent upsert behavior, and the FCR dashboard pipeline. CaseZero stores support interactions by workspace, provider, and external ticket ID.
 
 ## Supported Providers
 

@@ -54,6 +54,20 @@ const sidebarItems = [
 export default function ServiceNowIntegrationPage() {
   const [health, setHealth] = useState<ServiceNowHealth>(emptyHealth);
   const [loading, setLoading] = useState(true);
+  const [connectorToken, setConnectorToken] = useState("");
+  const [tokenMessage, setTokenMessage] = useState("");
+
+  async function createConnectorToken() {
+    setTokenMessage("Creating...");
+    const response = await fetch("/api/integrations/itsm/config", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ provider: "servicenow" }) });
+    const data = await response.json() as { token?: string; error?: string };
+    if (!response.ok) {
+      setTokenMessage(data.error ?? "Unable to create token");
+      return;
+    }
+    setConnectorToken(data.token ?? "");
+    setTokenMessage("Token created. Copy it now; it will not be shown again.");
+  }
 
   useEffect(() => {
     async function loadHealth() {
@@ -109,10 +123,13 @@ export default function ServiceNowIntegrationPage() {
               </div>
               <div className="mt-4 grid gap-3 text-sm text-gray-700 md:grid-cols-2">
                 <SetupStep label="Method" value="POST" />
-                <SetupStep label="Auth header" value="X-CaseZero-Webhook-Secret" />
+                <SetupStep label="Auth header" value="X-CaseZero-Connector-Token" />
                 <SetupStep label="Idempotency" value="Upsert by incident number" />
                 <SetupStep label="Demo data" value="Available before connection" />
               </div>
+              <button type="button" onClick={createConnectorToken} className="mt-4 rounded bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-700">Create ServiceNow connector token</button>
+              {tokenMessage && <p className="mt-3 text-sm text-gray-600" role="status">{tokenMessage}</p>}
+              {connectorToken && <code className="mt-3 block break-all rounded border border-amber-200 bg-amber-50 p-3 text-xs text-amber-950">{connectorToken}</code>}
             </Card>
 
             <Card title="Integration health" subtitle="Operational counters from recent webhook attempts.">

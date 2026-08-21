@@ -1,4 +1,4 @@
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 
 type ServiceNowEventStatus = "accepted" | "duplicate" | "missing_fields" | "rejected" | "failed_auth";
 
@@ -31,7 +31,7 @@ export interface ItsmIntegrationEventSummary {
   receivedAt: string;
 }
 
-export async function recordServiceNowIntegrationEvent(event: ServiceNowIntegrationEventInput) {
+export async function recordServiceNowIntegrationEvent(event: ServiceNowIntegrationEventInput, workspaceId?: string) {
   try {
     const [{ getDb }, { serviceNowIntegrationEvents }] = await Promise.all([import("@/db"), import("@/db/schema")]);
     await getDb()
@@ -42,6 +42,7 @@ export async function recordServiceNowIntegrationEvent(event: ServiceNowIntegrat
         externalTicketId: event.externalTicketId ?? null,
         missingFields: event.missingFields?.join(",") ?? null,
         message: event.message ?? null,
+        workspaceId: workspaceId ?? null,
       })
       .run();
   } catch {
@@ -49,30 +50,36 @@ export async function recordServiceNowIntegrationEvent(event: ServiceNowIntegrat
   }
 }
 
-export async function getServiceNowIntegrationHealth(requestUrl: string): Promise<ServiceNowIntegrationHealth> {
+export async function getServiceNowIntegrationHealth(requestUrl: string, workspaceId?: string): Promise<ServiceNowIntegrationHealth> {
   const webhookUrl = new URL("/api/integrations/servicenow/fcr", requestUrl).toString();
-  const secretConfigured = await hasWebhookSecret();
+  let secretConfigured = false;
 
   try {
-    const [{ getDb }, { serviceNowIntegrationEvents }] = await Promise.all([import("@/db"), import("@/db/schema")]);
+    const [{ getDb }, { serviceNowIntegrationEvents, workspaceIntegrations }] = await Promise.all([import("@/db"), import("@/db/schema")]);
+    if (workspaceId) {
+      const integration = await getDb().select({ id: workspaceIntegrations.id }).from(workspaceIntegrations).where(eq(workspaceIntegrations.workspaceId, workspaceId)).limit(1);
+      secretConfigured = integration.length > 0;
+    }
     const rows = await getDb()
       .select()
       .from(serviceNowIntegrationEvents)
+      .where(workspaceId ? eq(serviceNowIntegrationEvents.workspaceId, workspaceId) : undefined)
       .orderBy(desc(serviceNowIntegrationEvents.receivedAt))
       .limit(100);
 
-    return summarizeEvents(webhookUrl, secretConfigured, rows, false);
+    return summarizeEvents(webhookUrl, secretConfigured || rows.some((row) => row.status === "accepted" || row.status === "duplicate"), rows, false);
   } catch {
     return summarizeEvents(webhookUrl, secretConfigured, demoEvents(), true);
   }
 }
 
-export async function getRecentItsmIntegrationEvents(): Promise<{ events: ItsmIntegrationEventSummary[]; sampleMode: boolean }> {
+export async function getRecentItsmIntegrationEvents(workspaceId?: string): Promise<{ events: ItsmIntegrationEventSummary[]; sampleMode: boolean }> {
   try {
     const [{ getDb }, { serviceNowIntegrationEvents }] = await Promise.all([import("@/db"), import("@/db/schema")]);
     const rows = await getDb()
       .select()
       .from(serviceNowIntegrationEvents)
+      .where(workspaceId ? eq(serviceNowIntegrationEvents.workspaceId, workspaceId) : undefined)
       .orderBy(desc(serviceNowIntegrationEvents.receivedAt))
       .limit(25);
 
@@ -82,10 +89,10 @@ export async function getRecentItsmIntegrationEvents(): Promise<{ events: ItsmIn
   }
 }
 
-export async function getItsmProviderHealth() {
+export async function getItsmProviderHealth(workspaceId?: string) {
   try {
     const [{ getDb }, { serviceNowIntegrationEvents }] = await Promise.all([import("@/db"), import("@/db/schema")]);
-    const rows = await getDb().select().from(serviceNowIntegrationEvents).orderBy(desc(serviceNowIntegrationEvents.receivedAt)).limit(500);
+    const rows = await getDb().select().from(serviceNowIntegrationEvents).where(workspaceId ? eq(serviceNowIntegrationEvents.workspaceId, workspaceId) : undefined).orderBy(desc(serviceNowIntegrationEvents.receivedAt)).limit(500);
     return { providers: summarizeProviders(rows), sampleMode: false };
   } catch {
     return { providers: summarizeProviders(demoEvents()), sampleMode: true };
@@ -105,15 +112,6 @@ function summarizeProviders(rows: Array<{ status: string; externalTicketId: stri
     byProvider.set(provider, current);
   }
   return [...byProvider.entries()].map(([provider, summary]) => ({ provider, ...summary, status: summary.failedAuth > 0 && summary.accepted === 0 ? "attention" : summary.rejected > summary.accepted ? "degraded" : "healthy" }));
-}
-
-async function hasWebhookSecret() {
-  try {
-    const { env } = await import("cloudflare:workers");
-    return Boolean((env as unknown as { ITSM_WEBHOOK_SECRET?: string }).ITSM_WEBHOOK_SECRET);
-  } catch {
-    return false;
-  }
 }
 
 function summarizeEvents(

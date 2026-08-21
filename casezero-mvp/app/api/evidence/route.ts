@@ -1,17 +1,5 @@
-import { mockCases } from "@/lib/mockData";
+import { and, eq, or } from "drizzle-orm";
 import { requireAuth } from "@/lib/auth";
-
-const mockEvidence = mockCases.flatMap((c) =>
-  (c.recommendation?.evidence ?? []).map((entry: string[], index: number) => ({
-    id: `evidence-${c.id}-${index}`,
-    caseId: c.id,
-    type: entry[0],
-    title: entry[1],
-    description: entry[2],
-    timestamp: entry[3],
-    color: entry[4] ?? "blue",
-  }))
-);
 
 export async function GET(request: Request) {
   const auth = await requireAuth(request, "read");
@@ -19,10 +7,14 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const caseId = searchParams.get("caseId");
-    const results = caseId
-      ? mockEvidence.filter((e) => e.caseId === caseId)
-      : mockEvidence;
-    return Response.json(results);
+    const [{ getDb }, { cases, evidence }] = await Promise.all([import("@/db"), import("@/db/schema")]);
+    const db = getDb();
+    const results = await db.select({ evidence }).from(evidence).innerJoin(cases, eq(evidence.caseId, cases.id)).where(
+      caseId
+        ? and(eq(cases.workspaceId, auth.workspaceId), or(eq(cases.id, caseId), eq(cases.caseId, caseId)))
+        : eq(cases.workspaceId, auth.workspaceId),
+    );
+    return Response.json(results.map((row) => row.evidence));
   } catch {
     return Response.json({ error: "Failed to fetch evidence" }, { status: 500 });
   }
@@ -34,16 +26,12 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { caseId, type, title, description, timestamp, color } = body;
-    const newEvidence = {
-      id: `evidence-${Date.now()}`,
-      caseId,
-      type,
-      title,
-      description,
-      timestamp,
-      color,
-    };
-    mockEvidence.unshift(newEvidence);
+    const [{ getDb }, { cases, evidence }] = await Promise.all([import("@/db"), import("@/db/schema")]);
+    const db = getDb();
+    const caseRows = await db.select({ id: cases.id }).from(cases).where(and(eq(cases.workspaceId, auth.workspaceId), or(eq(cases.id, caseId), eq(cases.caseId, caseId)))).limit(1);
+    if (!caseRows[0]) return Response.json({ error: "Case not found" }, { status: 404 });
+    const newEvidence = { id: crypto.randomUUID(), caseId: caseRows[0].id, type, title, description, timestamp, color: color ?? "blue" };
+    await db.insert(evidence).values(newEvidence).run();
     return Response.json(newEvidence, { status: 201 });
   } catch {
     return Response.json({ error: "Failed to create evidence" }, { status: 500 });

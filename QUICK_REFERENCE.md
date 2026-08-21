@@ -54,7 +54,7 @@ npm run test        # Run tests
 npm run build       # Build production bundle
 npm run lint        # Check code quality
 npm run check       # Lint + test + build
-npm run smoke:servicenow  # Local ServiceNow webhook smoke test
+Use `/admin/integrations/servicenow` to create a workspace connector token and test the ServiceNow HTTP Method.
 make dev            # Alternative: make dev
 make test           # Alternative: make test
 make build          # Alternative: make build

@@ -37,6 +37,30 @@ export const workspaceMembers = sqliteTable("workspace_members", {
 	updatedAt: updatedAt(),
 }, (table) => [primaryKey({ columns: [table.workspaceId, table.userId] })]);
 
+export const workspaceInvitations = sqliteTable("workspace_invitations", {
+	id: text("id").primaryKey(),
+	workspaceId: text("workspace_id").notNull().references(() => workspaces.id),
+	email: text("email").notNull(),
+	role: text("role").notNull().default("viewer"),
+	tokenHash: text("token_hash").notNull().unique(),
+	expiresAt: integer("expires_at", { mode: "timestamp_ms" }).notNull(),
+	invitedBy: text("invited_by").notNull().references(() => users.id),
+	acceptedAt: integer("accepted_at", { mode: "timestamp_ms" }),
+	revokedAt: integer("revoked_at", { mode: "timestamp_ms" }),
+	createdAt: createdAt(),
+}, (table) => [uniqueIndex("workspace_invitations_workspace_email_unique").on(table.workspaceId, table.email)]);
+
+export const workspaceIntegrations = sqliteTable("workspace_integrations", {
+	id: text("id").primaryKey(),
+	workspaceId: text("workspace_id").notNull().references(() => workspaces.id),
+	provider: text("provider").notNull(),
+	tokenHash: text("token_hash").notNull().unique(),
+	active: integer("active", { mode: "boolean" }).notNull().default(true),
+	createdBy: text("created_by").notNull().references(() => users.id),
+	createdAt: createdAt(),
+	updatedAt: updatedAt(),
+}, (table) => [uniqueIndex("workspace_integrations_workspace_provider_unique").on(table.workspaceId, table.provider)]);
+
 export const sessions = sqliteTable("sessions", {
 	id: text("id").primaryKey(),
 	userId: text("user_id").notNull().references(() => users.id),
@@ -128,6 +152,19 @@ export const activities = sqliteTable("activities", {
 	createdAt: createdAt(),
 });
 
+export const approvals = sqliteTable("approvals", {
+	id: text("id").primaryKey(),
+	workspaceId: text("workspace_id").notNull().references(() => workspaces.id),
+	caseId: text("case_id").notNull().references(() => cases.id),
+	recommendationId: text("recommendation_id"),
+	status: text("status").notNull(),
+	approvedBy: text("approved_by").notNull().references(() => users.id),
+	approvalNotes: text("approval_notes"),
+	decidedAt: integer("decided_at", { mode: "timestamp_ms" }),
+	createdAt: createdAt(),
+	updatedAt: updatedAt(),
+});
+
 export const supportInteractions = sqliteTable(
 	"support_interactions",
 	{
@@ -148,7 +185,7 @@ export const supportInteractions = sqliteTable(
 		createdAt: createdAt(),
 		updatedAt: updatedAt(),
 	},
-	(table) => [uniqueIndex("support_interactions_provider_external_ticket_id_unique").on(table.provider, table.externalTicketId)],
+	(table) => [uniqueIndex("support_interactions_workspace_provider_external_ticket_id_unique").on(table.workspaceId, table.provider, table.externalTicketId)],
 );
 
 export const serviceNowIntegrationEvents = sqliteTable("servicenow_integration_events", {

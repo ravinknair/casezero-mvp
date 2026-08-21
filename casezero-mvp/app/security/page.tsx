@@ -39,7 +39,7 @@ export default function SecurityPage() {
               <p className="text-sm leading-6 text-gray-700">FCR interaction rows are retained for operational reporting and can be deleted by clearing the D1 table. A production plan should add customer-configurable retention windows before enterprise rollout.</p>
             </Card>
             <Card title="Secrets" subtitle="Webhook authentication.">
-              <p className="text-sm leading-6 text-gray-700">The ServiceNow webhook secret is stored as the Cloudflare Worker secret <span className="font-mono">ITSM_WEBHOOK_SECRET</span>. It is never committed to source and is compared with a SHA-256 timing-resistant check.</p>
+              <p className="text-sm leading-6 text-gray-700">ServiceNow uses a workspace-specific connector token. CaseZero stores only its SHA-256 hash and never displays the token again after creation.</p>
             </Card>
             <Card title="Auth" subtitle="Access model.">
               <p className="text-sm leading-6 text-gray-700">GitHub OAuth creates a signed HTTP-only session for a workspace. Admin, operator, and viewer permissions protect high-risk API writes, with audit logs recorded for authenticated mutations.</p>

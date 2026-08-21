@@ -23,10 +23,9 @@ chmod +x setup-collaborator.sh
 ./setup-collaborator.sh
 ```
 
-The setup script installs app dependencies and creates `casezero-mvp/.dev.vars` with a local-only dummy webhook secret:
-
+The setup script installs app dependencies and creates `casezero-mvp/.dev.vars` for local development:
 ```text
-ITSM_WEBHOOK_SECRET=local-smoke-secret
+CASEZERO_SESSION_SECRET=local-development-session-secret
 ```
 
 That file is ignored by git. Do not put real production secrets in chat or commits.
@@ -70,30 +69,8 @@ npm run check
 
 Current expected test count: 16 passing tests.
 
-## Local ServiceNow Smoke Test
-
-Start the app first:
-
-```bash
-npm run dev
-```
-
-In a second terminal, from the repository root:
-
-```bash
-npm run smoke:servicenow
-```
-
-The smoke test verifies:
-
-- valid payload returns `accepted: true`
-- duplicate payload stays idempotent
-- missing `opened_at` returns HTTP 400
-- wrong secret returns HTTP 401
-- dashboard FCR metrics still respond
-- integration health endpoint responds
-
-Local health can still show `sampleMode: true` when vinext is using a remote D1 preview binding. That is acceptable for local collaborator smoke tests as long as the webhook responses and dashboard FCR metrics update.
+## ServiceNow Test
+Create a workspace connector token from `/admin/integrations/servicenow`, configure it in the ServiceNow REST Message, and use the HTTP Method **Test** action. Confirm the response contains `accepted: true`, then verify the event on the CaseZero integration health page.
 
 ## Cloudflare / D1 Work
 
@@ -125,13 +102,7 @@ Confirm the ServiceNow health table exists remotely:
 ./node_modules/.bin/wrangler d1 execute casezero-mvp --remote --command "select name from sqlite_master where type = 'table' and name = 'servicenow_integration_events';" --json
 ```
 
-Set the production ServiceNow webhook secret only in a real terminal prompt:
-
-```bash
-./node_modules/.bin/wrangler secret put ITSM_WEBHOOK_SECRET
-```
-
-Do not send the secret through chat, email, screenshots, or commits.
+Connector tokens are workspace-specific and are stored only as hashes. Do not send tokens through chat, email, screenshots, or commits.
 
 ## Production Deploy
 

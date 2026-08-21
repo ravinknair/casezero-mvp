@@ -215,7 +215,7 @@ export default function ItsmIntegrationsPage() {
           </header>
 
           <section className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
-            <Card title="Shared webhook endpoint" subtitle="Use this endpoint for every supported provider except legacy ServiceNow-only setups.">
+            <Card title="Workspace webhook endpoint" subtitle="Use this endpoint with a provider-specific connector token.">
               <div className="rounded border border-gray-200 bg-gray-50 p-3 font-mono text-xs text-gray-800 break-all">
                 {genericWebhookUrl}
               </div>
@@ -224,7 +224,7 @@ export default function ItsmIntegrationsPage() {
               </p>
               <div className="mt-4 grid gap-3 text-sm text-gray-700 md:grid-cols-3">
                 <SetupFact label="Method" value="POST" />
-                <SetupFact label="Auth header" value="X-CaseZero-Webhook-Secret" />
+                <SetupFact label="Auth header" value="X-CaseZero-Connector-Token" />
                 <SetupFact label="Identity" value="provider + ticket ID" />
               </div>
             </Card>

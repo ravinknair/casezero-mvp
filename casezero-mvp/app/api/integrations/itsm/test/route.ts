@@ -1,4 +1,3 @@
-import { ingestItsmFcrRequest } from "@/lib/itsmIngestion";
 import { audit, requireAuth } from "@/lib/auth";
 
 const testPayloads = {
@@ -73,22 +72,8 @@ export async function POST(request: Request) {
     return Response.json({ error: "Unsupported test provider" }, { status: 400 });
   }
 
-  const { env } = await import("cloudflare:workers");
-  const webhookSecret = (env as unknown as { ITSM_WEBHOOK_SECRET?: string }).ITSM_WEBHOOK_SECRET;
-  if (!webhookSecret) {
-    return Response.json({ error: "ITSM ingestion is not configured" }, { status: 503 });
-  }
-
-  const testRequest = new Request(new URL("/api/integrations/itsm/fcr", request.url), {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CaseZero-Webhook-Secret": webhookSecret,
-    },
-    body: JSON.stringify(testPayloads[provider as TestProvider]),
-  });
-
-  const response = await ingestItsmFcrRequest(testRequest);
+  const { ingestItsmFcrPayload } = await import("@/lib/itsmIngestion");
+  const response = await ingestItsmFcrPayload(testPayloads[provider as TestProvider], provider, auth.workspaceId);
   await audit(auth, "integration.test", provider);
   return response;
 }

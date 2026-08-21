@@ -1,3 +1,4 @@
+import { and, eq, isNull } from "drizzle-orm";
 import { mockCases, mockSupportInteractions } from "@/lib/mockData";
 import { audit, requireAuth } from "@/lib/auth";
 
@@ -12,23 +13,25 @@ export async function POST(request: Request) {
     ]);
     const db = getDb();
     const now = Date.now();
-    const userId = "user-default";
-    const siteId = "site-production";
+    const userId = auth.userId;
+    const siteId = `site-${auth.workspaceId}`;
 
     await db
       .insert(users)
-      .values({ id: userId, email: "operator@casezero.ai", name: "CaseZero Operator", role: "admin" })
-      .onConflictDoNothing()
+      .values({ id: userId, email: auth.email, name: auth.name, role: auth.role, workspaceId: auth.workspaceId })
+      .onConflictDoUpdate({ target: users.id, set: { name: auth.name, workspaceId: auth.workspaceId } })
       .run();
     await db
       .insert(sites)
-      .values({ id: siteId, name: "Production", code: "prod-primary", environment: "production", region: "global" })
+      .values({ id: siteId, name: "Production", code: `prod-${auth.workspaceId}`, environment: "production", region: "global", workspaceId: auth.workspaceId })
       .onConflictDoNothing()
       .run();
 
     for (const item of mockCases) {
       const openedAt = new Date(now - 24 * 60 * 60 * 1000);
       const resolvedAt = item.status === "resolved" ? new Date(now) : null;
+
+      await db.update(cases).set({ workspaceId: auth.workspaceId, siteId, createdBy: userId, ownerId: userId, assignedTo: userId }).where(and(eq(cases.id, item.id), isNull(cases.workspaceId))).run();
 
       await db
         .insert(cases)
@@ -47,6 +50,7 @@ export async function POST(request: Request) {
           confidence: item.confidence,
           openedAt,
           resolvedAt,
+          workspaceId: auth.workspaceId,
         })
         .onConflictDoNothing()
         .run();
@@ -94,12 +98,14 @@ export async function POST(request: Request) {
     }
 
     for (const item of mockSupportInteractions) {
+      await db.update(supportInteractions).set({ workspaceId: auth.workspaceId }).where(and(eq(supportInteractions.id, item.id), isNull(supportInteractions.workspaceId))).run();
       await db
         .insert(supportInteractions)
         .values({
           id: item.id,
           caseId: item.caseId,
           provider: "casezero_demo",
+          workspaceId: auth.workspaceId,
           externalTicketId: item.externalTicketId,
           channel: item.contactChannel,
           receivedAt: new Date(item.firstContactAt),
@@ -133,11 +139,13 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const auth = await requireAuth(request, "read");
+  if (auth instanceof Response) return auth;
   try {
     const [{ getDb }, { cases }] = await Promise.all([import("@/db"), import("@/db/schema")]);
     const db = getDb();
-    const result = await db.select({ id: cases.id }).from(cases);
+    const result = await db.select({ id: cases.id }).from(cases).where(eq(cases.workspaceId, auth.workspaceId));
     return Response.json(
       { cases: result.length, source: "d1", message: "D1 database status" },
       { headers: { "Cache-Control": "no-store" } },

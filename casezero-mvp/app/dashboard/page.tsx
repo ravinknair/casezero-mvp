@@ -82,6 +82,7 @@ export default function DashboardPage() {
   const [cases, setCases] = useState<CaseItem[]>([]);
   const [metrics, setMetrics] = useState<DashboardMetrics>(emptyMetrics);
   const [loading, setLoading] = useState(true);
+  const [provider, setProvider] = useState("all");
 
   const fetchCases = useCallback(async () => {
     try {
@@ -99,7 +100,8 @@ export default function DashboardPage() {
 
   const fetchDashboardMetrics = useCallback(async () => {
     try {
-      const response = await fetch("/api/dashboard/metrics");
+      const query = provider === "all" ? "" : `?provider=${encodeURIComponent(provider)}`;
+      const response = await fetch(`/api/dashboard/metrics${query}`);
       if (!response.ok) {
         throw new Error("Failed to fetch dashboard metrics");
       }
@@ -108,7 +110,7 @@ export default function DashboardPage() {
     } catch (error) {
       console.error("Failed to fetch dashboard metrics:", error);
     }
-  }, []);
+  }, [provider]);
 
   useEffect(() => {
     void fetchCases();
@@ -142,6 +144,26 @@ export default function DashboardPage() {
       <Sidebar items={sidebarItems} userName="Ravi Nair" caseCount={cases.length} />
       <DashboardLayout environment="Production" userName="Ravi Nair" onCreateCase={openNewCaseWindow}>
         <main className="space-y-6 bg-gray-50 p-8">
+          <section className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-gray-200 bg-white p-4">
+            <div>
+              <h1 className="text-lg font-bold text-gray-900">Operational overview</h1>
+              <p className="mt-1 text-sm text-gray-600">Compare outcomes across connected support systems.</p>
+            </div>
+            <label className="flex items-center gap-3 text-sm font-semibold text-gray-700">
+              Data source
+              <select value={provider} onChange={(event) => setProvider(event.target.value)} className="rounded border border-gray-300 bg-white px-3 py-2 font-normal">
+                <option value="all">All systems</option>
+                <option value="servicenow">ServiceNow</option>
+                <option value="zendesk">Zendesk</option>
+                <option value="jira_service_management">Jira Service Management</option>
+                <option value="salesforce_service_cloud">Salesforce Service Cloud</option>
+                <option value="freshservice">Freshservice</option>
+                <option value="bmc_helix">BMC Helix</option>
+                <option value="ivanti_neurons">Ivanti Neurons</option>
+                <option value="manageengine_service_desk_plus">ManageEngine</option>
+              </select>
+            </label>
+          </section>
           {metrics.sampleMode ? (
             <section className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
               <div className="font-semibold">Demo mode is active</div>

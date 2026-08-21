@@ -4,7 +4,7 @@ CaseZero accepts idempotent ServiceNow incident snapshots at:
 
 ```text
 POST /api/integrations/servicenow/fcr
-X-CaseZero-Webhook-Secret: <ITSM_WEBHOOK_SECRET>
+X-CaseZero-Connector-Token: <workspace connector token>
 Content-Type: application/json
 ```
 
@@ -22,17 +22,9 @@ Production endpoint:
 https://casezero-mvp.raknair.workers.dev/api/integrations/servicenow/fcr
 ```
 
-## Cloudflare Setup
+## Connector Token Setup
 
-Create the Worker secret from a terminal. Enter the value only at Wrangler's hidden prompt:
-
-```bash
-wrangler secret put ITSM_WEBHOOK_SECRET
-```
-
-Do not store the secret in source control or send it through chat.
-
-Use the custom `X-CaseZero-Webhook-Secret` header in ServiceNow. ServiceNow may replace the standard `Authorization` header when an authentication profile is selected. Bearer authorization remains supported for other clients.
+Create a ServiceNow connector token from the CaseZero ServiceNow integration page. Store it in ServiceNow as a protected credential and send it in the `X-CaseZero-Connector-Token` header.
 
 ## ServiceNow REST Message
 
@@ -41,7 +33,7 @@ Create an outbound REST Message named `CaseZero FCR` with an HTTP Method named `
 - HTTP method: `POST`
 - Authentication type: `No authentication`
 - `Content-Type` header: `application/json`
-- `X-CaseZero-Webhook-Secret` header: the same value stored in `ITSM_WEBHOOK_SECRET`
+- `X-CaseZero-Connector-Token` header: the workspace token created in CaseZero
 
 Do not use ServiceNow Basic Authentication for this endpoint.
 

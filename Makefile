@@ -25,8 +25,5 @@ check:
 ci:
 	$(NPM) run ci
 
-smoke-servicenow:
-	bash ./scripts/smoke-servicenow-local.sh
-
 deploy: build
 	cd $(DEPLOY_DIR) && npx wrangler deploy --config wrangler.json

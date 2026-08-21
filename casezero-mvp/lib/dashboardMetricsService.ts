@@ -1,16 +1,18 @@
-import { desc } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { activities, cases, evidence, supportInteractions } from "@/db/schema";
 import { buildDashboardMetrics } from "@/lib/dashboardMetrics";
 import type { SupportTelemetryEvent } from "@/lib/externalSupport";
 
-export async function getDatabaseDashboardMetrics(supportEvents: SupportTelemetryEvent[]) {
+export async function getDatabaseDashboardMetrics(supportEvents: SupportTelemetryEvent[], workspaceId: string, provider?: string) {
   const db = getDb();
   const [caseRows, evidenceRows, activityRows, supportInteractionRows] = await Promise.all([
-    db.select().from(cases),
-    db.select({ caseId: evidence.caseId }).from(evidence),
-    db.select().from(activities).orderBy(desc(activities.createdAt)).limit(6),
-    db.select().from(supportInteractions),
+    db.select().from(cases).where(eq(cases.workspaceId, workspaceId)),
+    db.select({ caseId: evidence.caseId }).from(evidence).innerJoin(cases, eq(evidence.caseId, cases.id)).where(eq(cases.workspaceId, workspaceId)),
+    db.select().from(activities).innerJoin(cases, eq(activities.caseId, cases.id)).where(eq(cases.workspaceId, workspaceId)).orderBy(desc(activities.createdAt)).limit(6),
+    db.select().from(supportInteractions).where(provider
+      ? and(eq(supportInteractions.workspaceId, workspaceId), eq(supportInteractions.provider, provider))
+      : eq(supportInteractions.workspaceId, workspaceId)),
   ]);
 
   if (caseRows.length === 0) {
@@ -36,7 +38,7 @@ export async function getDatabaseDashboardMetrics(supportEvents: SupportTelemetr
   }));
 
   const casesById = new Map(dashboardCases.map((item) => [item.id, item]));
-  const recentActivity = activityRows.map((item) => {
+  const recentActivity = activityRows.map(({ activities: item }) => {
     const relatedCase = casesById.get(item.caseId);
     return {
       id: item.id,

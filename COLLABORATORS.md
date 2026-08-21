@@ -132,7 +132,7 @@ npm run check
 make check
 
 # Run local ServiceNow webhook smoke test
-npm run smoke:servicenow
+Use the deployed ServiceNow integration test flow from `/admin/integrations/servicenow`.
 make smoke-servicenow
 
 # Stop dev server
