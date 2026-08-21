@@ -1,4 +1,5 @@
 import { mockCases } from "@/lib/mockData";
+import { audit, requireAuth } from "@/lib/auth";
 
 function normalizeEvidence(
   rawEvidence: Array<[string, string, string, string, string?]> | undefined
@@ -27,6 +28,8 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireAuth(request, "read");
+  if (auth instanceof Response) return auth;
   try {
     const { id } = await params;
     const caseFound = mockCases.find((item) => item.id === id || item.caseId === id);
@@ -56,6 +59,8 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireAuth(request, "write");
+  if (auth instanceof Response) return auth;
   try {
     const { id } = await params;
     const body = await request.json();
@@ -66,6 +71,7 @@ export async function PATCH(
     }
 
     caseFound.status = body.status || caseFound.status;
+    await audit(auth, "case.update", id, { status: caseFound.status });
     return Response.json(caseFound);
   } catch {
     return Response.json({ error: "Failed to update case" }, { status: 500 });
@@ -76,6 +82,8 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireAuth(request, "admin");
+  if (auth instanceof Response) return auth;
   try {
     const { id } = await params;
     const caseIndex = mockCases.findIndex((item) => item.id === id || item.caseId === id);
@@ -85,6 +93,7 @@ export async function DELETE(
     }
 
     const [deletedCase] = mockCases.splice(caseIndex, 1);
+    await audit(auth, "case.delete", id);
     return Response.json({ deleted: true, id: deletedCase.id });
   } catch {
     return Response.json({ error: "Failed to delete case" }, { status: 500 });

@@ -6,8 +6,11 @@ import {
   type SupportActionType,
   type SupportSourceType,
 } from "@/lib/externalSupport";
+import { audit, requireAuth } from "@/lib/auth";
 
 export async function GET(request: Request) {
+  const auth = await requireAuth(request, "read");
+  if (auth instanceof Response) return auth;
   try {
     const { searchParams } = new URL(request.url);
     const caseId = searchParams.get("caseId");
@@ -22,6 +25,8 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const auth = await requireAuth(request, "write");
+  if (auth instanceof Response) return auth;
   try {
     const body = await request.json();
     const action = body.action as SupportActionType | undefined;
@@ -51,6 +56,7 @@ export async function POST(request: Request) {
           ? collectAllSupportSources(caseId, createdBy, clientEnvironment)
           : prepareTicketBundle(caseId, createdBy, clientEnvironment);
 
+    await audit(auth, "support_tracking.write", caseId, { action });
     return Response.json(result, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to process support tracking action";

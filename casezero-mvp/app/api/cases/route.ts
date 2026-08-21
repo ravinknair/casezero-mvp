@@ -1,11 +1,16 @@
 import { mockCases } from "@/lib/mockData";
 import { trackEvent } from "@/lib/telemetry";
+import { audit, requireAuth } from "@/lib/auth";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const auth = await requireAuth(request, "read");
+  if (auth instanceof Response) return auth;
   return Response.json(mockCases);
 }
 
 export async function POST(request: Request) {
+  const auth = await requireAuth(request, "write");
+  if (auth instanceof Response) return auth;
   try {
     const body = await request.json();
     const {
@@ -55,6 +60,7 @@ export async function POST(request: Request) {
       type: newCase.type,
       severity: newCase.severity,
     }, { confidence: newCase.confidence, sources: newCase.sources });
+    await audit(auth, "case.create", newCase.caseId);
     return Response.json(newCase, { status: 201 });
   } catch {
     return Response.json({ error: "Failed to create case" }, { status: 500 });

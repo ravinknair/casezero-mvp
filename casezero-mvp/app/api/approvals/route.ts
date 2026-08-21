@@ -1,7 +1,10 @@
 import { mockApprovals, mockCases } from "@/lib/mockData";
 import { trackEvent } from "@/lib/telemetry";
+import { audit, requireAuth } from "@/lib/auth";
 
 export async function GET(request: Request) {
+  const auth = await requireAuth(request, "read");
+  if (auth instanceof Response) return auth;
   try {
     const { searchParams } = new URL(request.url);
     const caseId = searchParams.get("caseId");
@@ -17,6 +20,8 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const auth = await requireAuth(request, "write");
+  if (auth instanceof Response) return auth;
   try {
     const body = await request.json();
     const { caseId, recommendationId, status, approvedBy, approvalNotes } = body;
@@ -43,6 +48,7 @@ export async function POST(request: Request) {
       status,
       approvedBy,
     });
+    await audit(auth, "approval.create", caseId, { status });
 
     return Response.json(newApproval, { status: 201 });
   } catch (error) {
@@ -52,6 +58,8 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
+  const auth = await requireAuth(request, "write");
+  if (auth instanceof Response) return auth;
   try {
     const body = await request.json();
     const { id, status, approvedBy, approvalNotes } = body;
@@ -65,6 +73,7 @@ export async function PATCH(request: Request) {
     approvalToUpdate.approvedBy = approvedBy ?? approvalToUpdate.approvedBy;
     approvalToUpdate.approvalNotes = approvalNotes ?? approvalToUpdate.approvalNotes;
     approvalToUpdate.decidedAt = new Date().toISOString();
+    await audit(auth, "approval.update", id, { status });
 
     return Response.json(approvalToUpdate);
   } catch (error) {

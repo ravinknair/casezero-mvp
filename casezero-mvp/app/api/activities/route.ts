@@ -1,4 +1,5 @@
 import { mockCases } from "@/lib/mockData";
+import { requireAuth } from "@/lib/auth";
 
 const mockActivities = mockCases.flatMap((c) =>
   (c.recommendation?.activities ?? []).map((description: string, index: number) => ({
@@ -11,6 +12,8 @@ const mockActivities = mockCases.flatMap((c) =>
 );
 
 export async function GET(request: Request) {
+  const auth = await requireAuth(request, "read");
+  if (auth instanceof Response) return auth;
   try {
     const { searchParams } = new URL(request.url);
     const caseId = searchParams.get("caseId");
@@ -24,6 +27,8 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const auth = await requireAuth(request, "write");
+  if (auth instanceof Response) return auth;
   try {
     const body = await request.json();
     const { caseId, description, createdBy } = body;

@@ -42,7 +42,7 @@ export default function SecurityPage() {
               <p className="text-sm leading-6 text-gray-700">The ServiceNow webhook secret is stored as the Cloudflare Worker secret <span className="font-mono">ITSM_WEBHOOK_SECRET</span>. It is never committed to source and is compared with a SHA-256 timing-resistant check.</p>
             </Card>
             <Card title="Auth" subtitle="Access model.">
-              <p className="text-sm leading-6 text-gray-700">The MVP uses platform hosting controls and app-level admin screens. Production packaging should enforce signed-in workspace identity, role checks, audit logs, and per-tenant isolation.</p>
+              <p className="text-sm leading-6 text-gray-700">GitHub OAuth creates a signed HTTP-only session for a workspace. Admin, operator, and viewer permissions protect high-risk API writes, with audit logs recorded for authenticated mutations.</p>
             </Card>
           </section>
 

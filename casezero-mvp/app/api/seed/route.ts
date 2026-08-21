@@ -1,6 +1,10 @@
 import { mockCases, mockSupportInteractions } from "@/lib/mockData";
+import { audit, requireAuth } from "@/lib/auth";
 
-export async function POST() {
+export async function POST(request: Request) {
+  const auth = await requireAuth(request, "admin");
+  if (auth instanceof Response) return auth;
+  await audit(auth, "seed.run", "seed");
   try {
     const [{ getDb }, { activities, cases, evidence, incidents, sites, supportInteractions, users }] = await Promise.all([
       import("@/db"),

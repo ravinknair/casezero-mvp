@@ -82,6 +82,31 @@ export async function getRecentItsmIntegrationEvents(): Promise<{ events: ItsmIn
   }
 }
 
+export async function getItsmProviderHealth() {
+  try {
+    const [{ getDb }, { serviceNowIntegrationEvents }] = await Promise.all([import("@/db"), import("@/db/schema")]);
+    const rows = await getDb().select().from(serviceNowIntegrationEvents).orderBy(desc(serviceNowIntegrationEvents.receivedAt)).limit(500);
+    return { providers: summarizeProviders(rows), sampleMode: false };
+  } catch {
+    return { providers: summarizeProviders(demoEvents()), sampleMode: true };
+  }
+}
+
+function summarizeProviders(rows: Array<{ status: string; externalTicketId: string | null; receivedAt: Date }>) {
+  const byProvider = new Map<string, { events: number; accepted: number; rejected: number; failedAuth: number; lastEvent: string | null }>();
+  for (const row of rows) {
+    const provider = parseProviderTicket(row.externalTicketId).provider;
+    const current = byProvider.get(provider) ?? { events: 0, accepted: 0, rejected: 0, failedAuth: 0, lastEvent: null };
+    current.events += 1;
+    if (row.status === "accepted" || row.status === "duplicate") current.accepted += 1;
+    if (row.status === "rejected" || row.status === "missing_fields") current.rejected += 1;
+    if (row.status === "failed_auth") current.failedAuth += 1;
+    current.lastEvent ??= row.receivedAt.toISOString();
+    byProvider.set(provider, current);
+  }
+  return [...byProvider.entries()].map(([provider, summary]) => ({ provider, ...summary, status: summary.failedAuth > 0 && summary.accepted === 0 ? "attention" : summary.rejected > summary.accepted ? "degraded" : "healthy" }));
+}
+
 async function hasWebhookSecret() {
   try {
     const { env } = await import("cloudflare:workers");

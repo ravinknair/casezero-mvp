@@ -1,4 +1,5 @@
 import { mockCases } from "@/lib/mockData";
+import { requireAuth } from "@/lib/auth";
 
 const mockEvidence = mockCases.flatMap((c) =>
   (c.recommendation?.evidence ?? []).map((entry: string[], index: number) => ({
@@ -13,6 +14,8 @@ const mockEvidence = mockCases.flatMap((c) =>
 );
 
 export async function GET(request: Request) {
+  const auth = await requireAuth(request, "read");
+  if (auth instanceof Response) return auth;
   try {
     const { searchParams } = new URL(request.url);
     const caseId = searchParams.get("caseId");
@@ -26,6 +29,8 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const auth = await requireAuth(request, "write");
+  if (auth instanceof Response) return auth;
   try {
     const body = await request.json();
     const { caseId, type, title, description, timestamp, color } = body;

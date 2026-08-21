@@ -11,9 +11,10 @@ const providers = [
   {
     name: "ServiceNow",
     provider: "servicenow",
-    status: "Reference connector",
+    status: "Dedicated connector + health workflow",
     channel: "Incident Business Rule or REST Message",
     detailHref: "/admin/integrations/servicenow",
+    healthHref: "/admin/integrations/health",
     sample: `{
   "provider": "servicenow",
   "number": "INC0012048",
@@ -24,7 +25,8 @@ const providers = [
   {
     name: "Zendesk",
     provider: "zendesk",
-    status: "Supported",
+    status: "Generic normalized webhook",
+    healthHref: "/admin/integrations/health",
     channel: "Ticket webhook",
     sample: `{
   "provider": "zendesk",
@@ -38,7 +40,8 @@ const providers = [
   {
     name: "Jira Service Management",
     provider: "jira_service_management",
-    status: "Supported",
+    status: "Generic normalized webhook",
+    healthHref: "/admin/integrations/health",
     channel: "Automation webhook",
     sample: `{
   "provider": "jira_service_management",
@@ -53,7 +56,8 @@ const providers = [
   {
     name: "Salesforce Service Cloud",
     provider: "salesforce_service_cloud",
-    status: "Supported",
+    status: "Generic normalized webhook",
+    healthHref: "/admin/integrations/health",
     channel: "Case outbound message or Flow",
     sample: `{
   "provider": "salesforce",
@@ -65,7 +69,8 @@ const providers = [
   {
     name: "Freshservice / Freshdesk",
     provider: "freshservice",
-    status: "Supported",
+    status: "Generic normalized webhook",
+    healthHref: "/admin/integrations/health",
     channel: "Ticket webhook",
     sample: `{
   "provider": "freshservice",
@@ -79,7 +84,8 @@ const providers = [
   {
     name: "BMC Helix ITSM",
     provider: "bmc_helix",
-    status: "Supported",
+    status: "Generic normalized webhook",
+    healthHref: "/admin/integrations/health",
     channel: "Incident webhook or integration service",
     sample: `{
   "provider": "bmc_helix",
@@ -93,7 +99,8 @@ const providers = [
   {
     name: "Ivanti Neurons",
     provider: "ivanti_neurons",
-    status: "Supported",
+    status: "Generic normalized webhook",
+    healthHref: "/admin/integrations/health",
     channel: "Incident webhook or integration service",
     sample: `{
   "provider": "ivanti_neurons",
@@ -107,7 +114,8 @@ const providers = [
   {
     name: "ManageEngine ServiceDesk Plus",
     provider: "manageengine_service_desk_plus",
-    status: "Supported",
+    status: "Generic normalized webhook",
+    healthHref: "/admin/integrations/health",
     channel: "Request webhook or custom trigger",
     sample: `{
   "provider": "manageengine",
@@ -295,6 +303,7 @@ function ProviderCard({
             Health page
           </a>
         ) : null}
+        {provider.healthHref ? <a href={provider.healthHref} className="rounded border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-700 hover:border-gray-400">Provider health</a> : null}
       </div>
       <div className="mt-4 grid gap-3 lg:grid-cols-[0.75fr_1.25fr]">
         <div className="rounded border border-gray-100 p-3 text-sm">

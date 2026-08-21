@@ -1,5 +1,5 @@
 import { relations, sql } from "drizzle-orm";
-import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { integer, primaryKey, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 const createdAt = () =>
 	integer("created_at", { mode: "timestamp_ms" })
@@ -16,8 +16,43 @@ export const users = sqliteTable("users", {
 	email: text("email").notNull().unique(),
 	name: text("name").notNull(),
 	role: text("role").notNull().default("operator"),
+	workspaceId: text("workspace_id"),
 	createdAt: createdAt(),
 	updatedAt: updatedAt(),
+});
+
+export const workspaces = sqliteTable("workspaces", {
+	id: text("id").primaryKey(),
+	tenantId: text("tenant_id").notNull().unique(),
+	name: text("name").notNull(),
+	createdAt: createdAt(),
+	updatedAt: updatedAt(),
+});
+
+export const workspaceMembers = sqliteTable("workspace_members", {
+	workspaceId: text("workspace_id").notNull().references(() => workspaces.id),
+	userId: text("user_id").notNull().references(() => users.id),
+	role: text("role").notNull().default("viewer"),
+	createdAt: createdAt(),
+	updatedAt: updatedAt(),
+}, (table) => [primaryKey({ columns: [table.workspaceId, table.userId] })]);
+
+export const sessions = sqliteTable("sessions", {
+	id: text("id").primaryKey(),
+	userId: text("user_id").notNull().references(() => users.id),
+	workspaceId: text("workspace_id").notNull().references(() => workspaces.id),
+	expiresAt: integer("expires_at", { mode: "timestamp_ms" }).notNull(),
+	createdAt: createdAt(),
+});
+
+export const auditLogs = sqliteTable("audit_logs", {
+	id: text("id").primaryKey(),
+	workspaceId: text("workspace_id").references(() => workspaces.id),
+	userId: text("user_id").references(() => users.id),
+	action: text("action").notNull(),
+	resource: text("resource"),
+	metadata: text("metadata"),
+	createdAt: createdAt(),
 });
 
 export const sites = sqliteTable("sites", {
@@ -26,6 +61,7 @@ export const sites = sqliteTable("sites", {
 	code: text("code").notNull().unique(),
 	environment: text("environment").notNull().default("production"),
 	region: text("region"),
+	workspaceId: text("workspace_id").references(() => workspaces.id),
 	createdAt: createdAt(),
 	updatedAt: updatedAt(),
 });
@@ -37,6 +73,7 @@ export const cases = sqliteTable("cases", {
 	createdBy: text("created_by").references(() => users.id),
 	ownerId: text("owner_id").references(() => users.id),
 	assignedTo: text("assigned_to").references(() => users.id),
+	workspaceId: text("workspace_id").references(() => workspaces.id),
 	type: text("type").notNull(),
 	severity: text("severity").notNull(),
 	title: text("title").notNull(),
@@ -98,6 +135,7 @@ export const supportInteractions = sqliteTable(
 		caseId: text("case_id").references(() => cases.id),
 		provider: text("provider").notNull().default("servicenow"),
 		externalTicketId: text("external_ticket_id").notNull(),
+		workspaceId: text("workspace_id").references(() => workspaces.id),
 		channel: text("channel").notNull(),
 		receivedAt: integer("received_at", { mode: "timestamp_ms" }).notNull(),
 		firstResolvedAt: integer("first_resolved_at", { mode: "timestamp_ms" }),
@@ -122,6 +160,7 @@ export const serviceNowIntegrationEvents = sqliteTable("servicenow_integration_e
 	receivedAt: integer("received_at", { mode: "timestamp_ms" })
 		.notNull()
 		.default(sql`(unixepoch() * 1000)`),
+	workspaceId: text("workspace_id").references(() => workspaces.id),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({

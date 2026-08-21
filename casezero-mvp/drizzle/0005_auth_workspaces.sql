@@ -1,0 +1,10 @@
+CREATE TABLE `workspaces` (`id` text PRIMARY KEY NOT NULL, `tenant_id` text NOT NULL, `name` text NOT NULL, `created_at` integer DEFAULT (unixepoch() * 1000) NOT NULL, `updated_at` integer DEFAULT (unixepoch() * 1000) NOT NULL);
+CREATE UNIQUE INDEX `workspaces_tenant_id_unique` ON `workspaces` (`tenant_id`);
+CREATE TABLE `workspace_members` (`workspace_id` text NOT NULL, `user_id` text NOT NULL, `role` text DEFAULT 'viewer' NOT NULL, `created_at` integer DEFAULT (unixepoch() * 1000) NOT NULL, `updated_at` integer DEFAULT (unixepoch() * 1000) NOT NULL, PRIMARY KEY (`workspace_id`, `user_id`), FOREIGN KEY (`workspace_id`) REFERENCES `workspaces`(`id`), FOREIGN KEY (`user_id`) REFERENCES `users`(`id`));
+CREATE TABLE `sessions` (`id` text PRIMARY KEY NOT NULL, `user_id` text NOT NULL, `workspace_id` text NOT NULL, `expires_at` integer NOT NULL, `created_at` integer DEFAULT (unixepoch() * 1000) NOT NULL, FOREIGN KEY (`user_id`) REFERENCES `users`(`id`), FOREIGN KEY (`workspace_id`) REFERENCES `workspaces`(`id`));
+CREATE TABLE `audit_logs` (`id` text PRIMARY KEY NOT NULL, `workspace_id` text, `user_id` text, `action` text NOT NULL, `resource` text, `metadata` text, `created_at` integer DEFAULT (unixepoch() * 1000) NOT NULL, FOREIGN KEY (`workspace_id`) REFERENCES `workspaces`(`id`), FOREIGN KEY (`user_id`) REFERENCES `users`(`id`));
+ALTER TABLE `users` ADD `workspace_id` text;
+ALTER TABLE `sites` ADD `workspace_id` text;
+ALTER TABLE `cases` ADD `workspace_id` text;
+ALTER TABLE `support_interactions` ADD `workspace_id` text;
+ALTER TABLE `servicenow_integration_events` ADD `workspace_id` text;

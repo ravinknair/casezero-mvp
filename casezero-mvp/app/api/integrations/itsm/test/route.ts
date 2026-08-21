@@ -1,4 +1,5 @@
 import { ingestItsmFcrRequest } from "@/lib/itsmIngestion";
+import { audit, requireAuth } from "@/lib/auth";
 
 const testPayloads = {
   servicenow: {
@@ -65,6 +66,8 @@ const testPayloads = {
 type TestProvider = keyof typeof testPayloads;
 
 export async function POST(request: Request) {
+  const auth = await requireAuth(request, "admin");
+  if (auth instanceof Response) return auth;
   const { provider } = (await request.json()) as { provider?: string };
   if (!provider || !(provider in testPayloads)) {
     return Response.json({ error: "Unsupported test provider" }, { status: 400 });
@@ -85,5 +88,7 @@ export async function POST(request: Request) {
     body: JSON.stringify(testPayloads[provider as TestProvider]),
   });
 
-  return ingestItsmFcrRequest(testRequest);
+  const response = await ingestItsmFcrRequest(testRequest);
+  await audit(auth, "integration.test", provider);
+  return response;
 }

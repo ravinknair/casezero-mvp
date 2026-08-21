@@ -1,8 +1,11 @@
 import { mockCases, mockSupportInteractions } from "@/lib/mockData";
 import { getSupportTelemetryEvents } from "@/lib/externalSupport";
 import { buildDashboardMetrics } from "@/lib/dashboardMetrics";
+import { requireAuth } from "@/lib/auth";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const auth = await requireAuth(request, "read");
+  if (auth instanceof Response) return auth;
   try {
     const supportEvents = getSupportTelemetryEvents();
 
