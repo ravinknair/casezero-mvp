@@ -14,7 +14,7 @@ const sidebarItems = [
 export default function SecurityPage() {
   return (
     <div className="app-layout flex">
-      <Sidebar items={sidebarItems} userName="Ravi Nair" />
+      <Sidebar items={sidebarItems} userName="CaseZero Team" />
       <main className="app-workspace flex-1 bg-gray-50 p-8">
         <div className="mx-auto max-w-7xl space-y-6">
           <header>

@@ -141,8 +141,8 @@ export default function DashboardPage() {
 
   return (
     <div className="app-layout flex">
-      <Sidebar items={sidebarItems} userName="Ravi Nair" caseCount={cases.length} />
-      <DashboardLayout environment="Production" userName="Ravi Nair" onCreateCase={openNewCaseWindow}>
+      <Sidebar items={sidebarItems} userName="CaseZero Team" caseCount={cases.length} />
+      <DashboardLayout environment="Production" userName="CaseZero Team" onCreateCase={openNewCaseWindow}>
         <main className="space-y-6 bg-gray-50 p-8">
           <section className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-gray-200 bg-white p-4">
             <div>

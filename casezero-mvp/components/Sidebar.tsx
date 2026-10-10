@@ -20,7 +20,7 @@ export function Sidebar({
   items,
   userName,
   caseCount,
-  approvers = ["Iranga Subasinghe", "Mandar Pophali", "John Lafferty — SVP of Sales"],
+  approvers = ["Incident Review Board", "Operations Leadership", "Sales Leadership"],
 }: SidebarProps) {
   return (
     <div className="app-sidebar cz-sidebar w-64 text-white h-screen flex flex-col fixed left-0 top-0">
@@ -54,8 +54,8 @@ export function Sidebar({
         </div>
         <div className="mt-4 rounded-lg border border-blue-400/40 bg-blue-500/10 p-3">
           <div className="text-[10px] font-semibold uppercase tracking-wide text-blue-200">Sales contact</div>
-          <div className="mt-2 text-sm font-semibold text-white">John Lafferty</div>
-          <div className="text-xs text-blue-100">SVP of Sales</div>
+          <div className="mt-2 text-sm font-semibold text-white">Sales Leadership</div>
+          <div className="text-xs text-blue-100">Private contact</div>
         </div>
       </div>
 

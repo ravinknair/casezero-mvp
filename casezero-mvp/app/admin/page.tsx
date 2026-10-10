@@ -44,7 +44,7 @@ export default function AdminPage() {
 
   return (
     <div className="app-layout flex">
-      <Sidebar items={sidebarItems} userName="Ravi Nair" />
+      <Sidebar items={sidebarItems} userName="CaseZero Team" />
       <main className="app-workspace flex-1 space-y-6 p-8">
         <header>
           <h1 className="text-3xl font-bold text-gray-900">Admin</h1>

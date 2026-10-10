@@ -65,7 +65,7 @@ export default function DemoGuidePage() {
 
   return (
     <div className="app-layout flex min-h-screen bg-gray-50">
-      <Sidebar items={sidebarItems} userName="Ravi Nair" />
+      <Sidebar items={sidebarItems} userName="CaseZero Team" />
 
       <main className="app-workspace flex-1 p-8">
         <div className="max-w-3xl mx-auto">

@@ -61,7 +61,7 @@ export default function TelemetryPage() {
 
   return (
     <div className="app-layout flex min-h-screen bg-gray-50">
-      <Sidebar items={sidebarItems} userName="Ravi Nair" caseCount={mockCases.length} />
+      <Sidebar items={sidebarItems} userName="CaseZero Team" caseCount={mockCases.length} />
 
       <main className="app-workspace flex-1 p-8">
         <div className="max-w-6xl mx-auto">

@@ -195,7 +195,7 @@ export default function CaseDetailPage() {
         body: JSON.stringify({
           caseId,
           status: "approved",
-          approvedBy: "Mandar Pophali",
+          approvedBy: "Operations Leadership",
           approvalNotes: "Proceeding with recommended action",
         }),
       });
@@ -219,7 +219,7 @@ export default function CaseDetailPage() {
         body: JSON.stringify({
           caseId,
           status: "rejected",
-          approvedBy: "Mandar Pophali",
+          approvedBy: "Operations Leadership",
           approvalNotes: "Keeping case under observation",
         }),
       });
@@ -259,7 +259,7 @@ export default function CaseDetailPage() {
           action,
           sourceType,
           sourceName,
-          createdBy: "Mandar Pophali",
+          createdBy: "Operations Leadership",
           clientEnvironment: resolvedClientEnvironment,
         }),
       });
@@ -311,7 +311,7 @@ export default function CaseDetailPage() {
 
   return (
     <div className="app-layout flex">
-      <Sidebar items={sidebarItems} userName="Ravi Nair" />
+      <Sidebar items={sidebarItems} userName="CaseZero Team" />
 
       <div className="app-workspace flex-1">
         {/* Header */}
