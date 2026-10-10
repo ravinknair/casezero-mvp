@@ -14,7 +14,7 @@ export function DashboardLayout({ environment, userName, onCreateCase, children 
       <header className="cz-border border-b bg-white px-8 py-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <Image src="/casezero-logo.svg" alt="CaseZero" width={128} height={24} className="h-6 w-auto" />
+            <Image src="/casezero-logo.png" alt="CaseZero" width={128} height={38} className="h-6 w-auto" />
             <span className="rounded-full border border-[var(--blue)] bg-[var(--blue-soft)] px-3 py-1 text-xs font-semibold text-[#175cd3]">
               {environment}
             </span>

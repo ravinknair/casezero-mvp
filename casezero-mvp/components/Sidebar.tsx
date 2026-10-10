@@ -26,14 +26,16 @@ export function Sidebar({
     <div className="app-sidebar cz-sidebar w-64 text-white h-screen flex flex-col fixed left-0 top-0">
       {/* Header */}
       <div className="cz-sidebar-border border-b p-6">
-        <Image
-          src="/casezero-logo.svg"
-          alt="CaseZero"
-          width={192}
-          height={36}
-          className="mb-4 h-auto w-full max-w-[192px]"
-          priority
-        />
+        <div className="mb-4 inline-flex rounded-xl bg-white/95 px-3 py-2">
+          <Image
+            src="/casezero-logo.png"
+            alt="CaseZero"
+            width={192}
+            height={56}
+            className="h-auto w-full max-w-[192px]"
+            priority
+          />
+        </div>
         {userName && (
           <div className="text-xs text-gray-400">
             <div>{userName}</div>

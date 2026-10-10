@@ -1358,14 +1358,16 @@ export default function OperationsPage() {
       <div className="grid min-h-screen lg:grid-cols-[260px_1fr]">
         <aside className="border-r border-slate-800 bg-slate-950/95 p-5 lg:sticky lg:top-0 lg:h-screen">
           <div className="flex items-center gap-3 pb-5">
-            <Image
-              src="/casezero-logo.svg"
-              alt="CaseZero"
-              width={160}
-              height={30}
-              className="h-8 w-auto"
-              priority
-            />
+            <div className="inline-flex rounded-xl bg-white/95 px-3 py-2">
+              <Image
+                src="/casezero-logo.png"
+                alt="CaseZero"
+                width={160}
+                height={48}
+                className="h-8 w-auto"
+                priority
+              />
+            </div>
             <div>
               <div className="font-bold">CaseZero</div>
               <div className="text-xs text-slate-400">Support Operations</div>
