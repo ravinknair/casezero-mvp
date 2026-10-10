@@ -164,6 +164,32 @@ export default function DashboardPage() {
               </select>
             </label>
           </section>
+          <section className="grid gap-4 rounded-lg border border-indigo-200 bg-indigo-50 p-4 md:grid-cols-2">
+            <article>
+              <p className="text-xs font-semibold uppercase tracking-wide text-indigo-700">Industry context</p>
+              <h2 className="mt-1 text-base font-bold text-gray-900">Why incident operations need a new execution layer</h2>
+              <p className="mt-2 text-sm text-gray-700">
+                Recent analyst coverage highlights the same pattern we see in customer environments: detection tooling has matured, but
+                coordination and execution across teams still create the largest delays.
+              </p>
+            </article>
+            <div className="space-y-3 text-sm text-gray-700">
+              <div className="rounded-md border border-indigo-200 bg-white p-3">
+                <p className="font-semibold text-gray-900">Gartner (July 2025)</p>
+                <p className="mt-1">
+                  Research on unified incident management and workflow automation emphasizes the operational burden created by fragmented
+                  ownership and manual coordination.
+                </p>
+              </div>
+              <div className="rounded-md border border-indigo-200 bg-white p-3">
+                <p className="font-semibold text-gray-900">Forrester (June 2026)</p>
+                <p className="mt-1">
+                  Industry analysis notes growing pressure on incident response from cloud complexity, security tool sprawl, and
+                  accelerating automation expectations.
+                </p>
+              </div>
+            </div>
+          </section>
           {metrics.sampleMode ? (
             <section className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
               <div className="font-semibold">Demo mode is active</div>
